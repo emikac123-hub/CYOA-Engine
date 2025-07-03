@@ -34,14 +34,19 @@ languages.forEach((lang) => {
       expect(brokenLinks).toEqual([]);
     });
 
-    test("No story page should have more than 550 characters of text", () => {
-      const longPages = story.filter((page) => page.text.trim().length > 550);
+    test("No story page should have more than 430 characters of text", () => {
+      const longPages = story.filter((page) => page.text.trim().length > 430);
+
       if (longPages.length > 0) {
         console.warn(
-          `⚠️ ${lang.toUpperCase()} has ${longPages.length} long pages:`,
-          longPages.map((p) => p.id)
+          `⚠️ ${lang.toUpperCase()} has ${longPages.length} long pages:`
         );
+        longPages.forEach((p, i) => {
+          const length = p.text.trim().length;
+          console.warn(`  ${i + 1}. ID: ${p.id} (${length} characters)`);
+        });
       }
+
       expect(longPages.length).toBe(0);
     });
 
@@ -70,14 +75,14 @@ languages.forEach((lang) => {
         .map(([text, count]) => ({ text, count }));
 
       if (duplicates.length > 0) {
-        console.warn(`⚠️ ${lang.toUpperCase()} has duplicate text passages:`);
+        console.warn(`⚠️ ${duplicates} has duplicate text passages:`);
         duplicates.forEach((dup, i) => {
           console.warn(
             `  ${i + 1}. (${dup.count}x) ${dup.text.slice(0, 60)}...`
           );
         });
       }
-
+      console.warn(duplicates)
       expect(duplicates.length).toBe(0);
     });
   });

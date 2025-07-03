@@ -6,6 +6,7 @@
     "delete": "Eliminar progreso",
     "confirmClear": "¿Estás seguro de que deseas eliminar tu progreso?",
     "cancel": "Cancelar",
-    "ok": "Aceptar"
+    "ok": "Aceptar",
+    "unlock": "Desbloquear por {{price}}"
   }
 }

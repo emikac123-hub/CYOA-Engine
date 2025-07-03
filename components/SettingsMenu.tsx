@@ -1,4 +1,5 @@
 // components/SettingsModal.tsx
+import { useRouter } from "expo-router";
 import React from "react";
 import {
   Modal,
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export default function SettingsModal({ visible, onClose }: Props) {
+  const router = useRouter();
   return (
     <Modal
       animationType="slide"
@@ -26,7 +28,7 @@ export default function SettingsModal({ visible, onClose }: Props) {
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Settings</Text>
 
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity style={styles.optionButton} onPress={() => router.push("/LanguageSelection")}>
             <Text style={styles.optionText}>🌐 Language Settings</Text>
           </TouchableOpacity>
 

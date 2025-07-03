@@ -7,6 +7,7 @@
     "delete": "Clear Progress",
     "confirmClear": "Are you sure you want to delete your progress?",
     "cancel": "Cancel",
-    "ok": "OK"
+    "ok": "OK",
+    "unlock": "Unlock for {{price}}"
   }
 }

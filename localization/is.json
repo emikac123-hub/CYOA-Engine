@@ -6,6 +6,7 @@
     "delete": "Hreinsa framvindu",
     "confirmClear": "Ertu viss um að þú viljir eyða framvindunni þinni?",
     "cancel": "Hætta við",
-    "ok": "Í lagi"
+    "ok": "Í lagi",
+    "unlock": "Aflæsa fyrir {{price}}"
   }
 }

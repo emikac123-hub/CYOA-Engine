@@ -6,6 +6,7 @@
     "delete": "進行状況を削除",
     "confirmClear": "進行状況を削除してもよろしいですか？",
     "cancel": "キャンセル",
-    "ok": "OK"
+    "ok": "OK",
+    "unlock": "{{price}}でロック解除"
   }
 }

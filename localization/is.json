@@ -1,0 +1,11 @@
+{
+  "titleScreen": {
+    "mainTitle": "Sögur af Kóvarníus",
+    "start": "Byrja nýja ævintýrið",
+    "continue": "Halda áfram",
+    "delete": "Hreinsa framvindu",
+    "confirmClear": "Ertu viss um að þú viljir eyða framvindunni þinni?",
+    "cancel": "Hætta við",
+    "ok": "Í lagi"
+  }
+}

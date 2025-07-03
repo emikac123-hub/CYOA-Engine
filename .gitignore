@@ -37,3 +37,11 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+stories/covarnius.json
+stories/covarnius-ja.json
+stories/storyIndex.json
+stories/covarnius-is.json
+stories/covarnius-fr.json
+stories/covarnius-es.json
+stories/covarnius-en.json
+stories/covarnius-de.json

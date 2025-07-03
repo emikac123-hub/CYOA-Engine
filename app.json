@@ -1,5 +1,10 @@
 {
   "expo": {
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
     "name": "choose-your-own-adventure",
     "slug": "choose-your-own-adventure",
     "version": "1.0.0",

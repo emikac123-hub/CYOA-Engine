@@ -1,0 +1,11 @@
+{
+  "titleScreen": {
+    "mainTitle": "Die Geschichten von Covarnius",
+    "start": "Neues Abenteuer starten",
+    "continue": "Fortsetzen",
+    "delete": "Fortschritt löschen",
+    "confirmClear": "Bist du sicher, dass du deinen Fortschritt löschen möchtest?",
+    "cancel": "Abbrechen",
+    "ok": "OK"
+  }
+}

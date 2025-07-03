@@ -1,50 +1,74 @@
-# Welcome to your Expo app 👋
+# Tales of Covarnius: A Choose Your Own Adventure App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This project is a choose-your-own-adventure application built with Expo. It features a dynamic story loading mechanism and custom UI components for a consistent user experience.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **Dynamic Story Loading**: Stories are loaded from JSON files, allowing for easy expansion and modification of adventure content.
+- **Themed UI Components**: Custom components that adapt to light and dark modes for a visually consistent experience.
 
-   ```bash
-   npm install
-   ```
+## Project Structure
 
-2. Start the app
+This project utilizes [Expo Router](https://docs.expo.dev/router/introduction) for file-based routing, simplifying navigation within the application.
 
-   ```bash
-   npx expo start
-   ```
+### Key Directories and Files:
 
-In the output, you'll find options to open the app in a
+- `app/`: Contains the application's screens and navigation logic.
+  - `index.tsx`: The title screen of the application.
+  - `story.tsx`: Displays the story content and handles user choices.
+- `assets/`: Stores static assets like images and fonts.
+- `components/`: Houses reusable UI components.
+  - `ThemedText.tsx`: A custom `Text` component that automatically adjusts its color based on the active theme (light or dark).
+  - `ThemedView.tsx`: A custom `View` component that automatically adjusts its background color based on the active theme (light or dark).
+- `constants/`: Defines application-wide constants.
+  - `Colors.ts`: Defines the color palette for both light and dark themes.
+- `hooks/`: Contains custom React hooks.
+  - `useThemeColor.ts`: A hook that provides a convenient way to access theme-dependent colors defined in `Colors.ts`.
+- `stories/`: Stores the JSON files for different adventure stories.
+- `storyloader.ts`: Manages the loading and parsing of story content.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Getting Started
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Follow these steps to set up and run the project locally:
 
-## Get a fresh project
+1.  **Install Dependencies**:
 
-When you're ready, run:
+    ```bash
+    npm install
+    ```
 
-```bash
-npm run reset-project
-```
+2.  **Start the Application**:
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+    ```bash
+    npx expo start
+    ```
 
-## Learn more
+    After running the command, you will be presented with options to open the app in a:
 
-To learn more about developing your project with Expo, look at the following resources:
+    -   [Development Build](https://docs.expo.dev/develop/development-builds/introduction/)
+    -   [Android Emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+    -   [iOS Simulator](https://docs.expo.dev/workflow/ios-simulator/)
+    -   [Expo Go](https://expo.dev/go) (a limited sandbox for trying out app development with Expo)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Available Scripts
 
-## Join the community
+-   `npm start`: Starts the Expo development server.
+-   `npm run reset-project`: Resets the project to its initial state (moves starter code to `app-example` and creates a blank `app` directory).
+-   `npm run android`: Starts the app on an Android emulator or device.
+-   `npm run ios`: Starts the app on an iOS simulator or device.
+-   `npm run web`: Starts the app in a web browser.
+-   `npm run lint`: Runs ESLint to check for code quality issues.
 
-Join our community of developers creating universal apps.
+## Learning Resources
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+For more information on developing with Expo, refer to the official documentation:
+
+-   [Expo Documentation](https://docs.expo.dev/)
+-   [Learn Expo Tutorial](https://docs.expo.dev/tutorial/introduction/)
+
+## Community
+
+Join the Expo developer community:
+
+-   [Expo on GitHub](https://github.com/expo/expo)
+-   [Discord Community](https://chat.expo.dev)

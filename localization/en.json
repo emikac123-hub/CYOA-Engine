@@ -1,0 +1,12 @@
+
+{
+  "titleScreen": {
+    "mainTitle": "Tales of Covarnius",
+    "start": "Start New Adventure",
+    "continue": "Continue",
+    "delete": "Clear Progress",
+    "confirmClear": "Are you sure you want to delete your progress?",
+    "cancel": "Cancel",
+    "ok": "OK"
+  }
+}

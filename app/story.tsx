@@ -106,14 +106,19 @@ function ActualStoryEngine({
         setConfettiKey((prev) => prev + 1);
 
         setUnlockedChapters((prev) => {
-          const updated = [
-            ...prev,
-            {
-              title: page.chapter.title,
-              order: page.chapter.order,
-              id: currentPageId,
-            },
-          ].sort((a, b) => a.order - b.order);
+          const newChapter = {
+            title: page.chapter.title,
+            order: page.chapter.order,
+            id: currentPageId,
+          };
+
+          // Use Map to deduplicate by ID
+          const chapterMap = new Map(prev.map((ch) => [ch.id, ch]));
+          chapterMap.set(newChapter.id, newChapter); // adds or replaces
+
+          const updated = Array.from(chapterMap.values()).sort(
+            (a, b) => a.order - b.order
+          );
 
           AsyncStorage.setItem(
             `unlockedChapters-${meta.id}`,

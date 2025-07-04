@@ -11,8 +11,12 @@ export const loadProgress = async (storyId: string): Promise<string | null> => {
 };
 
 export const clearProgress = async (storyId: string) => {
-  await AsyncStorage.removeItem(PROGRESS_KEY_PREFIX + storyId);
+  await AsyncStorage.multiRemove([
+    PROGRESS_KEY_PREFIX + storyId,
+    `unlockedChapters-${storyId}`,
+  ]);
 };
+
 export const getLastPlayedStory = async (): Promise<{
   storyId: string;
   pageId: string;

@@ -7,7 +7,9 @@ import {
   Animated,
   Dimensions,
   Easing,
+  FlatList,
   Image,
+  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -17,6 +19,9 @@ import SettingsModal from "../components/SettingsMenu";
 import StoryLoaderGate, { useStory } from "../components/StoryLoaderGate";
 import { loadProgress, saveProgress } from "../storage/progressManager";
 import { isStoryUnlocked } from "../storage/unlockManager";
+import ConfettiCannon from "react-native-confetti-cannon";
+import Modal from "react-native-modal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -34,8 +39,11 @@ function ActualStoryEngine({
   story: any[];
   resumePageId?: string;
 }) {
+  const [unlockedChapters, setUnlockedChapters] = useState([]);
+
   const router = useRouter();
   const { t } = useLanguage();
+  const [chapterMenuVisible, setChapterMenuVisible] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [currentPageId, setCurrentPageId] = useState<string | null>(null);
   const [history, setHistory] = useState<string[]>([]);
@@ -43,6 +51,12 @@ function ActualStoryEngine({
   const [fadeAnim] = useState(new Animated.Value(0));
   const [showPaywall, setShowPaywall] = useState(false);
   const [loading, setLoading] = useState(true);
+  const localizedChapters = t("titleScreen.chapters") || [];
+  const [showChapterPopup, setShowChapterPopup] = useState(false);
+  const [confettiKey, setConfettiKey] = useState(0);
+  const [lastShownChapterId, setLastShownChapterId] = useState<string | null>(
+    null
+  );
 
   const startPageId = "intro";
 
@@ -50,15 +64,76 @@ function ActualStoryEngine({
     const load = async () => {
       const savedPageId = await loadProgress(meta.id);
       const initialPage = savedPageId || startPageId;
-      console.log("✅ Initial Page ID:", initialPage);
       setCurrentPageId(initialPage);
+
+      // ✅ Load previously unlocked chapters
+      try {
+        const savedChapters = await AsyncStorage.getItem(
+          `unlockedChapters-${meta.id}`
+        );
+        if (savedChapters) {
+          const parsed = JSON.parse(savedChapters);
+          setUnlockedChapters(parsed);
+        }
+      } catch (err) {
+        console.warn("Failed to load unlocked chapters:", err);
+      }
+
       setLoading(false);
     };
     load();
   }, []);
 
+  const page = story.find((p) => p.id === currentPageId);
+
   useEffect(() => {
-    if (currentPageId) fadeIn();
+    if (currentPageId) {
+      fadeIn(); // ✅ Needed so text animates in
+    }
+
+    if (
+      currentPageId &&
+      page?.chapter?.title &&
+      currentPageId !== lastShownChapterId
+    ) {
+      const isAlreadyUnlocked = unlockedChapters.some(
+        (ch) => ch.id === currentPageId
+      );
+
+      if (!isAlreadyUnlocked) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setShowChapterPopup(true);
+        setConfettiKey((prev) => prev + 1);
+
+        setUnlockedChapters((prev) => {
+          const updated = [
+            ...prev,
+            {
+              title: page.chapter.title,
+              order: page.chapter.order,
+              id: currentPageId,
+            },
+          ].sort((a, b) => a.order - b.order);
+
+          AsyncStorage.setItem(
+            `unlockedChapters-${meta.id}`,
+            JSON.stringify(updated)
+          ).catch((err) =>
+            console.warn("Failed to save unlocked chapters:", err)
+          );
+
+          return updated;
+        });
+      }
+
+      setLastShownChapterId(currentPageId);
+
+      const timeout = setTimeout(() => {
+        setShowChapterPopup(false);
+      }, 2500);
+
+      return () => clearTimeout(timeout);
+    }
   }, [currentPageId]);
 
   const fadeIn = () => {
@@ -71,30 +146,9 @@ function ActualStoryEngine({
     }).start();
   };
 
-  if (!currentPageId) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ color: "#fff", textAlign: "center", marginTop: 40 }}>
-          Loading story...
-        </Text>
-      </View>
-    );
-  }
-
-  const page = story.find((p) => p.id === currentPageId);
-
-  if (!page) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ color: "#fff", textAlign: "center", marginTop: 40 }}>
-          ❌ Story page not found
-        </Text>
-      </View>
-    );
-  }
-
   const localizedContinue = t("titleScreen.continue").toLowerCase();
-   const localizedGoBack = t("titleScreen.back");
+  const localizedGoBack = t("titleScreen.back");
+
   const isSingleContinue =
     page?.choices?.length === 1 &&
     page.choices[0].text.trim().toLowerCase() === localizedContinue;
@@ -121,21 +175,39 @@ function ActualStoryEngine({
     }
   };
 
+  if (!currentPageId) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ color: "#fff", textAlign: "center", marginTop: 40 }}>
+          Loading story...
+        </Text>
+      </View>
+    );
+  }
+
+  if (!page) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ color: "#fff", textAlign: "center", marginTop: 40 }}>
+          ❌ Story page not found
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1 }}>
-      {/* Settings & Home Icons */}
       <View style={{ position: "absolute", top: 40, left: 20, zIndex: 10 }}>
         <TouchableOpacity onPress={() => setSettingsVisible(true)}>
           <Ionicons name="settings-outline" size={28} color="#fff" />
         </TouchableOpacity>
       </View>
       <View style={{ position: "absolute", top: 40, right: 20, zIndex: 10 }}>
-        <TouchableOpacity onPress={() => router.push("/")}>
-          <Ionicons name="home-outline" size={28} color="#fff" />
+        <TouchableOpacity onPress={() => setChapterMenuVisible(true)}>
+          <Ionicons name="list-outline" size={28} color="#fff" />
         </TouchableOpacity>
       </View>
 
-      {/* Tap Area */}
       <TouchableOpacity
         style={styles.container}
         activeOpacity={1}
@@ -153,7 +225,6 @@ function ActualStoryEngine({
           <Text style={styles.storyText}>{page.text}</Text>
         </Animated.View>
 
-        {/* Choices */}
         <View style={styles.storyContent} pointerEvents="box-none">
           {history.length > 0 && (
             <TouchableOpacity
@@ -168,7 +239,7 @@ function ActualStoryEngine({
                 });
               }}
             >
-      <Text style={styles.backText}>{localizedGoBack}</Text>
+              <Text style={styles.backText}>{localizedGoBack}</Text>
             </TouchableOpacity>
           )}
 
@@ -190,7 +261,6 @@ function ActualStoryEngine({
           )}
         </View>
 
-        {/* Paywall */}
         {showPaywall && (
           <View style={styles.paywall}>
             <Text style={styles.paywallText}>
@@ -215,7 +285,87 @@ function ActualStoryEngine({
         )}
       </TouchableOpacity>
 
-      {/* Settings Modal */}
+      {showChapterPopup && page.chapter?.title && (
+        <>
+          <ConfettiCannon
+            count={100}
+            origin={{ x: SCREEN_WIDTH / 2, y: -20 }}
+            fadeOut
+            autoStart
+            key={confettiKey}
+          />
+          <Modal
+            isVisible={showChapterPopup}
+            animationIn="zoomInDown"
+            animationOut="fadeOut"
+            backdropOpacity={0.6}
+            animationOutTiming={1200}
+            useNativeDriver
+          >
+            <View
+              style={{
+                backgroundColor: "#222",
+                padding: 20,
+                borderRadius: 16,
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{
+                  color: "#fff",
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                {page.chapter.title}
+              </Text>
+            </View>
+          </Modal>
+        </>
+      )}
+      <Modal
+        isVisible={chapterMenuVisible}
+        onBackdropPress={() => setChapterMenuVisible(false)}
+        style={{ justifyContent: "flex-end", margin: 0 }}
+      >
+        <SafeAreaView
+          edges={["bottom", "left", "right"]}
+          style={{
+            backgroundColor: "#111",
+            padding: 20,
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+          }}
+        >
+          <Text>Chapter Select</Text>
+          <FlatList
+            data={[{ title: "🏠 Home", id: "home" }, ...unlockedChapters]}
+            keyExtractor={(item, index) => `${item.id || item.title}-${index}`}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  setChapterMenuVisible(false);
+
+                  if (item.id === "home") {
+                    router.replace("/"); // go to TitleScreen
+                  } else if (item.id) {
+                    setCurrentPageId(item.id); // valid ID, go to chapter
+                  } else {
+                    console.warn("Chapter item missing ID:", item); // helpful debug
+                  }
+                }}
+                style={{ paddingVertical: 12 }}
+              >
+                <Text style={{ color: "#fff", fontSize: 16 }}>
+                  {item.title}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+        </SafeAreaView>
+      </Modal>
+
       <SettingsModal
         visible={settingsVisible}
         onClose={() => setSettingsVisible(false)}

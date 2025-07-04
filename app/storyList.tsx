@@ -4,26 +4,31 @@ import React, { useEffect, useState } from "react";
 import { useLanguage } from "../localization/LanguageProvider";
 import { useRouter } from "expo-router";
 import {
-    FlatList,
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { isStoryUnlocked } from "../storage/unlockManager";
-const { t } = useLanguage();
-// ✅ Define the image map here
+import { Ionicons } from "@expo/vector-icons";
+
 const coverImages: Record<string, any> = {
   korgle: require("../assets/images/KorgleTitle.png"),
   swamp: require("../assets/images/swamp.png"),
+};
+
+export const screenOptions = {
+  gestureEnabled: true,
 };
 
 export default function StoryListScreen() {
   const [stories, setStories] = useState<any[]>([]);
   const [unlockedMap, setUnlockedMap] = useState<Record<string, boolean>>({});
   const router = useRouter();
-
+  const { t } = useLanguage();
   useEffect(() => {
     const load = async () => {
       const data = await import("../stories/storyIndex.json").then(
@@ -76,14 +81,30 @@ export default function StoryListScreen() {
   };
 
   return (
-    <FlatList
-      contentContainerStyle={{ padding: 16 }}
-      data={stories}
-      keyExtractor={(item) => item.id}
-      renderItem={renderItem}
-    />
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#000", padding: 16 }}>
+      <View
+        style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}
+      >
+        <TouchableOpacity
+          onPress={() => router.replace("/")}
+          style={{ paddingRight: 12 }}
+        >
+          <Ionicons name="arrow-back" size={24} color="#fff" />
+        </TouchableOpacity>
+        <Text style={{ color: "#fff", fontSize: 20, fontWeight: "bold" }}>
+          {t("titleScreen.selectStory")}
+        </Text>
+      </View>
+
+      <FlatList
+        data={stories}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+      />
+    </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#111",
@@ -92,12 +113,12 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderColor: "#444",
     borderWidth: 1,
-    width: "100%", // Make sure it scales with screen width
+    width: "100%",
   },
   image: {
     width: "100%",
-    height: 180, // Adjusted for better fit
-    resizeMode: "cover", // This keeps it from looking squished
+    height: 180,
+    resizeMode: "cover",
   },
   info: {
     padding: 12,

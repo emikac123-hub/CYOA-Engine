@@ -1,4 +1,3 @@
-
 {
   "titleScreen": {
     "mainTitle": "Tales of Covarnius",
@@ -11,6 +10,68 @@
     "unlockPrice": "Unlock for {{price}}",
     "unlock": "✅ Unlock",
     "sampleLimit": "🔓 Sample only ({{count}} choices)",
-    "back": "⬅️ Go Back"
+    "back": "⬅️ Go Back",
+    "selectStory": "Select Story",
+    "chapters": [
+      [
+        {
+          "title": "Adventure Time!",
+          "order": 2,
+          "id": "Part_1_Intro_Adventure"
+        },
+        {
+          "title": "Fork In The Road",
+          "order": 3,
+          "id": "Part_1_Fork_In_The_Road"
+        },
+        {
+          "title": "Cowboys of Katonia 🤠",
+          "order": 4,
+          "id": "Part_1_Cowboys_Of_Katonia"
+        },
+        {
+          "title": "Random Hapalstance",
+          "order": 5,
+          "id": "Part_1_Hapalstance"
+        },
+        {
+          "title": "Save the Hapal",
+          "order": 6,
+          "id": "Part_1_Save_The_Hapal"
+        },
+        { "title": "Let Hapal Down 😢", "order": 6, "id": "Part_1_Hapal_Down" },
+        {
+          "title": "The King 👑",
+          "order": 7,
+          "id": "Part_1_Greatest_Scientist"
+        },
+        { "title": "Fakin' It", "order": 8, "id": "Part_1_Fake_Til_You_Make" },
+        {
+          "title": "Time to Help! 🕒",
+          "order": 9,
+          "id": "Part_1_Not_Scientist"
+        },
+        {
+          "title": "Diplomatic Immunity",
+          "order": 10,
+          "id": "Part_1_Diplomatic_Immunity"
+        },
+        {
+          "title": "Boarding Ticket?",
+          "order": 11,
+          "id": "Part_1_Boarding_Ticket"
+        },
+        {
+          "title": "Rise and Shine! ☀️",
+          "order": 12,
+          "id": "Part_2_Hypersleep"
+        },
+        {
+          "title": "Raid on Covarnius",
+          "order": 12,
+          "id": "Part_2_Raid_On_Covarnius"
+        }
+      ]
+    ]
   }
 }

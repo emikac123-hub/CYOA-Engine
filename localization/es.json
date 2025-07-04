@@ -10,7 +10,58 @@
     "unlockPrice": "Desbloquear por {{price}}",
     "unlock": "✅ Desbloquear",
     "sampleLimit": "🔓 Solo muestra ({{count}} opciones)",
-        "back": "⬅️ Volver"
-
+    "back": "⬅️ Volver",
+    "selectStory": "Selecciona una historia",
+    "chapters": [
+      { "title": "¡Hora de aventura!", "order": 2, "id": "intro" },
+      { "title": "Encrucijada", "order": 3, "id": "Part_1_Fork_In_The_Road" },
+      {
+        "title": "Los vaqueros de Katonia 🤠",
+        "order": 4,
+        "id": "Part_1_Cowboys_Of_Katonia"
+      },
+      {
+        "title": "Hapalstancia Aleatoria",
+        "order": 5,
+        "id": "Part_1_Hapalstance"
+      },
+      {
+        "title": "¡Salva al Hapal!",
+        "order": 6,
+        "id": "Part_1_Save_The_Hapal"
+      },
+      {
+        "title": "Decepcionamos a Hapal 😢",
+        "order": 6,
+        "id": "Part_1_Hapal_Down"
+      },
+      { "title": "El Rey 👑", "order": 7, "id": "Part_1_Greatest_Scientist" },
+      {
+        "title": "Fingiendo ser quien no soy",
+        "order": 8,
+        "id": "Part_1_Fake_Til_You_Make"
+      },
+      {
+        "title": "¡Es hora de ayudar! 🕒",
+        "order": 9,
+        "id": "Part_1_Not_Scientist"
+      },
+      {
+        "title": "Inmunidad Diplomática",
+        "order": 10,
+        "id": "Part_1_Diplomatic_Immunity"
+      },
+      {
+        "title": "¿Tu boleto de embarque?",
+        "order": 11,
+        "id": "Part_1_Boarding_Ticket"
+      },
+      {
+        "title": "¡Arriba, que ya es hora! ☀️",
+        "order": 12,
+        "id": "Part_2_Hypersleep"
+      },
+      { "title": "Ataque a Covarnius", "order": 12, "id": "Part_1_Sneak" }
+    ]
   }
 }

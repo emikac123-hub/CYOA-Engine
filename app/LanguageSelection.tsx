@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const languages = [
   { code: "en", label: "English" },
@@ -21,30 +22,32 @@ const languages = [
 
 const LanguageSelection = () => {
   const navigation = useNavigation();
-  const { setLang } = useLanguage(); // ✅ this updates context, which re-renders app
+  const { setLang, t } = useLanguage(); // ✅ get the `t` function from context
 
   const selectLanguage = async (code: string) => {
     await AsyncStorage.setItem("selectedLanguage", code);
-    setLang(code); // ✅ triggers re-render via context
-    navigation.goBack(); // ✅ go back AFTER language is set
+    setLang(code);
+    navigation.goBack();
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Choose Your Language</Text>
-      <FlatList
-        data={languages}
-        keyExtractor={(item) => item.code}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.languageButton}
-            onPress={() => selectLanguage(item.code)}
-          >
-            <Text style={styles.languageText}>{item.label}</Text>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <Text style={styles.title}>{t("languageChoice")}</Text>
+        <FlatList
+          data={languages}
+          keyExtractor={(item) => item.code}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.languageButton}
+              onPress={() => selectLanguage(item.code)}
+            >
+              <Text style={styles.languageText}>{item.label}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 

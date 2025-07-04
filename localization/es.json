@@ -3,7 +3,7 @@
     "mainTitle": "Cuentos de Covarnius",
     "start": "Comenzar nueva aventura",
     "continue": "Continuar",
-    "delete": "Eliminar progreso",
+    "delete": "Eliminar Progreso",
     "confirmClear": "¿Estás seguro de que deseas eliminar tu progreso?",
     "cancel": "Cancelar",
     "ok": "Aceptar",
@@ -61,7 +61,24 @@
         "order": 12,
         "id": "Part_2_Hypersleep"
       },
-      { "title": "Ataque a Covarnius", "order": 12, "id": "Part_1_Sneak" }
+      { "title": "Ataque a Covarnius", "order": 12, "id": "Part_1_Sneak" },
+      {
+        "title": "🏠 Inicio",
+        "order": 999,
+        "id": "home"
+      }
     ]
-  }
+  },
+  "home": "🏠 Inicio",
+  "languageChoice": "Elige tu idioma",
+    "selectChapter": "📖 Selección de capítulo",
+  "settings": {
+    "title": "Configuración",
+    "language": "Configuración de idioma",
+    "support": "Soporte",
+    "terms": "Términos de uso",
+    "privacy": "Política de privacidad",
+    "close": "Cerrar"
+  },
+  "subtitle": "Un viaje comienza con un extraño de las estrellas"
 }

@@ -1,5 +1,6 @@
 import * as Haptics from "expo-haptics";
 import React, { useEffect, useState } from "react";
+import { SAMPLE_LIMIT } from "../constants/Constants";
 
 import { useLanguage } from "../localization/LanguageProvider";
 import { useRouter } from "expo-router";
@@ -68,12 +69,12 @@ export default function StoryListScreen() {
           />
         )}
         <View style={styles.info}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.desc}>{item.description}</Text>
+          <Text style={styles.title}>{t("titleScreen.mainTitle")}</Text>
+          <Text style={styles.desc}>{t("subtitle")}</Text>
           <Text style={styles.status}>
             {unlocked
               ? t("unlocked")
-              : t("sampleLimit", { count: `${item.sampleLimit}` })}
+              : t("titleScreen.sampleLimit", { count: `${SAMPLE_LIMIT}` })}
           </Text>
         </View>
       </TouchableOpacity>

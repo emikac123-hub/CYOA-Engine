@@ -1,5 +1,4 @@
 // components/SettingsModal.tsx
-import { useRouter } from "expo-router";
 import React from "react";
 import {
   Modal,
@@ -9,6 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useRouter } from "expo-router";
+import { useLanguage } from "../localization/LanguageProvider"; // 👈 adjust path as needed
 
 type Props = {
   visible: boolean;
@@ -17,6 +18,8 @@ type Props = {
 
 export default function SettingsModal({ visible, onClose }: Props) {
   const router = useRouter();
+  const { t } = useLanguage(); // 👈 use translation function
+
   return (
     <Modal
       animationType="slide"
@@ -26,29 +29,37 @@ export default function SettingsModal({ visible, onClose }: Props) {
     >
       <Pressable style={styles.modalBackdrop} onPress={onClose}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Settings</Text>
+          <Text style={styles.modalTitle}>{t("settings.title")}</Text>
 
-          <TouchableOpacity style={styles.optionButton} onPress={() => router.push("/LanguageSelection")}>
-            <Text style={styles.optionText}>🌐 Language Settings</Text>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={() => {
+              onClose();
+              setTimeout(() => router.push("/LanguageSelection"), 0);
+            }}
+          >
+            <Text style={styles.optionText}>🌐 {t("settings.language")}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
-            <Text style={styles.optionText}>📬 Support</Text>
+          <TouchableOpacity style={styles.optionButton} onPress={onClose}>
+            <Text style={styles.optionText}>📬 {t("settings.support")}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
-            <Text style={styles.optionText}>📄 Terms of Use</Text>
+          <TouchableOpacity style={styles.optionButton} onPress={onClose}>
+            <Text style={styles.optionText}>📄 {t("settings.terms")}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
-            <Text style={styles.optionText}>🔒 Privacy Policy</Text>
+          <TouchableOpacity style={styles.optionButton} onPress={onClose}>
+            <Text style={styles.optionText}>🔒 {t("settings.privacy")}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.optionButton, { marginTop: 10 }]}
             onPress={onClose}
           >
-            <Text style={[styles.optionText, { color: "#B00020" }]}>Close</Text>
+            <Text style={[styles.optionText, { color: "#B00020" }]}>
+              {t("settings.close")}
+            </Text>
           </TouchableOpacity>
         </View>
       </Pressable>

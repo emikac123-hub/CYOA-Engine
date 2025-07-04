@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-
+import {TESTING} from "../constants/Constants"
 const languages = ["en", "de", "es", "fr", "is", "jp"];
 
 languages.forEach((lang) => {
@@ -529,5 +529,13 @@ describe("🌐 Verify 'Cowboys of Katonia' chapter title on Part_1_Cowboys_Of_Ka
       expect(page.chapter.title).toContain(cowboysOfKatoniaChapter[lang]);
       expect(page.chapter.order).toEqual(4);
     });
+  });
+});
+// __tests__/constants.test.ts
+
+
+describe("TESTING constant", () => {
+  it("should be set to false before commit", () => {
+    expect(TESTING).toBe(false);
   });
 });

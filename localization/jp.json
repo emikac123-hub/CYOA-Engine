@@ -13,53 +13,68 @@
     "back": "⬅️ 戻る（もどる)",
     "selectStory": "物語を選んでください",
     "chapters": [
-      [
-        { "title": "冒険の時間だ!", "order": 2, "id": "intro" },
-        { "title": "分かれ道", "order": 3, "id": "Part_1_Fork_In_The_Road" },
-        {
-          "title": "カトニアのカウボーイたち 🤠",
-          "order": 4,
-          "id": "Part_1_Cowboys_Of_Katonia"
-        },
-        { "title": "ハパル的な偶然", "order": 5, "id": "Part_1_Hapalstance" },
-        {
-          "title": "ハパルを救え！",
-          "order": 6,
-          "id": "Part_1_Save_The_Hapal"
-        },
-        {
-          "title": "ハパルをがっかりさせた 😢",
-          "order": 6,
-          "id": "Part_1_Hapal_Down"
-        },
-        { "title": "王様 👑", "order": 7, "id": "Part_1_Greatest_Scientist" },
-        {
-          "title": "なりすまし中",
-          "order": 8,
-          "id": "Part_1_Fake_Til_You_Make"
-        },
-        {
-          "title": "助ける時間だ！ 🕒",
-          "order": 9,
-          "id": "Part_1_Not_Scientist"
-        },
-        {
-          "title": "外交特権",
-          "order": 10,
-          "id": "Part_1_Diplomatic_Immunity"
-        },
-        {
-          "title": "搭乗券はどこですか？",
-          "order": 11,
-          "id": "Part_1_Boarding_Ticket"
-        },
-        {
-          "title": "起きろ、もう朝だ！ ☀️",
-          "order": 12,
-          "id": "Part_2_Hypersleep"
-        },
-        { "title": "コヴァルニウスへの襲撃", "order": 12, "id": "Part_1_Sneak" }
-      ]
+      { "title": "冒険の時間だ!", "order": 2, "id": "intro" },
+      { "title": "分かれ道", "order": 3, "id": "Part_1_Fork_In_The_Road" },
+      {
+        "title": "カトニアのカウボーイたち 🤠",
+        "order": 4,
+        "id": "Part_1_Cowboys_Of_Katonia"
+      },
+      { "title": "ハパル的な偶然", "order": 5, "id": "Part_1_Hapalstance" },
+      {
+        "title": "ハパルを救え！",
+        "order": 6,
+        "id": "Part_1_Save_The_Hapal"
+      },
+      {
+        "title": "ハパルをがっかりさせた 😢",
+        "order": 6,
+        "id": "Part_1_Hapal_Down"
+      },
+      { "title": "王様 👑", "order": 7, "id": "Part_1_Greatest_Scientist" },
+      {
+        "title": "なりすまし中",
+        "order": 8,
+        "id": "Part_1_Fake_Til_You_Make"
+      },
+      {
+        "title": "助ける時間だ！ 🕒",
+        "order": 9,
+        "id": "Part_1_Not_Scientist"
+      },
+      {
+        "title": "外交特権",
+        "order": 10,
+        "id": "Part_1_Diplomatic_Immunity"
+      },
+      {
+        "title": "搭乗券はどこですか？",
+        "order": 11,
+        "id": "Part_1_Boarding_Ticket"
+      },
+      {
+        "title": "起きろ、もう朝だ！ ☀️",
+        "order": 12,
+        "id": "Part_2_Hypersleep"
+      },
+      { "title": "コヴァルニウスへの襲撃", "order": 12, "id": "Part_1_Sneak" },
+      {
+        "title": "🏠 ホーム",
+        "order": 999,
+        "id": "home"
+      }
     ]
-  }
+  },
+  "home": "🏠 ホーム",
+  "languageChoice": "言語を選択してください",
+  "selectChapter": "📖 チャプター選択",
+  "settings": {
+    "title": "設定",
+    "language": "言語設定",
+    "support": "サポート",
+    "terms": "利用規約",
+    "privacy": "プライバシーポリシー",
+    "close": "閉じる"
+  },
+  "subtitle": "旅は星から来た見知らぬ者と共に始まる"
 }

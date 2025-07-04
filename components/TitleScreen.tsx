@@ -1,21 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { DeleteButtonText} from "./DeleteButtonText"
+import React, { useEffect, useState } from "react";
 import {
-    Alert,
-    Platform,
-    StatusBar,
-    StyleSheet,
-    TouchableOpacity,
-    View
+  Alert,
+  Animated,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import Animated, {
-    Easing,
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
-} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { clearProgress, getLastPlayedStory } from "../storage/progressManager";
 import GleamingButton from "./GleamingButton";
@@ -24,36 +20,28 @@ import { ThemedText } from "./ThemedText";
 import { useLanguage } from "../localization/LanguageProvider";
 
 export default function TitleScreen() {
-    const { t } = useLanguage();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
-  const [settingsVisible, setSettingsVisible] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
   const router = useRouter();
-  const [lastPlayed, setLastPlayed] = useState<{
-    storyId: string;
-    pageId: string;
-    title: string;
-  } | null>(null);
-
-  // Animate title
-  const titleOpacity = useSharedValue(0);
-  const titleScale = useSharedValue(0.95);
+  const [settingsVisible, setSettingsVisible] = useState(false);
+  const [lastPlayed, setLastPlayed] = useState(null);
+  const [fadeAnim] = useState(new Animated.Value(0));
+  const [scaleAnim] = useState(new Animated.Value(0.95));
 
   useEffect(() => {
-    titleOpacity.value = withTiming(1, {
-      duration: 800,
-      easing: Easing.out(Easing.ease),
-    });
-    titleScale.value = withTiming(1, {
-      duration: 800,
-      easing: Easing.out(Easing.ease),
-    });
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 6,
+        useNativeDriver: true,
+      }),
+    ]).start();
   }, []);
-
-  const animatedTitleStyle = useAnimatedStyle(() => ({
-    opacity: titleOpacity.value,
-    transform: [{ scale: titleScale.value }],
-  }));
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -65,16 +53,17 @@ export default function TitleScreen() {
 
   return (
     <View style={[styles.container, StyleSheet.absoluteFill]}>
-      {/* Gear Icon in top-left */}
       <TouchableOpacity
-        style={[styles.gearIcon, { top: insets.top + 10 }]} // ensures spacing for notch
+        style={[styles.gearIcon, { top: insets.top + 10 }]}
         onPress={() => setSettingsVisible(true)}
       >
         <Ionicons name="settings-outline" size={28} color="white" />
       </TouchableOpacity>
-      {/* Content */}
+
       <View style={styles.content}>
-        <Animated.View style={animatedTitleStyle}>
+        <Animated.View
+          style={{ opacity: fadeAnim, transform: [{ scale: scaleAnim }] }}
+        >
           <ThemedText style={styles.title}>
             {t("titleScreen.mainTitle")}
           </ThemedText>
@@ -128,7 +117,7 @@ export default function TitleScreen() {
               }
             >
               <ThemedText style={styles.buttonText}>
-                ❌ {t("titleScreen.delete")}
+               <DeleteButtonText />
               </ThemedText>
             </TouchableOpacity>
           </View>
@@ -147,11 +136,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: "relative",
-    backgroundColor: "#000", // fallback
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.4)", // darken background
+    backgroundColor: "#000",
   },
   content: {
     flex: 1,
@@ -203,31 +188,5 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 20,
     zIndex: 10,
-  },
-  modalBackdrop: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    paddingTop: 16,
-    paddingBottom: 40,
-    paddingHorizontal: 24,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  optionButton: {
-    paddingVertical: 14,
-  },
-  optionText: {
-    fontSize: 16,
-    color: "#333",
   },
 });

@@ -3,7 +3,7 @@
     "mainTitle": "Les Contes de Covarnius",
     "start": "Commencer une nouvelle aventure",
     "continue": "Continuer",
-    "delete": "Supprimer la progression",
+    "delete": "Supprimer la Progression",
     "confirmClear": "Êtes-vous sûr de vouloir supprimer votre progression ?",
     "cancel": "Annuler",
     "ok": "OK",
@@ -11,55 +11,70 @@
     "unlock": "✅ Débloquer",
     "sampleLimit": "🔓 Extrait seulement ({{count}} choix)",
     "back": "⬅️ Retour",
-       "selectStory": "Choisissez une histoire",
+    "selectStory": "Choisissez une histoire",
     "chapters": [
-      [
-        { "title": "C’est l’heure de l’aventure !", "order": 2, "id": "intro" },
-        {
-          "title": "Carrefour du destin",
-          "order": 3,
-          "id": "Part_1_Fork_In_The_Road"
-        },
-        {
-          "title": "Les cowboys de Katonia 🤠",
-          "order": 4,
-          "id": "Part_1_Cowboys_Of_Katonia"
-        },
-        {
-          "title": "Coïncidence Hapalesque",
-          "order": 5,
-          "id": "Part_1_Hapalstance"
-        },
-        { "title": "Sauver Hapal", "order": 6, "id": "Part_1_Save_The_Hapal" },
-        { "title": "Décevoir Hapal 😢", "order": 6, "id": "Part_1_Hapal_Down" },
-        { "title": "Le Roi 👑", "order": 7, "id": "Part_1_Greatest_Scientist" },
-        {
-          "title": "En pleine imposture",
-          "order": 8,
-          "id": "Part_1_Fake_Til_You_Make"
-        },
-        {
-          "title": "Il est temps d’aider ! 🕒",
-          "order": 9,
-          "id": "Part_1_Not_Scientist"
-        },
-        {
-          "title": "Immunité Diplomatique",
-          "order": 10,
-          "id": "Part_1_Diplomatic_Immunity"
-        },
-        {
-          "title": "Votre billet d’embarquement ?",
-          "order": 11,
-          "id": "Part_1_Boarding_Ticket"
-        },
-        {
-          "title": "Debout là-dedans ! ☀️",
-          "order": 12,
-          "id": "Part_2_Hypersleep"
-        },
-        { "title": "Assaut sur Covarnius", "order": 12, "id": "Part_1_Sneak" }
-      ]
+      { "title": "C’est l’heure de l’aventure !", "order": 2, "id": "intro" },
+      {
+        "title": "Carrefour du destin",
+        "order": 3,
+        "id": "Part_1_Fork_In_The_Road"
+      },
+      {
+        "title": "Les cowboys de Katonia 🤠",
+        "order": 4,
+        "id": "Part_1_Cowboys_Of_Katonia"
+      },
+      {
+        "title": "Coïncidence Hapalesque",
+        "order": 5,
+        "id": "Part_1_Hapalstance"
+      },
+      { "title": "Sauver Hapal", "order": 6, "id": "Part_1_Save_The_Hapal" },
+      { "title": "Décevoir Hapal 😢", "order": 6, "id": "Part_1_Hapal_Down" },
+      { "title": "Le Roi 👑", "order": 7, "id": "Part_1_Greatest_Scientist" },
+      {
+        "title": "En pleine imposture",
+        "order": 8,
+        "id": "Part_1_Fake_Til_You_Make"
+      },
+      {
+        "title": "Il est temps d’aider ! 🕒",
+        "order": 9,
+        "id": "Part_1_Not_Scientist"
+      },
+      {
+        "title": "Immunité Diplomatique",
+        "order": 10,
+        "id": "Part_1_Diplomatic_Immunity"
+      },
+      {
+        "title": "Votre billet d’embarquement ?",
+        "order": 11,
+        "id": "Part_1_Boarding_Ticket"
+      },
+      {
+        "title": "Debout là-dedans ! ☀️",
+        "order": 12,
+        "id": "Part_2_Hypersleep"
+      },
+      { "title": "Assaut sur Covarnius", "order": 12, "id": "Part_1_Sneak" },
+      {
+        "title": "🏠 Accueil",
+        "order": 999,
+        "id": "home"
+      }
     ]
-  }
+  },
+  "home": "🏠 Accueil",
+  "languageChoice": "Choisissez votre langue",
+  "selectChapter": "📖 Sélection de chapitre",
+  "settings": {
+    "title": "Paramètres",
+    "language": "Paramètres de langue",
+    "support": "Support",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité",
+    "close": "Fermer"
+  },
+   "subtitle": "Un voyage commence avec un étranger venu des étoiles"
 }

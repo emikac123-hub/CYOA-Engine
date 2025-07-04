@@ -7,6 +7,9 @@
     "confirmClear": "Êtes-vous sûr de vouloir supprimer votre progression ?",
     "cancel": "Annuler",
     "ok": "OK",
-    "unlock": "Déverrouiller pour {{price}}"
+    "unlockPrice": "Débloquer pour {{price}}",
+    "unlock": "✅ Débloquer",
+    "sampleLimit": "🔓 Extrait seulement ({{count}} choix)",
+    "back": "⬅️ Retour"
   }
 }

@@ -2,11 +2,15 @@
   "titleScreen": {
     "mainTitle": "コヴァーニアスの物語",
     "start": "新しい冒険を始める",
-    "continue": "続き",
+    "continue": "次へ",
     "delete": "進行状況を削除",
     "confirmClear": "進行状況を削除してもよろしいですか？",
     "cancel": "キャンセル",
     "ok": "OK",
-    "unlock": "{{price}}でロック解除"
+    "unlockPrice": "{{price}}でロック解除",
+    "unlock": "✅ でロック解除",
+    "sampleLimit": "🔓 お試し版（{{count}}つの選択肢）",
+    "back": "⬅️ 戻る（もどる)"
+
   }
 }

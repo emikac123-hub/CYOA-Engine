@@ -43,8 +43,8 @@ def polish_text_fields(obj, language):
             polish_text_fields(item, language)
 
 # File paths
-input_path = "../stories/covarnius-ja.json"
-output_path = "polished-covarnius-ja.json"
+input_path = "../stories/covarnius-jp.json"
+output_path = "polished-covarnius-jp.json"
 
 # Load JSON input
 with open(input_path, "r", encoding="utf-8") as infile:

@@ -8,7 +8,7 @@ file_names = [
     "covarnius-es.json",
     "covarnius-fr.json",
     "covarnius-is.json",
-    "covarnius-ja.json"
+    "covarnius-jp.json"
 ]
 
 # Directory containing your story files

@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
 import * as Haptics from "expo-haptics";
+import React, { useEffect, useState } from "react";
 
-import {
-  FlatList,
-  TouchableOpacity,
-  View,
-  Text,
-  Image,
-  StyleSheet,
-} from "react-native";
+import { useLanguage } from "../localization/LanguageProvider";
 import { useRouter } from "expo-router";
+import {
+    FlatList,
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { isStoryUnlocked } from "../storage/unlockManager";
-
+const { t } = useLanguage();
 // ✅ Define the image map here
 const coverImages: Record<string, any> = {
   korgle: require("../assets/images/KorgleTitle.png"),
@@ -66,8 +67,8 @@ export default function StoryListScreen() {
           <Text style={styles.desc}>{item.description}</Text>
           <Text style={styles.status}>
             {unlocked
-              ? "✅ Unlocked"
-              : `🔓 Sample only (${item.sampleLimit} choices)`}
+              ? t("unlocked")
+              : t("sampleLimit", { count: `${item.sampleLimit}` })}
           </Text>
         </View>
       </TouchableOpacity>

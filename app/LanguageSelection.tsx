@@ -1,7 +1,14 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from "react-native";
+import { useLanguage } from "../localization/LanguageProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "expo-router";
+import React from "react";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const languages = [
   { code: "en", label: "English" },
@@ -14,10 +21,12 @@ const languages = [
 
 const LanguageSelection = () => {
   const navigation = useNavigation();
+  const { setLang } = useLanguage(); // ✅ this updates context, which re-renders app
 
   const selectLanguage = async (code: string) => {
     await AsyncStorage.setItem("selectedLanguage", code);
-    navigation.goBack(); // or navigation.navigate("Home") if you want
+    setLang(code); // ✅ triggers re-render via context
+    navigation.goBack(); // ✅ go back AFTER language is set
   };
 
   return (

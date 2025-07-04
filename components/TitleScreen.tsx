@@ -1,34 +1,30 @@
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  TouchableOpacity,
-  StatusBar,
-  Alert,
-  Platform,
-  Modal,
-  Pressable,
+    Alert,
+    Platform,
+    StatusBar,
+    StyleSheet,
+    TouchableOpacity,
+    View
 } from "react-native";
-import { useRouter } from "expo-router";
-import * as Haptics from "expo-haptics";
-import { t } from "../localization";
-import { clearProgress, getLastPlayedStory } from "../storage/progressManager";
-import { ThemedText } from "./ThemedText";
-import GleamingButton from "./GleamingButton";
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
 } from "react-native-reanimated";
-import SettingsMenu from "./SettingsMenu";
-import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { clearProgress, getLastPlayedStory } from "../storage/progressManager";
+import GleamingButton from "./GleamingButton";
 import SettingsModal from "./SettingsMenu";
+import { ThemedText } from "./ThemedText";
+import { useLanguage } from "../localization/LanguageProvider";
 
 export default function TitleScreen() {
+    const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);

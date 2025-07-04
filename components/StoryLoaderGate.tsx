@@ -1,83 +1,85 @@
-import React, { useEffect, useState } from "react";
-import { Text, View, ActivityIndicator } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { loadStory } from "../storyloader";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { View, Text } from "react-native";
+import { useLanguage } from "../localization/LanguageProvider";
+import { loadStory } from "../storyloader"; 
 
-type StoryLoaderGateProps = {
-  children: (data: {
-    meta: any;
-    story: any[];
-    resumePageId?: string;
-  }) => React.ReactNode;
+// Define the context
+const StoryContext = createContext<{
+  meta: any;
+  story: any[];
+} | null>(null);
+
+// Custom hook
+export const useStory = () => {
+  const context = useContext(StoryContext);
+  if (!context) {
+    throw new Error("useStory must be used within a StoryLoaderGate");
+  }
+  return context;
 };
 
-export default function StoryLoaderGate({ children }: StoryLoaderGateProps) {
-  const { id, resume } = useLocalSearchParams();
-  const router = useRouter();
-
-  const [loading, setLoading] = useState(true);
+// StoryLoaderGate component
+const StoryLoaderGate = ({
+  children,
+  storyId = "covarnius", // You can pass this in dynamically if needed
+}: {
+  children: React.ReactNode;
+  storyId?: string;
+}) => {
+  const { lang } = useLanguage();
   const [storyData, setStoryData] = useState<{
     meta: any;
     story: any[];
-    resumePageId?: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
-      if (!id || typeof id !== "string") {
-        setError("No story selected.");
-        setLoading(false);
-        return;
-      }
-
       try {
-        const data = await loadStory(id);
-
-        if (resume && typeof resume === "string") {
-          data.resumePageId = resume;
-        }
-
+        const data = await loadStory(storyId, lang);
         setStoryData(data);
-      } catch (err) {
-        setError(`Could not load story: ${id}`);
-      } finally {
-        setLoading(false);
+        setError(null);
+      } catch (err: any) {
+        console.error("❌ Failed to load story:", err);
+        setError(err.message || "Failed to load story");
       }
     };
-
     load();
-  }, [id]);
+  }, [storyId, lang]);
 
-  if (loading) {
+  if (error) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#fff" />
-        <Text style={{ color: "#aaa", marginTop: 10 }}>Loading story...</Text>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#000",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ color: "#fff" }}>❌ {error}</Text>
       </View>
     );
   }
 
-  if (error || !storyData) {
+  if (!storyData?.meta || !storyData?.story) {
     return (
-      <View style={{ padding: 24 }}>
-        <Text style={{ fontSize: 18, color: "red", textAlign: "center" }}>
-          {error || "Unknown error."}
-        </Text>
-        <Text
-          onPress={() => router.replace("/")}
-          style={{
-            textAlign: "center",
-            marginTop: 16,
-            color: "#00f",
-            textDecorationLine: "underline",
-          }}
-        >
-          Back to story list
-        </Text>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#000",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ color: "#fff" }}>📖 Loading story...</Text>
       </View>
     );
   }
 
-  return <>{children(storyData)}</>;
-}
+  return (
+    <StoryContext.Provider value={storyData}>{children}</StoryContext.Provider>
+  );
+};
+
+export default StoryLoaderGate;

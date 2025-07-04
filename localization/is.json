@@ -2,11 +2,14 @@
   "titleScreen": {
     "mainTitle": "Sögur af Kóvarníus",
     "start": "Byrja nýja ævintýrið",
-    "continue": "Halda áfram",
+    "continue": "Haltu áfram",
     "delete": "Hreinsa framvindu",
     "confirmClear": "Ertu viss um að þú viljir eyða framvindunni þinni?",
     "cancel": "Hætta við",
     "ok": "Í lagi",
-    "unlock": "Aflæsa fyrir {{price}}"
+    "unlockPrice": "Opna fyrir {{price}}",
+    "unlock": "✅ Opna",
+    "sampleLimit": "🔓 Aðeins sýnishorn ({{count}} valmöguleikar)",
+    "back": "⬅️ Til baka"
   }
 }

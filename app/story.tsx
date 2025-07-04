@@ -1,37 +1,29 @@
+import { useLanguage } from "../localization/LanguageProvider";
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  View,
+  Animated,
+  Dimensions,
+  Easing,
+  Image,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  Animated,
-  Easing,
-  StyleSheet,
-  Image,
-  Dimensions,
+  View,
 } from "react-native";
-import { useRouter } from "expo-router";
-import StoryLoaderGate from "../components/StoryLoaderGate";
-import { isStoryUnlocked } from "../storage/unlockManager";
-import { loadProgress, saveProgress } from "../storage/progressManager";
-import * as Haptics from "expo-haptics";
-import { Ionicons } from "@expo/vector-icons";
 import SettingsModal from "../components/SettingsMenu";
+import StoryLoaderGate, { useStory } from "../components/StoryLoaderGate";
+import { loadProgress, saveProgress } from "../storage/progressManager";
+import { isStoryUnlocked } from "../storage/unlockManager";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-export default function StoryScreen() {
-  return (
-    <StoryLoaderGate>
-      {({ meta, story, resumePageId }) => (
-        <ActualStoryEngine
-          meta={meta}
-          story={story}
-          resumePageId={resumePageId}
-        />
-      )}
-    </StoryLoaderGate>
-  );
-}
+const StoryScreen = () => {
+  const { meta, story } = useStory();
+  return <ActualStoryEngine meta={meta} story={story} />;
+};
 
 function ActualStoryEngine({
   meta,
@@ -43,26 +35,30 @@ function ActualStoryEngine({
   resumePageId?: string;
 }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [settingsVisible, setSettingsVisible] = useState(false);
-  const startPageId = "intro";
-  const [currentPageId, setCurrentPageId] = useState(
-    resumePageId || startPageId
-  );
+  const [currentPageId, setCurrentPageId] = useState<string | null>(null);
   const [history, setHistory] = useState<string[]>([]);
   const [decisionCount, setDecisionCount] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(0));
   const [showPaywall, setShowPaywall] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const startPageId = "intro";
 
   useEffect(() => {
     const load = async () => {
       const savedPageId = await loadProgress(meta.id);
-      if (savedPageId) setCurrentPageId(savedPageId);
+      const initialPage = savedPageId || startPageId;
+      console.log("✅ Initial Page ID:", initialPage);
+      setCurrentPageId(initialPage);
+      setLoading(false);
     };
     load();
   }, []);
 
   useEffect(() => {
-    fadeIn();
+    if (currentPageId) fadeIn();
   }, [currentPageId]);
 
   const fadeIn = () => {
@@ -75,13 +71,39 @@ function ActualStoryEngine({
     }).start();
   };
 
+  if (!currentPageId) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ color: "#fff", textAlign: "center", marginTop: 40 }}>
+          Loading story...
+        </Text>
+      </View>
+    );
+  }
+
   const page = story.find((p) => p.id === currentPageId);
+
+  if (!page) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ color: "#fff", textAlign: "center", marginTop: 40 }}>
+          ❌ Story page not found
+        </Text>
+      </View>
+    );
+  }
+
+  const localizedContinue = t("titleScreen.continue").toLowerCase();
+   const localizedGoBack = t("titleScreen.back");
+  const isSingleContinue =
+    page?.choices?.length === 1 &&
+    page.choices[0].text.trim().toLowerCase() === localizedContinue;
 
   const handleChoice = async (nextId: string) => {
     setHistory((prev) => [...prev, currentPageId]);
     const unlocked = await isStoryUnlocked(meta.id);
-
     const nextCount = decisionCount + 1;
+
     if (!unlocked && nextCount >= meta.sampleLimit) {
       setShowPaywall(true);
       return;
@@ -93,10 +115,7 @@ function ActualStoryEngine({
   };
 
   const handleTapAnywhere = () => {
-    if (
-      page?.choices?.length === 1 &&
-      page.choices[0].text.toLowerCase().includes("continue")
-    ) {
+    if (page?.choices?.length === 1) {
       Haptics.selectionAsync();
       handleChoice(page.choices[0].nextId);
     }
@@ -104,7 +123,7 @@ function ActualStoryEngine({
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Settings Icon (top-right corner) */}
+      {/* Settings & Home Icons */}
       <View style={{ position: "absolute", top: 40, left: 20, zIndex: 10 }}>
         <TouchableOpacity onPress={() => setSettingsVisible(true)}>
           <Ionicons name="settings-outline" size={28} color="#fff" />
@@ -116,6 +135,7 @@ function ActualStoryEngine({
         </TouchableOpacity>
       </View>
 
+      {/* Tap Area */}
       <TouchableOpacity
         style={styles.container}
         activeOpacity={1}
@@ -130,9 +150,10 @@ function ActualStoryEngine({
         )}
 
         <Animated.View style={[styles.textContainer, { opacity: fadeAnim }]}>
-          <Text style={styles.storyText}>{page?.text}</Text>
+          <Text style={styles.storyText}>{page.text}</Text>
         </Animated.View>
 
+        {/* Choices */}
         <View style={styles.storyContent} pointerEvents="box-none">
           {history.length > 0 && (
             <TouchableOpacity
@@ -147,17 +168,16 @@ function ActualStoryEngine({
                 });
               }}
             >
-              <Text style={styles.backText}>⬅️ Go Back</Text>
+      <Text style={styles.backText}>{localizedGoBack}</Text>
             </TouchableOpacity>
           )}
 
-          {page?.choices?.length !== 1 ||
-          !page.choices[0].text.toLowerCase().includes("continue") ? (
+          {!isSingleContinue && (
             <View style={styles.choicesContainer}>
-              {page?.choices?.map((choice, index) => (
+              {page.choices.map((choice, index) => (
                 <TouchableOpacity
                   key={index}
-                  style={[styles.choiceButton]}
+                  style={styles.choiceButton}
                   onPress={() => {
                     Haptics.selectionAsync();
                     handleChoice(choice.nextId);
@@ -167,9 +187,10 @@ function ActualStoryEngine({
                 </TouchableOpacity>
               ))}
             </View>
-          ) : null}
+          )}
         </View>
 
+        {/* Paywall */}
         {showPaywall && (
           <View style={styles.paywall}>
             <Text style={styles.paywallText}>
@@ -182,20 +203,18 @@ function ActualStoryEngine({
               }
             >
               <Text style={styles.purchaseButtonText}>
-                Unlock for ${meta.price || "1.99"}
+                {t("titleScreen.unlockPrice", {
+                  price: `${meta.price || "$1.99"}`,
+                })}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                Haptics.selectionAsync();
-                router.replace("/");
-              }}
-            >
+            <TouchableOpacity onPress={() => router.replace("/")}>
               <Text style={styles.cancelText}>Back to story list</Text>
             </TouchableOpacity>
           </View>
         )}
       </TouchableOpacity>
+
       {/* Settings Modal */}
       <SettingsModal
         visible={settingsVisible}
@@ -204,6 +223,12 @@ function ActualStoryEngine({
     </View>
   );
 }
+
+export default () => (
+  <StoryLoaderGate>
+    <StoryScreen />
+  </StoryLoaderGate>
+);
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#000", padding: 16 },
@@ -215,6 +240,7 @@ const styles = StyleSheet.create({
   },
   textContainer: { flex: 1, justifyContent: "center" },
   storyText: { fontSize: 18, color: "#fff", lineHeight: 26 },
+  storyContent: { paddingBottom: 24 },
   choicesContainer: { marginTop: 20 },
   choiceButton: {
     backgroundColor: "#333",

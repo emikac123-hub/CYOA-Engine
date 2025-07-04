@@ -8,7 +8,7 @@ import json
 # Spanish	covarnius-es.json	113
 # French	covarnius-fr.json	158
 # Icelandic	covarnius-is.json	107
-# Japanese	covarnius-ja.json	1
+# Japanese	covarnius-jp.json	1
 # Japanese is the most concise language
 """
     Remove Duplicates from the stories. This probably happened when I was bringing them over from Swift UI and lost track.
@@ -20,7 +20,7 @@ file_names = [
     "covarnius-es.json",
     "covarnius-fr.json",
     "covarnius-is.json",
-    "covarnius-ja.json"
+    "covarnius-jp.json"
 ]
 
 # Input/output folders

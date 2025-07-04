@@ -38,7 +38,7 @@ yarn-error.*
 
 app-example
 stories/covarnius.json
-stories/covarnius-ja.json
+stories/covarnius-jp.json
 stories/storyIndex.json
 stories/covarnius-is.json
 stories/covarnius-fr.json

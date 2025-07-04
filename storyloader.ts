@@ -1,38 +1,41 @@
 import storyIndex from "./stories/storyIndex.json";
 
+// Manually map story content by storyId and language
+const storyMap: Record<string, Record<string, () => Promise<any>>> = {
+  covarnius: {
+    en: () => import("./stories/covarnius-en.json"),
+    de: () => import("./stories/covarnius-de.json"),
+    fr: () => import("./stories/covarnius-fr.json"),
+    es: () => import("./stories/covarnius-es.json"),
+    is: () => import("./stories/covarnius-is.json"),
+    ja: () => import("./stories/covarnius-jp.json"),
+  },
+};
+
 /**
- * Loads a specific story by its ID.
- * It retrieves the story's metadata from `storyIndex.json` and then dynamically imports
- * the corresponding story content based on the story ID.
+ * Loads a specific story by its ID and language.
+ * This is compatible with Metro bundler (React Native / Expo).
  *
- * @param storyId The unique identifier of the story to load.
- * @returns A Promise that resolves to an object containing the story's metadata and its content.
- * @throws Error if the story metadata or content is not found.
+ * @param storyId The unique identifier of the story to load (e.g., "covarnius").
+ * @param lang Language code (e.g., "en", "de"). Defaults to "en".
+ * @returns A Promise with story `meta` and `story` content.
+ * @throws Error if the story or language is not supported.
  */
-export const loadStory = async (storyId: string): Promise<{
-  meta: any;
-  story: any[];
-}> => {
-  // Find the story's metadata in the storyIndex.json file
+export const loadStory = async (
+  storyId: string,
+  lang: string = "en"
+): Promise<{ meta: any; story: any[] }> => {
   const meta = storyIndex.find((story) => story.id === storyId);
-  if (!meta) {
-    // If metadata is not found, throw an error
-    throw new Error(`Metadata for story "${storyId}" not found.`);
+  if (!meta) throw new Error(`Metadata for story "${storyId}" not found.`);
+
+  const loader = storyMap[storyId]?.[lang];
+  if (!loader) {
+    throw new Error(`Story content for "${storyId}" in language "${lang}" not found.`);
   }
 
-  // Load story content based on the provided storyId
-  switch (storyId) {
-    case "covarnius": {
-      // Dynamically import the covarnius story JSON file
-      const mod = await import("./stories/covarnius-en.json");
-      console.log("Loaded story module:", mod);
-      return {
-        meta,          // Return the metadata found earlier
-        story: mod.story, // Return the story content from the imported module
-      };
-    }
-    default:
-      // If the storyId does not match any known story content, throw an error
-      throw new Error(`Story content for "${storyId}" not found.`);
-  }
+  const mod = await loader();
+  return {
+    meta,
+    story: mod.story,
+  };
 };

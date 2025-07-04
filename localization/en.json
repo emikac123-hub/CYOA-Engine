@@ -8,6 +8,9 @@
     "confirmClear": "Are you sure you want to delete your progress?",
     "cancel": "Cancel",
     "ok": "OK",
-    "unlock": "Unlock for {{price}}"
+    "unlockPrice": "Unlock for {{price}}",
+    "unlock": "✅ Unlock",
+    "sampleLimit": "🔓 Sample only ({{count}} choices)",
+    "back": "⬅️ Go Back"
   }
 }

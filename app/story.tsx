@@ -37,7 +37,7 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
   const router = useRouter();
   const { t } = useLanguage();
   const [chapterMenuVisible, setChapterMenuVisible] = useState(false);
-  const [settingsVisible, setSettingsVisible] = useState(false);
+
   const [currentPageId, setCurrentPageId] = useState(null);
   const [history, setHistory] = useState([]);
   const [decisionCount, setDecisionCount] = useState(0);
@@ -186,14 +186,7 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
           alignItems: "center",
         }}
       >
-        <TouchableOpacity onPress={() => setSettingsVisible(true)}>
-          <Ionicons
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            name="settings-outline"
-            size={28}
-            color={iconColor}
-          />
-        </TouchableOpacity>
+
 
         {history.length > 0 && (
           <TouchableOpacity
@@ -264,10 +257,6 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
         }}
       />
 
-      <SettingsModal
-        visible={settingsVisible}
-        onClose={() => setSettingsVisible(false)}
-      />
     </View>
   );
 }

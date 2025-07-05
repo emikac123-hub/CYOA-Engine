@@ -3,7 +3,7 @@
     "mainTitle": "Tales of Covarnius",
     "start": "Start New Adventure",
     "continue": "🕹️ Continue",
-    "delete": "Clear Progress",
+    "delete": "❌ Clear Progress",
     "confirmClear": "Are you sure you want to delete your progress?",
     "cancel": "Cancel",
     "ok": "OK",
@@ -86,7 +86,7 @@
     "support": "Support",
     "terms": "Terms of Use",
     "privacy": "Privacy Policy",
-    "close": "Close"
+    "close": "❌ Close"
   },
   "subtitle": "A Journey Begins with a Stranger from the Stars"
 }

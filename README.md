@@ -101,7 +101,7 @@ The project is organized into the following directories:
 
 ## Localization
 
-## Current Languages
+### Current Languages
 
 - English
 - Japanese
@@ -232,9 +232,11 @@ Developer: Bright Anchor Apps
 Contact: croquet_player@proton.me
 
 1. Acceptance of Terms
+
 By downloading, accessing, or using Forked Fates: Interactive Adventures (“the App”), you agree to be bound by these Terms of Use and our Privacy Policy. If you do not agree, do not use the App.
 
 2. License to Use
+
 We grant you a limited, non-exclusive, non-transferable, revocable license to use the App for personal, non-commercial purposes in accordance with these terms.
 
 You may not:
@@ -249,13 +251,14 @@ All content in the App — including stories, artwork, sound effects, music, and
 
 4. In-App Purchases
 The App may offer optional in-app purchases to unlock content. All payments are processed securely through the platform's respective app store (e.g., Apple App Store or Google Play Store).
-Purchases are subject to the billing terms and refund policies of the store you use. We do not store or have access to your payment information.
 
-All purchases are final.
+- Purchases are subject to the billing terms and refund policies of the store you use. We do not store or have access to your payment information.
 
-We do not offer refunds except where required by law.
+- All purchases are final.
 
-Content unlocked via in-app purchase may be tied to your platform account (e.g., Apple ID or Google Account) and device.
+- We do not offer refunds except where required by law.
+
+- Content unlocked via in-app purchase may be tied to your platform account (e.g., Apple ID or Google Account) and device.
 
 5. Availability & Support
 We do our best to keep the App available and functioning smoothly. However, we do not guarantee uninterrupted service, bug-free operation, or continued availability of specific features or stories.

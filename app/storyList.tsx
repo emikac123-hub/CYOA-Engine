@@ -1,28 +1,27 @@
 import * as Haptics from "expo-haptics";
 import React, { useEffect, useState } from "react";
 import { SAMPLE_LIMIT } from "../constants/Constants";
-
 import { useLanguage } from "../localization/LanguageProvider";
 import { useRouter } from "expo-router";
 import {
   FlatList,
   Image,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { isStoryUnlocked } from "../storage/unlockManager";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../context/ThemeContext";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { isStoryUnlocked } from "../storage/unlockManager";
 
 const coverImages: Record<string, any> = {
   korgle: require("../assets/images/KorgleTitle.png"),
   swamp: require("../assets/images/swamp.png"),
-};
-
-export const screenOptions = {
-  gestureEnabled: true,
 };
 
 export default function StoryListScreen() {
@@ -30,6 +29,9 @@ export default function StoryListScreen() {
   const [unlockedMap, setUnlockedMap] = useState<Record<string, boolean>>({});
   const router = useRouter();
   const { t } = useLanguage();
+  const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
+
   useEffect(() => {
     const load = async () => {
       const data = await import("../stories/storyIndex.json").then(
@@ -55,7 +57,7 @@ export default function StoryListScreen() {
 
     return (
       <TouchableOpacity
-        style={styles.card}
+        style={[styles.card, theme === "light" && lightStyles.card]}
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           router.push({ pathname: "/story", params: { id: item.id } });
@@ -69,8 +71,19 @@ export default function StoryListScreen() {
           />
         )}
         <View style={styles.info}>
-          <Text style={styles.title}>{t("titleScreen.mainTitle")}</Text>
-          <Text style={styles.desc}>{t("subtitle")}</Text>
+          <Text
+            style={[
+              styles.title,
+              { color: theme === "dark" ? "#fff" : "#000" },
+            ]}
+          >
+            {t("titleScreen.mainTitle")}
+          </Text>
+          <Text
+            style={[styles.desc, { color: theme === "dark" ? "#ccc" : "#444" }]}
+          >
+            {t("subtitle")}
+          </Text>
           <Text style={styles.status}>
             {unlocked
               ? t("unlocked")
@@ -82,17 +95,38 @@ export default function StoryListScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#000", padding: 16 }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: theme === "dark" ? "#000" : "#fff",
+        paddingTop: insets.top + 10,
+        paddingHorizontal: 16,
+      }}
+    >
       <View
-        style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: 10,
+        }}
       >
         <TouchableOpacity
           onPress={() => router.replace("/")}
           style={{ paddingRight: 12 }}
         >
-          <Ionicons name="arrow-back" size={24} color="#fff" />
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color={theme === "dark" ? "#fff" : "#000"}
+          />
         </TouchableOpacity>
-        <Text style={{ color: "#fff", fontSize: 20, fontWeight: "bold" }}>
+        <Text
+          style={{
+            color: theme === "dark" ? "#fff" : "#000",
+            fontSize: 20,
+            fontWeight: "bold",
+          }}
+        >
           {t("titleScreen.selectStory")}
         </Text>
       </View>
@@ -101,6 +135,7 @@ export default function StoryListScreen() {
         data={stories}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
+        contentContainerStyle={{ paddingBottom: 20 }}
       />
     </SafeAreaView>
   );
@@ -125,16 +160,22 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   title: {
-    color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
   },
   desc: {
-    color: "#ccc",
     marginVertical: 6,
   },
   status: {
     color: "#0af",
     fontWeight: "bold",
+  },
+});
+
+// Optional overrides for light mode
+const lightStyles = StyleSheet.create({
+  card: {
+    backgroundColor: "#f8f8f8",
+    borderColor: "#ddd",
   },
 });

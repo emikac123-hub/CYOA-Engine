@@ -1,6 +1,7 @@
 // components/SettingsModal.tsx
 import React from "react";
 import {
+  Linking,
   Modal,
   Pressable,
   StyleSheet,
@@ -58,19 +59,31 @@ export default function SettingsModal({ visible, onClose }: Props) {
           >
             <Text style={s.optionText}>🌐 {t("settings.language")}</Text>
           </TouchableOpacity>
-
           <TouchableOpacity style={s.optionButton} onPress={onClose}>
             <Text style={s.optionText}>📬 {t("settings.support")}</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity style={s.optionButton} onPress={onClose}>
+          <TouchableOpacity
+            style={s.optionButton}
+            onPress={() => {
+              onClose();
+              Linking.openURL(
+                "https://github.com/ErikMikac/tales-of-covarnius#terms-of-service"
+              );
+            }}
+          >
             <Text style={s.optionText}>📄 {t("settings.terms")}</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity style={s.optionButton} onPress={onClose}>
+          <TouchableOpacity
+            style={s.optionButton}
+            onPress={() => {
+              onClose();
+              Linking.openURL(
+                "https://github.com/ErikMikac/tales-of-covarnius#privacy-policy"
+              );
+            }}
+          >
             <Text style={s.optionText}>🔒 {t("settings.privacy")}</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
             style={[s.optionButton, { marginTop: 10 }]}
             onPress={onClose}
@@ -100,7 +113,7 @@ const styles = (theme: "light" | "dark") =>
       backgroundColor: "rgba(0,0,0,0.5)",
     },
     modalContent: {
-      backgroundColor: "#fff",
+      backgroundColor: theme === "dark" ? "#333" : "#eee",
       paddingTop: 16,
       paddingBottom: 40,
       paddingHorizontal: 24,
@@ -118,6 +131,6 @@ const styles = (theme: "light" | "dark") =>
     },
     optionText: {
       fontSize: 16,
-      color: "#333",
+      color: theme === "dark" ? "white" : "black",
     },
   });

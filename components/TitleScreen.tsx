@@ -27,7 +27,7 @@ export default function TitleScreen() {
   const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const [settingsVisible, setSettingsVisible] = useState(false);
+
   const [lastPlayed, setLastPlayed] = useState(null);
   const [fadeAnim] = useState(new Animated.Value(0));
   const [scaleAnim] = useState(new Animated.Value(0.95));
@@ -57,22 +57,7 @@ export default function TitleScreen() {
 
   return (
     <View style={[s.container, StyleSheet.absoluteFill]}>
-      <TouchableOpacity
-        style={[s.gearIcon, { top: insets.top + 10 }]}
-        onPress={() => setSettingsVisible(true)}
-      >
-        <Ionicons
-          name="settings-outline"
-          size={28}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          color={iconColor}
-          style={
-            theme === "dark"
-              ? { textShadowColor: "#fff", textShadowRadius: 4 }
-              : {}
-          }
-        />
-      </TouchableOpacity>
+
 
       <View style={s.content}>
         <Animated.View
@@ -136,10 +121,7 @@ export default function TitleScreen() {
         )}
       </View>
 
-      <SettingsModal
-        visible={settingsVisible}
-        onClose={() => setSettingsVisible(false)}
-      />
+
     </View>
   );
 }

@@ -3,7 +3,7 @@
     "mainTitle": "Sögur af Kóvarníus",
     "start": "Byrja nýja ævintýrið",
     "continue": "🕹️ Haltu áfram",
-    "delete": "Hreinsa Framvindu",
+    "delete": "❌ Hreinsa Framvindu",
     "confirmClear": "Ertu viss um að þú viljir eyða framvindunni þinni?",
     "cancel": "Hætta við",
     "ok": "Í lagi",
@@ -74,7 +74,7 @@
     "support": "Aðstoð",
     "terms": "Skilmálar",
     "privacy": "Persónuverndarstefna",
-    "close": "Loka"
+    "close": "❌ Loka"
   },
-     "subtitle": "Ferðalag hefst með ókunnugum frá stjörnunum"
+  "subtitle": "Ferðalag hefst með ókunnugum frá stjörnunum"
 }

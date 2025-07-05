@@ -22,6 +22,8 @@ const languages = [
 ];
 
 const LanguageSelection = () => {
+  const { theme } = useTheme();
+  const s = styles(theme);
   const navigation = useNavigation();
   const { setLang, t } = useLanguage(); // ✅ get the `t` function from context
 
@@ -33,17 +35,17 @@ const LanguageSelection = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <Text style={styles.title}>{t("languageChoice")}</Text>
+      <View style={s.container}>
+        <Text style={s.title}>{t("languageChoice")}</Text>
         <FlatList
           data={languages}
           keyExtractor={(item) => item.code}
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={styles.languageButton}
+              style={s.languageButton}
               onPress={() => selectLanguage(item.code)}
             >
-              <Text style={styles.languageText}>{item.label}</Text>
+              <Text style={s.languageText}>{item.label}</Text>
             </TouchableOpacity>
           )}
         />
@@ -54,27 +56,30 @@ const LanguageSelection = () => {
 
 export default LanguageSelection;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#111",
-    padding: 20,
-  },
-  title: {
-    fontSize: 22,
-    color: "#fff",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  languageButton: {
-    backgroundColor: "#222",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 12,
-    alignItems: "center",
-  },
-  languageText: {
-    color: "#fff",
-    fontSize: 18,
-  },
-});
+
+
+export const styles = (theme: "light" | "dark") =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme === "dark" ? "#111" : "#fff",
+      padding: 20,
+    },
+    title: {
+      fontSize: 22,
+      color: theme === "dark" ? "#fff" : "#000",
+      marginBottom: 20,
+      textAlign: "center",
+    },
+    languageButton: {
+      backgroundColor: theme === "dark" ? "#222" : "#eee",
+      padding: 15,
+      borderRadius: 10,
+      marginBottom: 12,
+      alignItems: "center",
+    },
+    languageText: {
+      color: theme === "dark" ? "#fff" : "#000",
+      fontSize: 18,
+    },
+  });

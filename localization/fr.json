@@ -3,7 +3,7 @@
     "mainTitle": "Les Contes de Covarnius",
     "start": "Commencer une nouvelle aventure",
     "continue": "Continuer",
-    "delete": "Supprimer la Progression",
+    "delete": "❌ Supprimer la Progression",
     "confirmClear": "Êtes-vous sûr de vouloir supprimer votre progression ?",
     "cancel": "Annuler",
     "ok": "OK",
@@ -74,7 +74,7 @@
     "support": "Support",
     "terms": "Conditions d'utilisation",
     "privacy": "Politique de confidentialité",
-    "close": "Fermer"
+    "close": "❌ Fermer"
   },
    "subtitle": "Un voyage commence avec un étranger venu des étoiles"
 }

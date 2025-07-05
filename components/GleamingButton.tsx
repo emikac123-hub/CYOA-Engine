@@ -8,6 +8,7 @@ import {
   Easing,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "context/ThemeContext";
 
 export default function GleamingButton({
   title,
@@ -16,7 +17,8 @@ export default function GleamingButton({
   textStyle = {},
 }) {
   const animation = useRef(new Animated.Value(-1)).current;
-
+  const { theme } = useTheme();
+  const s = styles(theme);
   useEffect(() => {
     const loop = () => {
       Animated.sequence([
@@ -43,12 +45,12 @@ export default function GleamingButton({
   });
 
   return (
-    <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
-      <Text style={[styles.buttonText, textStyle]}>{title}</Text>
+    <TouchableOpacity style={[s.button, style]} onPress={onPress}>
+      <Text style={[s.buttonText, textStyle]}>{title}</Text>
       <Animated.View
         pointerEvents="none"
         style={[
-          styles.shimmerOverlay,
+          s.shimmerOverlay,
           {
             transform: [{ translateX }],
           },
@@ -57,40 +59,42 @@ export default function GleamingButton({
         <LinearGradient
           colors={["transparent", "rgba(255,255,255,0.4)", "transparent"]}
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }} // ← angled direction
-          style={[styles.shimmer, { transform: [{ rotate: "-20deg" }] }]} // diagonal gleam
+          end={{ x: 1, y: 1 }}
+          style={[s.shimmer, { transform: [{ rotate: "-10deg" }] }]}
         />
       </Animated.View>
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 16,
-    marginVertical: 10,
-    width: "80%",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.25)",
-    overflow: "hidden",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 17,
-    fontWeight: "500",
-    letterSpacing: 0.3,
-    zIndex: 2,
-  },
-  shimmerOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 1,
-  },
-  shimmer: {
-    width: 80,
-    height: "100%",
-  },
-});
+const styles = (theme: "light" | "dark") =>
+  StyleSheet.create({
+    button: {
+      backgroundColor:
+        theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
+      paddingVertical: 14,
+      paddingHorizontal: 24,
+      borderRadius: 16,
+      marginVertical: 10,
+      width: "80%",
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor:
+        theme === "dark" ? "rgba(255, 255, 255, 0.25)" : "rgba(0, 0, 0, 0.1)",
+      overflow: "hidden",
+    },
+    buttonText: {
+      color: theme === "dark" ? "#fff" : "#000",
+      fontSize: 17,
+      fontWeight: "500",
+      letterSpacing: 0.3,
+      zIndex: 2,
+    },
+    shimmerOverlay: {
+      ...StyleSheet.absoluteFillObject,
+      zIndex: 1,
+    },
+    shimmer: {
+      width: 80,
+      height: "100%",
+    },
+  });

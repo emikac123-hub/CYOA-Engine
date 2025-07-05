@@ -2,7 +2,7 @@
   "titleScreen": {
     "mainTitle": "Cuentos de Covarnius",
     "start": "Comenzar nueva aventura",
-    "continue": "Continuar",
+    "continue": "🕹️ Continuar",
     "delete": "Eliminar Progreso",
     "confirmClear": "¿Estás seguro de que deseas eliminar tu progreso?",
     "cancel": "Cancelar",

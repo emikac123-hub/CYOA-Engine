@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useTheme } from "../context/ThemeContext";
+
 
 import SettingsModal from "../components/SettingsMenu";
 import StoryLoaderGate, { useStory } from "../components/StoryLoaderGate";
@@ -23,6 +23,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import StoryContent from "../components/StoryContent";
 import ChapterUnlockPopup from "../components/ChapterUnlockPopup";
 import ChapterSelectMenu from "../components/ChapterSelectMenu";
+import { useTheme } from "../context/ThemeContext";
 
 const StoryScreen = () => {
   const { meta, story } = useStory();
@@ -30,6 +31,8 @@ const StoryScreen = () => {
 };
 
 function ActualStoryEngine({ meta, story, resumePageId }) {
+  const { theme } = useTheme();
+  const iconColor = theme === "dark" ? "#fff" : "#000";
   const [unlockedChapters, setUnlockedChapters] = useState([]);
   const router = useRouter();
   const { t } = useLanguage();
@@ -173,7 +176,7 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1,  backgroundColor: theme === "dark" ? "#000" : "#fff" }}>
       <View
         style={{
           position: "absolute",
@@ -188,7 +191,7 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             name="settings-outline"
             size={28}
-            color="#fff"
+            color={iconColor}
           />
         </TouchableOpacity>
 
@@ -208,7 +211,7 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
               <Ionicons
                 name="arrow-back-outline"
                 size={24}
-                color="#fff"
+                color={iconColor}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               />
             </Animated.View>
@@ -221,7 +224,7 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
         style={{ position: "absolute", top: 40, right: 20, zIndex: 10 }}
       >
         <TouchableOpacity onPress={() => setChapterMenuVisible(true)}>
-          <Ionicons name="list-outline" size={28} color="#fff" />
+          <Ionicons name="list-outline" size={28} color={iconColor} />
         </TouchableOpacity>
       </View>
 

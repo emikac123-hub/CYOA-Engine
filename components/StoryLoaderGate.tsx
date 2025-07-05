@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { useLanguage } from "../localization/LanguageProvider";
-import { loadStory } from "../storyloader"; 
+import { loadStory } from "../storyloader";
+import { useTheme } from "context/ThemeContext";
 
 // Define the context
 const StoryContext = createContext<{
@@ -32,7 +33,8 @@ const StoryLoaderGate = ({
     story: any[];
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
-
+  const { theme } = useTheme();
+  const iconColor = theme === "dark" ? "#fff" : "#000";
   useEffect(() => {
     const load = async () => {
       try {
@@ -52,12 +54,12 @@ const StoryLoaderGate = ({
       <View
         style={{
           flex: 1,
-          backgroundColor: "#000",
+          backgroundColor: theme === "dark" ? "#fff" : "#000",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-        <Text style={{ color: "#fff" }}>❌ {error}</Text>
+        <Text style={{ color: theme === "dark" ? "#fff" : "#000" }}>❌ {error}</Text>
       </View>
     );
   }
@@ -67,12 +69,12 @@ const StoryLoaderGate = ({
       <View
         style={{
           flex: 1,
-          backgroundColor: "#000",
+          backgroundColor: theme === "dark" ? "#fff" : "#000",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-        <Text style={{ color: "#fff" }}>📖 Loading story...</Text>
+        <Text style={{ color: theme === "dark" ? "#fff" : "#000" }}>📖 Loading story...</Text>
       </View>
     );
   }

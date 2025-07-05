@@ -31,7 +31,7 @@ export default function TitleScreen() {
   const [lastPlayed, setLastPlayed] = useState(null);
   const [fadeAnim] = useState(new Animated.Value(0));
   const [scaleAnim] = useState(new Animated.Value(0.95));
-
+  const iconColor = theme === "dark" ? "#fff" : "#000";
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -61,7 +61,17 @@ export default function TitleScreen() {
         style={[s.gearIcon, { top: insets.top + 10 }]}
         onPress={() => setSettingsVisible(true)}
       >
-        <Ionicons name="settings-outline" size={28} color="white" />
+        <Ionicons
+          name="settings-outline"
+          size={28}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          color={iconColor}
+          style={
+            theme === "dark"
+              ? { textShadowColor: "#fff", textShadowRadius: 4 }
+              : {}
+          }
+        />
       </TouchableOpacity>
 
       <View style={s.content}>
@@ -96,13 +106,13 @@ export default function TitleScreen() {
             >
               <ThemedText style={s.buttonText}>
                 {t("titleScreen.continue", {
-                  title: `🕹️ ${lastPlayed.title}`,
+                  title: `${lastPlayed.title}`,
                 })}
               </ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[s.button, styles.deleteButton]}
+              style={[s.button, s.deleteButton]}
               onPress={() =>
                 Alert.alert(
                   t("titleScreen.delete"),
@@ -118,7 +128,7 @@ export default function TitleScreen() {
                 )
               }
             >
-              <ThemedText style={s.buttonText}>
+              <ThemedText style={[s.buttonText]}>
                 <DeleteButtonText />
               </ThemedText>
             </TouchableOpacity>
@@ -187,9 +197,10 @@ const styles = (theme: "light" | "dark") =>
       alignItems: "center",
     },
     deleteButton: {
-      backgroundColor: "transparent",
+      backgroundColor:
+        theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
       borderColor:
-        theme === "dark" ? "rgba(255, 0, 0, 0.4)" : "rgba(255, 0, 0, 0.6)",
+        theme === "dark" ? "rgba(255, 0, 0, 0.4)" : "rgba(200, 0, 0, 0.6)",
     },
     gearIcon: {
       position: "absolute",

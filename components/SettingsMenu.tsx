@@ -67,7 +67,7 @@ export default function SettingsModal({ visible, onClose }: Props) {
             onPress={() => {
               onClose();
               Linking.openURL(
-                "https://github.com/ErikMikac/tales-of-covarnius#terms-of-service"
+                "https://github.com/emikac123-hub/CYOA-Engine?tab=readme-ov-file#terms-of-use"
               );
             }}
           >
@@ -78,7 +78,7 @@ export default function SettingsModal({ visible, onClose }: Props) {
             onPress={() => {
               onClose();
               Linking.openURL(
-                "https://github.com/ErikMikac/tales-of-covarnius#privacy-policy"
+                "https://github.com/emikac123-hub/CYOA-Engine?tab=readme-ov-file#terms-of-use"
               );
             }}
           >

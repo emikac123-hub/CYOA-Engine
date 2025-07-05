@@ -10,7 +10,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { useTheme } from "../context/ThemeContext";
+const { theme } = useTheme();
 const languages = [
   { code: "en", label: "English" },
   { code: "de", label: "Deutsch" },

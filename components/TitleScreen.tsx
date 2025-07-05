@@ -1,8 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { DeleteButtonText} from "./DeleteButtonText"
+import { DeleteButtonText } from "./DeleteButtonText";
 import React, { useEffect, useState } from "react";
+import { useTheme } from "../context/ThemeContext"; // ✅ import this
+
 import {
   Alert,
   Animated,
@@ -20,6 +22,8 @@ import { ThemedText } from "./ThemedText";
 import { useLanguage } from "../localization/LanguageProvider";
 
 export default function TitleScreen() {
+  const { theme } = useTheme();
+  const s = styles(theme);
   const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -52,21 +56,19 @@ export default function TitleScreen() {
   }, []);
 
   return (
-    <View style={[styles.container, StyleSheet.absoluteFill]}>
+    <View style={[s.container, StyleSheet.absoluteFill]}>
       <TouchableOpacity
-        style={[styles.gearIcon, { top: insets.top + 10 }]}
+        style={[s.gearIcon, { top: insets.top + 10 }]}
         onPress={() => setSettingsVisible(true)}
       >
         <Ionicons name="settings-outline" size={28} color="white" />
       </TouchableOpacity>
 
-      <View style={styles.content}>
+      <View style={s.content}>
         <Animated.View
           style={{ opacity: fadeAnim, transform: [{ scale: scaleAnim }] }}
         >
-          <ThemedText style={styles.title}>
-            {t("titleScreen.mainTitle")}
-          </ThemedText>
+          <ThemedText style={s.title}>{t("titleScreen.mainTitle")}</ThemedText>
         </Animated.View>
 
         <GleamingButton
@@ -78,9 +80,9 @@ export default function TitleScreen() {
         />
 
         {lastPlayed && (
-          <View style={styles.continueContainer}>
+          <View style={s.continueContainer}>
             <TouchableOpacity
-              style={styles.button}
+              style={s.button}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 router.push({
@@ -92,7 +94,7 @@ export default function TitleScreen() {
                 });
               }}
             >
-              <ThemedText style={styles.buttonText}>
+              <ThemedText style={s.buttonText}>
                 {t("titleScreen.continue", {
                   title: `🕹️ ${lastPlayed.title}`,
                 })}
@@ -100,7 +102,7 @@ export default function TitleScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.button, styles.deleteButton]}
+              style={[s.button, styles.deleteButton]}
               onPress={() =>
                 Alert.alert(
                   t("titleScreen.delete"),
@@ -116,8 +118,8 @@ export default function TitleScreen() {
                 )
               }
             >
-              <ThemedText style={styles.buttonText}>
-               <DeleteButtonText />
+              <ThemedText style={s.buttonText}>
+                <DeleteButtonText />
               </ThemedText>
             </TouchableOpacity>
           </View>
@@ -132,61 +134,66 @@ export default function TitleScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: "relative",
-    backgroundColor: "#000",
-  },
-  content: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 24,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-  },
-  title: {
-    fontSize: 44,
-    lineHeight: 54,
-    fontWeight: "600",
-    color: "#ffffff",
-    marginBottom: 48,
-    textAlign: "center",
-    letterSpacing: 1,
-    opacity: 0.95,
-    textShadowColor: "rgba(255,255,255,0.3)",
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
-  },
-  button: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 16,
-    marginVertical: 10,
-    width: "80%",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.25)",
-  },
-  buttonText: {
-    color: "#ffffff",
-    fontSize: 17,
-    fontWeight: "500",
-    letterSpacing: 0.3,
-  },
-  continueContainer: {
-    marginTop: 28,
-    width: "80%",
-    alignItems: "center",
-  },
-  deleteButton: {
-    backgroundColor: "transparent",
-    borderColor: "rgba(255, 0, 0, 0.4)",
-  },
-  gearIcon: {
-    position: "absolute",
-    left: 20,
-    zIndex: 10,
-  },
-});
+const styles = (theme: "light" | "dark") =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      position: "relative",
+      backgroundColor: theme === "dark" ? "#000" : "#fff",
+    },
+    content: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 24,
+      paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
+    title: {
+      fontSize: 44,
+      lineHeight: 54,
+      fontWeight: "600",
+      color: theme === "dark" ? "#ffffff" : "#111111",
+      marginBottom: 48,
+      textAlign: "center",
+      letterSpacing: 1,
+      opacity: 0.95,
+      textShadowColor:
+        theme === "dark" ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.1)",
+      textShadowOffset: { width: 0, height: 0 },
+      textShadowRadius: 10,
+    },
+    button: {
+      backgroundColor:
+        theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
+      paddingVertical: 14,
+      paddingHorizontal: 24,
+      borderRadius: 16,
+      marginVertical: 10,
+      width: "80%",
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor:
+        theme === "dark" ? "rgba(255, 255, 255, 0.25)" : "rgba(0, 0, 0, 0.1)",
+    },
+    buttonText: {
+      color: theme === "dark" ? "#ffffff" : "#000000",
+      fontSize: 17,
+      fontWeight: "500",
+      letterSpacing: 0.3,
+    },
+    continueContainer: {
+      marginTop: 28,
+      width: "80%",
+      alignItems: "center",
+    },
+    deleteButton: {
+      backgroundColor: "transparent",
+      borderColor:
+        theme === "dark" ? "rgba(255, 0, 0, 0.4)" : "rgba(255, 0, 0, 0.6)",
+    },
+    gearIcon: {
+      position: "absolute",
+      left: 20,
+      zIndex: 10,
+    },
+  });

@@ -12,6 +12,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTheme } from "../context/ThemeContext";
+
 import SettingsModal from "../components/SettingsMenu";
 import StoryLoaderGate, { useStory } from "../components/StoryLoaderGate";
 import { loadProgress, saveProgress } from "../storage/progressManager";
@@ -45,7 +47,6 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
   const startPageId = "intro";
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
-
   useEffect(() => {
     const load = async () => {
       const savedPageId = await loadProgress(meta.id);

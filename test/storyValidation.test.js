@@ -1,8 +1,15 @@
 const fs = require("fs");
 const path = require("path");
-import {TESTING} from "../constants/Constants"
+import { TESTING } from "../constants/Constants";
 const languages = ["en", "de", "es", "fr", "is", "jp"];
-
+const isCapitalized = (text) => {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  const firstChar = trimmed[0];
+  return (
+    firstChar === firstChar.toUpperCase() && /[ „"A-ZÁÉÍÓÚÝÆÖÞ«À¡.¿“]/i.test(firstChar)
+  );
+};
 languages.forEach((lang) => {
   const filePath = path.join(__dirname, `../stories/covarnius-${lang}.json`);
 
@@ -510,15 +517,18 @@ const cowboysOfKatoniaChapter = {
   de: "Die Cowboys von Katonia",
   es: "Los vaqueros de Katonia",
   is: "Kúrekarnir frá Katonia",
-  jp: "カトニアのカウボーイたち"
+  jp: "カトニアのカウボーイたち",
 };
-
+const languagesForCaps = ["en", "de", "es", "fr", "is"];
 describe("🌐 Verify 'Cowboys of Katonia' chapter title on Part_1_Cowboys_Of_Katonia", () => {
   const languages = Object.keys(cowboysOfKatoniaChapter);
 
   languages.forEach((lang) => {
     test(`${lang.toUpperCase()}: Part_1_Cowboys_Of_Katonia has correct chapter title and order`, () => {
-      const filePath = path.join(__dirname, `../stories/covarnius-${lang}.json`);
+      const filePath = path.join(
+        __dirname,
+        `../stories/covarnius-${lang}.json`
+      );
       const storyData = JSON.parse(fs.readFileSync(filePath, "utf8"));
       const story = storyData.story;
 
@@ -533,9 +543,44 @@ describe("🌐 Verify 'Cowboys of Katonia' chapter title on Part_1_Cowboys_Of_Ka
 });
 // __tests__/constants.test.ts
 
-
 describe("TESTING constant", () => {
   it("should be set to false before commit", () => {
     expect(TESTING).toBe(false);
+  });
+});
+
+const EXCLUDED_IDS = new Set(["DedicationView", "Silver_Ending", "Gold_Ending"]);
+
+languagesForCaps.forEach((lang) => {
+  const filePath = path.join(__dirname, `../stories/covarnius-${lang}.json`);
+
+  describe(`🌐 Text capitalization check: ${lang.toUpperCase()}`, () => {
+    let story;
+
+    beforeAll(() => {
+      const storyData = JSON.parse(fs.readFileSync(filePath, "utf8"));
+      story = storyData.story;
+    });
+
+    test("All 'text' fields should start with a capital letter (excluding known exceptions)", () => {
+      const errors = story
+        .filter((page) => !EXCLUDED_IDS.has(page.id))
+        .map((page) => ({
+          id: page.id,
+          text: page.text.trim(),
+        }))
+        .filter((p) => !isCapitalized(p.text));
+
+      if (errors.length > 0) {
+        console.warn(
+          `⚠️ Found ${errors.length} text fields that do not start with a capital letter:`
+        );
+        errors.forEach((p, i) => {
+          console.warn(`  ${i + 1}. ID: ${p.id} → "${p.text.slice(0, 60)}..."`);
+        });
+      }
+
+      expect(errors.length).toBe(0);
+    });
   });
 });

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useRef } from "react";
 import { View, Text, TouchableOpacity, Image, Animated } from "react-native";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "context/ThemeContext";
 import { storyStyles } from "./storyStyles";
+import ChoiceButton from "./ChoiceButton";
 
 const StoryContent = ({
   page,
@@ -19,14 +20,19 @@ const StoryContent = ({
 }) => {
   const { theme } = useTheme();
   const s = storyStyles(theme);
+  const choiceRefs = useRef([]);
+
   return (
     <TouchableOpacity
       style={s.container}
       activeOpacity={1}
       onPress={() => {
-        if (page?.choices?.length === 1) {
+        if (isSingleContinue && page.choices.length === 1) {
           Haptics.selectionAsync();
           handleChoice(page.choices[0].nextId);
+        } else {
+          // If choices exist, pulse them
+          choiceRefs.current.forEach((ref) => ref?.pulse?.());
         }
       }}
     >
@@ -46,16 +52,14 @@ const StoryContent = ({
         {!isSingleContinue && (
           <View style={s.choicesContainer}>
             {page.choices.map((choice, index) => (
-              <TouchableOpacity
+              <ChoiceButton
                 key={index}
+                ref={(el) => (choiceRefs.current[index] = el)}
+                text={choice.text}
+                onPress={() => handleChoice(choice.nextId)}
                 style={s.choiceButton}
-                onPress={() => {
-                  Haptics.selectionAsync();
-                  handleChoice(choice.nextId);
-                }}
-              >
-                <Text style={s.choiceText}>{choice.text}</Text>
-              </TouchableOpacity>
+                textStyle={s.choiceText}
+              />
             ))}
           </View>
         )}
@@ -86,7 +90,6 @@ const StoryContent = ({
 };
 
 export default StoryContent;
-function styles(theme: string): { s: any; } {
+function styles(theme: string): { s: any } {
   throw new Error("Function not implemented.");
 }
-

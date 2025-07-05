@@ -154,7 +154,7 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
     }).start();
   };
 
-  const localizedContinue = t("titleScreen.continue").toLowerCase();
+  const localizedContinue = stripEmoji(t("titleScreen.continue").toLowerCase());
   const isSingleContinue =
     page?.choices?.length === 1 &&
     page.choices[0].text.trim().toLowerCase() === localizedContinue;
@@ -266,3 +266,8 @@ export default () => (
     <StoryScreen />
   </StoryLoaderGate>
 );
+export function stripEmoji(text: string): string {
+  // This removes emojis and common variation selectors (e.g., U+FE0F)
+  const emojiRegex = /^[\p{Extended_Pictographic}\uFE0F\s]+/u;
+  return text.replace(emojiRegex, "").trim();
+}

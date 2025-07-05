@@ -178,67 +178,73 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Privacy Policy
 
-Last Updated: July 5, 2025
-App: Forked Fates: Interactive Adventures
-Developer: Bright Anchor Apps
+**Last Updated:** July 5, 2025
 
-1. Introduction
+**App**: Forked Fates: Interactive Adventures
+
+**Developer** Bright Anchor Apps
+
+1. **Introduction**
+   
 Your privacy is important to us. This Privacy Policy explains how Forked Fates: Interactive Adventures (“the App”) collects, uses, and protects your information. By using the App, you agree to the practices described in this policy.
 
-2. Information We Do Not Collect
+3. **Information We Do Not Collect**
+   
 We do not collect or store the following types of personal data:
 
-Your name, email address, or contact info
-Location data
-Health or biometric data
-Photos or media from your device
-The App does not include social logins, user accounts, or personal profiles.
+- Your name, email address, or contact info
+- Location data
+- Health or biometric data
+- Photos or media from your device
+- The App does not include social logins, user accounts, or personal profiles.
 
-3. Information We May Collect
+3. **Information We May Collect**
+   
 We may collect non-personal information to improve the user experience and app functionality, including:
 
-Anonymous usage statistics (e.g., which stories are accessed most)
-Device type and operating system
-Crash reports or performance metrics (via Apple or other analytics tools)
-This data is used in aggregate and does not identify you personally.
+- Anonymous usage statistics (e.g., which stories are accessed most)
+- Device type and operating system
+- Crash reports or performance metrics (via Apple or other analytics tools)
+- This data is used in aggregate and does not identify you personally.
 
-4. In-App Purchases
+4. **In-App Purchases**
+   
 All purchases are processed securely through the platform's respective app store (e.g., Apple App Store or Google Play Store). We do not store or have access to your payment information.
 
-5. Data Storage
+6. **Data Storage**
+   
 All story progress is stored locally on your device. We do not store any cloud-based user data or maintain external databases tied to individual users.
 
-6. Children’s Privacy
+7. **Children’s Privacy**
+   
 Our App is suitable for users aged 10 and up. We do not knowingly collect any personal information from children under 13. If you're a parent or guardian and believe your child has provided personal information, please contact us immediately.
 
-7. Third-Party Services
+8. **Third-Party Services**
+
 We may use third-party tools (e.g., for analytics or bug tracking). These tools may collect anonymous usage data but cannot access your personal information.
 All third-party services used comply with Apple’s privacy guidelines.
 
-8. Your Rights
+9. **Your Rights**
 Because we do not collect or store personal information, there's no data to request, export, or delete. You may delete the app at any time to remove all locally stored data.
 
-9. Contact Us
+10. **Contact Us**
 If you have any questions or concerns about this Privacy Policy, feel free to contact us at:
 📧  <croquet_player@proton.me>
 
-10. Changes to This Policy
+11. **Changes to This Policy**
 We may update this Privacy Policy from time to time. Changes will be posted here with a revised "Last Updated" date.
 
 ## Terms of Use
-Last Updated: July 5, 2025
-App: Forked Fates: Interactive Adventures
-Developer: Bright Anchor Apps
-Contact: croquet_player@proton.me
+**Last Updated:** July 5, 2025
+**App: Forked Fates:** Interactive Adventures
+**Developer:** Bright Anchor Apps
+**Contact:** croquet_player@proton.me
 
-1. Acceptance of Terms
-
+1. **Acceptance of Terms**
 By downloading, accessing, or using Forked Fates: Interactive Adventures (“the App”), you agree to be bound by these Terms of Use and our Privacy Policy. If you do not agree, do not use the App.
 
-2. License to Use
-
+2. **License to Use**
 We grant you a limited, non-exclusive, non-transferable, revocable license to use the App for personal, non-commercial purposes in accordance with these terms.
-
 You may not:
 
 - Use the open-source engine in a way that violates its license terms
@@ -246,44 +252,53 @@ You may not:
 - Resell, sublicense, or distribute the App or its content
 - Circumvent any security or access control mechanisms
 
-3. Intellectual Property
+3. **Intellectual Property**
+   
 All content in the App — including stories, artwork, sound effects, music, and branding — is owned by the developer or used with permission. You may not copy, reproduce, or exploit any part of the App without prior written consent.
 
-4. In-App Purchases
+5. **In-App Purchases**
+   
 The App may offer optional in-app purchases to unlock content. All payments are processed securely through the platform's respective app store (e.g., Apple App Store or Google Play Store).
+Purchases are subject to the billing terms and refund policies of the store you use. We do not store or have access to your payment information.
 
-- Purchases are subject to the billing terms and refund policies of the store you use. We do not store or have access to your payment information.
+All purchases are final.
 
-- All purchases are final.
+We do not offer refunds except where required by law.
 
-- We do not offer refunds except where required by law.
+Content unlocked via in-app purchase may be tied to your platform account (e.g., Apple ID or Google Account) and device.
 
-- Content unlocked via in-app purchase may be tied to your platform account (e.g., Apple ID or Google Account) and device.
-
-5. Availability & Support
+5. **Availability & Support**
+   
 We do our best to keep the App available and functioning smoothly. However, we do not guarantee uninterrupted service, bug-free operation, or continued availability of specific features or stories.
 
-6. User Conduct
+7. **User Conduct**
+   
 You agree not to:
 
 - Use the App for any activity that violates local, state, or international laws
 - Disrupt or interfere with the normal operation of the App
 - Upload malicious code or exploit vulnerabilities
 
-7. Termination
+7. **Termination**
+   
 We reserve the right to terminate your access to the App if you violate these Terms or misuse the software. You may stop using the App at any time by uninstalling it from your device.
 
-8. Disclaimer of Warranties
+9. **Disclaimer of Warranties**
+    
 The App is provided “as is” without warranties of any kind, express or implied. We disclaim all warranties including but not limited to merchantability, fitness for a particular purpose, and non-infringement.
 
-9. Limitation of Liability
+11. **Limitation of Liability**
+    
 To the fullest extent permitted by law, the developer shall not be liable for any indirect, incidental, or consequential damages arising from your use of the App.
 
-10. Changes to Terms
+13. **Changes to Terms**
+    
 We may revise these Terms of Use from time to time. Updates will be posted in the App and/or in the App Store listing with a revised "Last Updated" date. Continued use of the App after changes constitutes acceptance.
 
-11. Governing Law
+15. **Governing Law**
+    
 These Terms are governed by the laws of the State of Indiana, United States, without regard to its conflict of law principles.
 
-12. Open Source Components
+17. **Open Source Components**
+    
 Parts of this App (e.g., the story engine) are open source and distributed under the MIT License. See the GitHub repository for details. These components may be reused or modified in accordance with their license.

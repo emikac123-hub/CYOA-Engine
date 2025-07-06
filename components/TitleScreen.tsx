@@ -50,15 +50,14 @@ export default function TitleScreen() {
   useEffect(() => {
     const fetchProgress = async () => {
       const progress = await getLastPlayedStory();
+      console.log("📦 Last Played Progress:", progress); // Add this line
       setLastPlayed(progress);
     };
     fetchProgress();
-  }, []);
+  }, [t]); // 👈 re-run when language (t) changes
 
   return (
     <View style={[s.container, StyleSheet.absoluteFill]}>
-
-
       <View style={s.content}>
         <Animated.View
           style={{ opacity: fadeAnim, transform: [{ scale: scaleAnim }] }}
@@ -68,7 +67,8 @@ export default function TitleScreen() {
 
         <GleamingButton
           title={t("titleScreen.start")}
-          onPress={() => {
+          onPress={async () => {
+        
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             router.push("/storyList");
           }}
@@ -120,8 +120,6 @@ export default function TitleScreen() {
           </View>
         )}
       </View>
-
-
     </View>
   );
 }

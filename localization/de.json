@@ -11,65 +11,10 @@
     "unlock": "✅ Freischalten",
     "sampleLimit": "🔓 Nur Vorschau ({{count}} Auswahlmöglichkeiten)",
     "back": "⬅️ Zurück",
-    "selectStory": "Wähle eine Geschichte",
-    "chapters": [
-      { "title": "Zeit für ein Abenteuer!", "order": 2, "id": "intro" },
-      { "title": "Weggabelung", "order": 3, "id": "Part_1_Fork_In_The_Road" },
-      {
-        "title": "Die Cowboys von Katonia 🤠",
-        "order": 4,
-        "id": "Part_1_Cowboys_Of_Katonia"
-      },
-      {
-        "title": "Zufall à la Hapal",
-        "order": 5,
-        "id": "Part_1_Hapalstance"
-      },
-      { "title": "Rettet Hapal", "order": 6, "id": "Part_1_Save_The_Hapal" },
-      {
-        "title": "Hapal enttäuscht 😢",
-        "order": 6,
-        "id": "Part_1_Hapal_Down"
-      },
-      {
-        "title": "Der König 👑",
-        "order": 7,
-        "id": "Part_1_Greatest_Scientist"
-      },
-      {
-        "title": "Hochstapler am Werk",
-        "order": 8,
-        "id": "Part_1_Fake_Til_You_Make"
-      },
-      {
-        "title": "Zeit zu helfen! 🕒",
-        "order": 9,
-        "id": "Part_1_Not_Scientist"
-      },
-      {
-        "title": "Diplomatische Immunität",
-        "order": 10,
-        "id": "Part_1_Diplomatic_Immunity"
-      },
-      {
-        "title": "Wo ist dein Boardingpass?",
-        "order": 11,
-        "id": "Part_1_Boarding_Ticket"
-      },
-      {
-        "title": "Aufwachen, ihr Schlafmützen! ☀️",
-        "order": 12,
-        "id": "Part_2_Hypersleep"
-      },
-      { "title": "Überfall auf Covarnius", "order": 12, "id": "Part_1_Sneak" },
-      {
-        "title": "🏠 Startseite",
-        "order": 999,
-        "id": "home"
-      }
-    ]
+    "selectStory": "Wähle eine Geschichte"
   },
   "home": "🏠 Startseite",
+
   "languageChoice": "Wähle deine Sprache",
   "selectChapter": "Kapitel Auswählen",
   "settings": {
@@ -85,5 +30,8 @@
     "returnToTitle": "Zurück zur Geschichtenliste",
     "pitch": "Kaufe „{{title}}“, um weiterzulesen!",
     "currency": "€"
-  }
+  },
+  "gameOver": "Spiel beendet!",
+  "languageChangeWarning": "Wenn du die Sprache änderst, wirst du zum Startbildschirm zurückgebracht. Bist du sicher?"
+
 }

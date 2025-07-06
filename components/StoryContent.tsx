@@ -13,6 +13,7 @@ import { useTheme } from "context/ThemeContext";
 import { storyStyles } from "./storyStyles";
 import ChoiceButton from "./ChoiceButton";
 import { useLanguage } from "localization/LanguageProvider";
+import { clearProgressOnly } from "storage/progressManager";
 
 const StoryContent = ({
   page,
@@ -30,10 +31,11 @@ const StoryContent = ({
   const { theme } = useTheme();
   const s = storyStyles(theme);
   const choiceRefs = useRef([]);
-  const { t } = useLanguage()
+  const { t } = useLanguage();
   // Track latest page and history with refs
   const pageRef = useRef(page);
   const historyRef = useRef(history);
+
 
   useEffect(() => {
     pageRef.current = page;
@@ -42,7 +44,13 @@ const StoryContent = ({
   useEffect(() => {
     historyRef.current = history;
   }, [history]);
-
+  const handleGameOver = async () => {
+    const storyId = meta?.id;
+    if (storyId) {
+      await clearProgressOnly(storyId);
+    }
+    router.replace("/storyList"); // or router.push if you want stack behavior
+  };
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -56,8 +64,23 @@ const StoryContent = ({
         const currentPage = pageRef.current;
         const currentHistory = historyRef.current;
 
-        console.log("📲 Gesture dx:", dx);
 
+        // ✅ NEW: Determine dynamically if it's a Game Over page
+        const gameOverText = t("gameOver")?.toLowerCase();
+        const isGameOverPage = currentPage?.choices?.some(
+          (choice) =>
+            choice.text
+              .replace(
+                /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
+                ""
+              )
+              .trim()
+              .toLowerCase() === gameOverText
+        );
+        if (isGameOverPage) {
+          console.log("🚫 Swipe disabled — Game Over page");
+          return;
+        }
         if (Math.abs(dx) < 10) {
           // Tap
           console.log("⚡ Tap detected");
@@ -71,7 +94,7 @@ const StoryContent = ({
           }
         } else if (dx < -threshold) {
           // Swipe left
-          console.log("IsSingle Continue: " + isSingleContinue)
+          console.log("IsSingle Continue: " + isSingleContinue);
           if (isSingleContinue && currentPage?.choices?.length === 1) {
             const nextId = currentPage.choices[0].nextId;
             console.log("➡️ Swipe left to:", nextId);
@@ -112,19 +135,36 @@ const StoryContent = ({
       <View style={s.storyContent} pointerEvents="box-none">
         {!isSingleContinue && (
           <View style={s.choicesContainer}>
-            {page.choices.map((choice, index) => (
-              <ChoiceButton
-                key={index}
-                ref={(el) => (choiceRefs.current[index] = el)}
-                text={choice.text}
-                onPress={() => {
-                  Haptics.selectionAsync();
-                  handleChoice(choice.nextId);
-                }}
-                style={s.choiceButton}
-                textStyle={s.choiceText}
-              />
-            ))}
+            {page.choices.map((choice, index) => {
+              const stripped = choice.text
+                .replace(
+                  /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
+                  ""
+                )
+                .trim()
+                .toLowerCase();
+              const gameOverText = t("gameOver")?.toLowerCase();
+
+              const isGameOver = stripped === gameOverText;
+
+              return (
+                <ChoiceButton
+                  key={index}
+                  ref={(el) => (choiceRefs.current[index] = el)}
+                  text={choice.text}
+                  onPress={() => {
+                    Haptics.selectionAsync();
+                    if (isGameOver) {
+                      handleGameOver();
+                    } else {
+                      handleChoice(choice.nextId);
+                    }
+                  }}
+                  style={s.choiceButton}
+                  textStyle={s.choiceText}
+                />
+              );
+            })}
           </View>
         )}
       </View>

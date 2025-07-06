@@ -4,10 +4,11 @@ import { useLanguage } from "../localization/LanguageProvider";
 import { loadStory } from "../storyloader";
 import { useTheme } from "context/ThemeContext";
 
-// Define the context
+// Define the context with chapters included
 const StoryContext = createContext<{
   meta: any;
   story: any[];
+  chapters: any[];
 } | null>(null);
 
 // Custom hook
@@ -22,7 +23,7 @@ export const useStory = () => {
 // StoryLoaderGate component
 const StoryLoaderGate = ({
   children,
-  storyId = "covarnius", // You can pass this in dynamically if needed
+  storyId = "covarnius",
 }: {
   children: React.ReactNode;
   storyId?: string;
@@ -31,15 +32,17 @@ const StoryLoaderGate = ({
   const [storyData, setStoryData] = useState<{
     meta: any;
     story: any[];
+    chapters: any[];
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { theme } = useTheme();
-  const iconColor = theme === "dark" ? "#fff" : "#000";
+
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await loadStory(storyId, lang);
-        setStoryData(data);
+        const { meta, story, chapters } = await loadStory(storyId, lang);
+
+        setStoryData({ meta, story, chapters });
         setError(null);
       } catch (err: any) {
         console.error("❌ Failed to load story:", err);
@@ -64,7 +67,7 @@ const StoryLoaderGate = ({
     );
   }
 
-  if (!storyData?.meta || !storyData?.story) {
+  if (!storyData?.meta || !storyData?.story || !storyData?.chapters) {
     return (
       <View
         style={{

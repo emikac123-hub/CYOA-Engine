@@ -8,7 +8,7 @@ const storyMap: Record<string, Record<string, () => Promise<any>>> = {
     fr: () => import("./stories/covarnius-fr.json"),
     es: () => import("./stories/covarnius-es.json"),
     is: () => import("./stories/covarnius-is.json"),
-    ja: () => import("./stories/covarnius-jp.json"),
+    jp: () => import("./stories/covarnius-jp.json"),
   },
 };
 
@@ -24,18 +24,21 @@ const storyMap: Record<string, Record<string, () => Promise<any>>> = {
 export const loadStory = async (
   storyId: string,
   lang: string = "en"
-): Promise<{ meta: any; story: any[] }> => {
+): Promise<{ meta: any; story: any[]; chapters: any }> => {
   const meta = storyIndex.find((story) => story.id === storyId);
   if (!meta) throw new Error(`Metadata for story "${storyId}" not found.`);
 
   const loader = storyMap[storyId]?.[lang];
   if (!loader) {
-    throw new Error(`Story content for "${storyId}" in language "${lang}" not found.`);
+    throw new Error(
+      `Story content for "${storyId}" in language "${lang}" not found.`
+    );
   }
 
   const mod = await loader();
   return {
-    meta,
+    meta, // App-level metadata
     story: mod.story,
+    chapters: mod.meta?.chapters || [], // Add fallback to empty array just in case
   };
 };

@@ -2,8 +2,8 @@ import { useLanguage } from "../localization/LanguageProvider";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { SAMPLE_LIMIT, TESTING } from "../constants/Constants";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { SAMPLE_LIMIT } from "../constants/Constants";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
   Easing,
@@ -27,14 +27,14 @@ import { useTheme } from "../context/ThemeContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const StoryScreen = () => {
-  const { meta, story } = useStory();
-  return <ActualStoryEngine meta={meta} story={story} />;
+  const { meta, story, chapters } = useStory(); // ✅ Now includes chapters
+  return <ActualStoryEngine meta={meta} story={story} chapters={chapters} />;
 };
 
-function ActualStoryEngine({ meta, story, resumePageId }) {
+function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   const [unlockedChapters, setUnlockedChapters] = useState([]);
   const [currentPageId, setCurrentPageId] = useState(null);
-  const [page, setPage] = useState(null); // NEW: page from useEffect
+  const [page, setPage] = useState(null);
   const [history, setHistory] = useState([]);
   const [decisionCount, setDecisionCount] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(0));
@@ -48,36 +48,69 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
   const startPageId = "intro";
   const [chapterMenuVisible, setChapterMenuVisible] = useState(false);
   const insets = useSafeAreaInsets();
-  // Load saved progress
-  useEffect(() => {
-    const load = async () => {
-      const savedPageId = await loadProgress(meta.id);
-      const initialPage = savedPageId || startPageId;
-      setCurrentPageId(initialPage);
 
+  useEffect(() => {
+    const loadInitialState = async () => {
+      const allPageIds = new Set(story.map((p) => p.id));
+      let initialPageId: string | null = null;
+
+      try {
+        const savedPageId = await loadProgress(meta.id);
+        if (savedPageId && allPageIds.has(savedPageId)) {
+          initialPageId = savedPageId;
+        } else {
+          const savedChapters = await AsyncStorage.getItem(
+            `unlockedChapters-${meta.id}`
+          );
+          if (savedChapters) {
+            const parsed = JSON.parse(savedChapters);
+            const mostRecent = parsed[parsed.length - 1];
+            if (mostRecent && allPageIds.has(mostRecent.id)) {
+              initialPageId = mostRecent.id;
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Error loading progress or chapters:", err);
+      }
+
+      setCurrentPageId(initialPageId || startPageId);
+
+      // ✅ Localize chapters using `chapters` from useStory
       try {
         const savedChapters = await AsyncStorage.getItem(
           `unlockedChapters-${meta.id}`
         );
         if (savedChapters) {
           const parsed = JSON.parse(savedChapters);
-          setUnlockedChapters(parsed);
+          const localizedChapters = parsed
+            .map((ch) => {
+              const found = chapters.find((m) => m.id === ch.id);
+              return found
+                ? {
+                    id: ch.id,
+                    order: ch.order,
+                    title: found.title,
+                  }
+                : null;
+            })
+            .filter(Boolean)
+            .sort((a, b) => a.order - b.order);
+          setUnlockedChapters(localizedChapters);
         }
       } catch (err) {
-        console.warn("Failed to load unlocked chapters:", err);
+        console.warn("Failed to localize unlocked chapters:", err);
       }
     };
-    load();
+
+    loadInitialState();
   }, []);
 
-  // Keep page in sync with currentPageId
   useEffect(() => {
     const found = story.find((p) => p.id === currentPageId);
-    console.log("✅ currentPageId changed:", currentPageId);
     setPage(found || null);
   }, [currentPageId, story]);
 
-  // Page fade-in animation
   const fadeIn = () => {
     fadeAnim.setValue(0);
     Animated.timing(fadeAnim, {
@@ -92,7 +125,6 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
     if (currentPageId) fadeIn();
   }, [currentPageId]);
 
-  // Handle chapter unlock
   useEffect(() => {
     if (!page || !page.chapter?.title || currentPageId === lastShownChapterId)
       return;
@@ -123,12 +155,10 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
     }
 
     setLastShownChapterId(currentPageId);
-
     const timeout = setTimeout(() => setShowChapterPopup(false), 2500);
     return () => clearTimeout(timeout);
   }, [page]);
 
-  // Determine if this is a single "Continue" button
   const isSingleContinue = useMemo(() => {
     if (!page || !page.choices || page.choices.length !== 1) return false;
     const stripped = (s) =>
@@ -141,12 +171,7 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
     return actual === expected;
   }, [page, t]);
 
-  // Handle user making a choice
   const handleChoice = async (nextId) => {
-    console.log("The next ID:", nextId);
-    console.log("Prev:", [...history, currentPageId]);
-    console.log("Current Page ID:", currentPageId);
-
     setHistory((prev) => [...prev, currentPageId]);
     const unlocked = await isStoryUnlocked(meta.id);
     const nextCount = decisionCount + 1;
@@ -225,8 +250,8 @@ export default () => (
     <StoryScreen />
   </StoryLoaderGate>
 );
+
 export function stripEmoji(text: string): string {
-  // This removes emojis and common variation selectors (e.g., U+FE0F)
   const emojiRegex = /^[\p{Extended_Pictographic}\uFE0F\s]+/u;
   return text.replace(emojiRegex, "").trim();
 }

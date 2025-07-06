@@ -13,12 +13,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../context/ThemeContext";
 const { theme } = useTheme();
 const languages = [
-  { code: "en", label: "English" },
-  { code: "de", label: "Deutsch" },
-  { code: "es", label: "Español" },
-  { code: "fr", label: "Français" },
-  { code: "is", label: "Íslenska" },
-  { code: "ja", label: "日本語" },
+  { code: "en", label: "🇺🇸/🇬🇧 English" },
+  { code: "de", label: "🇩🇪 Deutsch" },
+  { code: "es", label: "🇪🇸 Español" },
+  { code: "fr", label: "🇫🇷 Français" },
+  { code: "is", label: "🇮🇸 Íslenska" },
+  { code: "jp", label: "🇯🇵 日本語" },
 ];
 
 const LanguageSelection = () => {

@@ -7,6 +7,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   Easing,
+  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -23,6 +24,7 @@ import StoryContent from "../components/StoryContent";
 import ChapterUnlockPopup from "../components/ChapterUnlockPopup";
 import ChapterSelectMenu from "../components/ChapterSelectMenu";
 import { useTheme } from "../context/ThemeContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const StoryScreen = () => {
   const { meta, story } = useStory();
@@ -42,9 +44,10 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
   const [lastShownChapterId, setLastShownChapterId] = useState(null);
   const router = useRouter();
   const { t } = useLanguage();
-
+  const { theme } = useTheme();
   const startPageId = "intro";
-
+  const [chapterMenuVisible, setChapterMenuVisible] = useState(false);
+  const insets = useSafeAreaInsets();
   // Load saved progress
   useEffect(() => {
     const load = async () => {
@@ -160,6 +163,24 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
 
   return (
     <View style={{ flex: 1 }}>
+      <View
+        style={{
+          position: "absolute",
+          top: insets.top + 10,
+          right: 20,
+          zIndex: 10,
+        }}
+      >
+        <TouchableOpacity onPress={() => setChapterMenuVisible(true)}>
+          <Ionicons
+            name="book-outline"
+            size={28}
+            color={theme === "dark" ? "#fff" : "#000"}
+            style={{ opacity: 0.9 }}
+          />
+        </TouchableOpacity>
+      </View>
+
       {page && (
         <StoryContent
           page={page}
@@ -181,18 +202,19 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
         title={page?.chapter?.title}
         confettiKey={confettiKey}
       />
-
       <ChapterSelectMenu
-        visible={false}
-        onClose={() => {}}
+        visible={chapterMenuVisible}
+        onClose={() => setChapterMenuVisible(false)}
         unlockedChapters={unlockedChapters}
         onSelectChapter={(item) => {
+          setChapterMenuVisible(false);
           if (item.id === "home") {
             router.replace("/");
           } else {
             setCurrentPageId(item.id);
           }
         }}
+        currentPageId={currentPageId}
       />
     </View>
   );

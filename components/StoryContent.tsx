@@ -12,6 +12,7 @@ import * as Haptics from "expo-haptics";
 import { useTheme } from "context/ThemeContext";
 import { storyStyles } from "./storyStyles";
 import ChoiceButton from "./ChoiceButton";
+import { useLanguage } from "localization/LanguageProvider";
 
 const StoryContent = ({
   page,
@@ -29,12 +30,18 @@ const StoryContent = ({
   const { theme } = useTheme();
   const s = storyStyles(theme);
   const choiceRefs = useRef([]);
-
-  // ✅ Track current page via ref for gesture access
+  const { t } = useLanguage()
+  // Track latest page and history with refs
   const pageRef = useRef(page);
+  const historyRef = useRef(history);
+
   useEffect(() => {
     pageRef.current = page;
   }, [page]);
+
+  useEffect(() => {
+    historyRef.current = history;
+  }, [history]);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -45,12 +52,14 @@ const StoryContent = ({
         gestureState: PanResponderGestureState
       ) => {
         const dx = gestureState.dx;
-        console.log("📲 Gesture dx:", dx);
         const threshold = 50;
         const currentPage = pageRef.current;
+        const currentHistory = historyRef.current;
+
+        console.log("📲 Gesture dx:", dx);
 
         if (Math.abs(dx) < 10) {
-          // Treat as tap
+          // Tap
           console.log("⚡ Tap detected");
           if (isSingleContinue && currentPage?.choices?.length === 1) {
             const nextId = currentPage.choices[0].nextId;
@@ -60,20 +69,22 @@ const StoryContent = ({
           } else {
             choiceRefs.current.forEach((ref) => ref?.pulse?.());
           }
-        } else if (
-          dx < -threshold &&
-          isSingleContinue &&
-          currentPage?.choices?.length === 1
-        ) {
-          // Swipe left → continue
-          const nextId = currentPage.choices[0].nextId;
-          console.log("➡️ Swipe left to:", nextId);
-          Haptics.selectionAsync();
-          handleChoice(nextId);
-        } else if (dx > threshold && history.length > 0) {
-          // Swipe right → go back
+        } else if (dx < -threshold) {
+          // Swipe left
+          console.log("IsSingle Continue: " + isSingleContinue)
+          if (isSingleContinue && currentPage?.choices?.length === 1) {
+            const nextId = currentPage.choices[0].nextId;
+            console.log("➡️ Swipe left to:", nextId);
+            Haptics.selectionAsync();
+            handleChoice(nextId);
+          } else {
+            console.log("⛔ Swipe left with multiple choices → pulse");
+            choiceRefs.current.forEach((ref) => ref?.pulse?.());
+          }
+        } else if (dx > threshold && currentHistory.length > 0) {
+          // Swipe right
           console.log("⬅️ Swipe right to go back");
-          const prev = [...history];
+          const prev = [...currentHistory];
           const last = prev.pop();
           setHistory(prev);
           if (last) {
@@ -129,7 +140,7 @@ const StoryContent = ({
             </Text>
           </Animated.View>
           <Text onPress={() => router.replace("/")} style={s.cancelText}>
-            Back to story list
+            {t("paywall.returnToTitle")}
           </Text>
         </View>
       )}

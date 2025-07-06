@@ -63,7 +63,7 @@ const StoryContent = ({
         const threshold = 50;
         const currentPage = pageRef.current;
         const currentHistory = historyRef.current;
-
+        console.log(currentHistory);
 
         // ✅ NEW: Determine dynamically if it's a Game Over page
         const gameOverText = t("gameOver")?.toLowerCase();
@@ -77,6 +77,7 @@ const StoryContent = ({
               .trim()
               .toLowerCase() === gameOverText
         );
+        const nextId = currentPage.choices[0]?.nextId;
         if (isGameOverPage) {
           console.log("🚫 Swipe disabled — Game Over page");
           return;
@@ -85,10 +86,10 @@ const StoryContent = ({
           // Tap
           console.log("⚡ Tap detected");
           if (isSingleContinue && currentPage?.choices?.length === 1) {
-            const nextId = currentPage.choices[0].nextId;
+            
             console.log("➡️ Continue to:", nextId);
             Haptics.selectionAsync();
-            handleChoice(nextId);
+            handleChoice(pageRef.current.id, nextId);
           } else {
             choiceRefs.current.forEach((ref) => ref?.pulse?.());
           }
@@ -96,10 +97,10 @@ const StoryContent = ({
           // Swipe left
           console.log("IsSingle Continue: " + isSingleContinue);
           if (isSingleContinue && currentPage?.choices?.length === 1) {
-            const nextId = currentPage.choices[0].nextId;
+            const nextId = currentPage.choices[0]?.nextId;
             console.log("➡️ Swipe left to:", nextId);
             Haptics.selectionAsync();
-            handleChoice(nextId);
+            handleChoice(pageRef.current.id, nextId);
           } else {
             console.log("⛔ Swipe left with multiple choices → pulse");
             choiceRefs.current.forEach((ref) => ref?.pulse?.());
@@ -157,7 +158,8 @@ const StoryContent = ({
                     if (isGameOver) {
                       handleGameOver();
                     } else {
-                      handleChoice(choice.nextId);
+                        console.log(choice.nextId)
+                      handleChoice(pageRef.current.id, choice.nextId);
                     }
                   }}
                   style={s.choiceButton}

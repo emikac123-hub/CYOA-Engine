@@ -120,7 +120,9 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       useNativeDriver: true,
     }).start();
   };
-
+  useEffect(() => {
+    console.log("🧠 History:", history);
+  }, [history]);
   useEffect(() => {
     if (currentPageId) fadeIn();
   }, [currentPageId]);
@@ -175,9 +177,9 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
     const actual = stripped(page.choices[0].text);
     return actual === expected;
   }, [page, t]);
+  const handleChoice = async (fromId: string, nextId: string) => {
+    setHistory((prev) => [...prev, fromId]);
 
-  const handleChoice = async (nextId) => {
-    setHistory((prev) => [...prev, currentPageId]);
     const unlocked = await isStoryUnlocked(meta.id);
     const nextCount = decisionCount + 1;
 

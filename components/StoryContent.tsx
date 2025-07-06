@@ -1,5 +1,13 @@
-import React, { useRef } from "react";
-import { View, Text, TouchableOpacity, Image, Animated } from "react-native";
+import React, { useRef, useEffect } from "react";
+import {
+  View,
+  Text,
+  Image,
+  Animated,
+  PanResponder,
+  GestureResponderEvent,
+  PanResponderGestureState,
+} from "react-native";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "context/ThemeContext";
 import { storyStyles } from "./storyStyles";
@@ -22,20 +30,62 @@ const StoryContent = ({
   const s = storyStyles(theme);
   const choiceRefs = useRef([]);
 
-  return (
-    <TouchableOpacity
-      style={s.container}
-      activeOpacity={1}
-      onPress={() => {
-        if (isSingleContinue && page.choices.length === 1) {
+  // ✅ Track current page via ref for gesture access
+  const pageRef = useRef(page);
+  useEffect(() => {
+    pageRef.current = page;
+  }, [page]);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderRelease: (
+        _: GestureResponderEvent,
+        gestureState: PanResponderGestureState
+      ) => {
+        const dx = gestureState.dx;
+        console.log("📲 Gesture dx:", dx);
+        const threshold = 50;
+        const currentPage = pageRef.current;
+
+        if (Math.abs(dx) < 10) {
+          // Treat as tap
+          console.log("⚡ Tap detected");
+          if (isSingleContinue && currentPage?.choices?.length === 1) {
+            const nextId = currentPage.choices[0].nextId;
+            console.log("➡️ Continue to:", nextId);
+            Haptics.selectionAsync();
+            handleChoice(nextId);
+          } else {
+            choiceRefs.current.forEach((ref) => ref?.pulse?.());
+          }
+        } else if (
+          dx < -threshold &&
+          isSingleContinue &&
+          currentPage?.choices?.length === 1
+        ) {
+          // Swipe left → continue
+          const nextId = currentPage.choices[0].nextId;
+          console.log("➡️ Swipe left to:", nextId);
           Haptics.selectionAsync();
-          handleChoice(page.choices[0].nextId);
-        } else {
-          // If choices exist, pulse them
-          choiceRefs.current.forEach((ref) => ref?.pulse?.());
+          handleChoice(nextId);
+        } else if (dx > threshold && history.length > 0) {
+          // Swipe right → go back
+          console.log("⬅️ Swipe right to go back");
+          const prev = [...history];
+          const last = prev.pop();
+          setHistory(prev);
+          if (last) {
+            setCurrentPageId(last);
+          }
         }
-      }}
-    >
+      },
+    })
+  ).current;
+
+  return (
+    <View {...panResponder.panHandlers} style={s.container}>
       {page?.image && (
         <Image
           source={{ uri: page.image }}
@@ -56,7 +106,10 @@ const StoryContent = ({
                 key={index}
                 ref={(el) => (choiceRefs.current[index] = el)}
                 text={choice.text}
-                onPress={() => handleChoice(choice.nextId)}
+                onPress={() => {
+                  Haptics.selectionAsync();
+                  handleChoice(choice.nextId);
+                }}
                 style={s.choiceButton}
                 textStyle={s.choiceText}
               />
@@ -70,26 +123,18 @@ const StoryContent = ({
           <Text style={s.paywallText}>
             Buy “{meta.title}” to continue reading!
           </Text>
-          <TouchableOpacity
-            style={s.purchaseButton}
-            onPress={() =>
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-            }
-          >
+          <Animated.View style={s.purchaseButton}>
             <Text style={s.purchaseButtonText}>
               {meta?.price ? `$${meta.price}` : "$1.99"}
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.replace("/")}>
-            <Text style={s.cancelText}>Back to story list</Text>
-          </TouchableOpacity>
+          </Animated.View>
+          <Text onPress={() => router.replace("/")} style={s.cancelText}>
+            Back to story list
+          </Text>
         </View>
       )}
-    </TouchableOpacity>
+    </View>
   );
 };
 
 export default StoryContent;
-function styles(theme: string): { s: any } {
-  throw new Error("Function not implemented.");
-}

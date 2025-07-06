@@ -88,5 +88,10 @@
     "privacy": "Privacy Policy",
     "close": "❌ Close"
   },
-  "subtitle": "A Journey Begins with a Stranger from the Stars"
+  "subtitle": "A Journey Begins with a Stranger from the Stars",
+
+  "payWall": {
+    "returnToTitle": "Back to story list",
+    "pitch": "Buy {{title}} to continue reading!",
+  }
 }

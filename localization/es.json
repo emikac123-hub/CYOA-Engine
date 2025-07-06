@@ -71,7 +71,7 @@
   },
   "home": "🏠 Inicio",
   "languageChoice": "Elige tu idioma",
-    "selectChapter": "📖 Selección de capítulo",
+  "selectChapter": "📖 Selección de capítulo",
   "settings": {
     "title": "Configuración",
     "language": "Configuración de idioma",
@@ -80,5 +80,9 @@
     "privacy": "Política de privacidad",
     "close": "❌ Cerrar"
   },
-  "subtitle": "Un viaje comienza con un extraño de las estrellas"
+  "subtitle": "Un viaje comienza con un extraño de las estrellas",
+  "payWall": {
+    "returnToTitle": "Volver a la lista de historias",
+    "pitch": "¡Compra {{title}} para seguir leyendo!"
+  }
 }

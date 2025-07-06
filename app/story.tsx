@@ -3,7 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { SAMPLE_LIMIT, TESTING } from "../constants/Constants";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   Easing,
@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
 
 import SettingsModal from "../components/SettingsMenu";
 import StoryLoaderGate, { useStory } from "../components/StoryLoaderGate";
@@ -31,14 +30,9 @@ const StoryScreen = () => {
 };
 
 function ActualStoryEngine({ meta, story, resumePageId }) {
-  const { theme } = useTheme();
-  const iconColor = theme === "dark" ? "#fff" : "#000";
   const [unlockedChapters, setUnlockedChapters] = useState([]);
-  const router = useRouter();
-  const { t } = useLanguage();
-  const [chapterMenuVisible, setChapterMenuVisible] = useState(false);
-
   const [currentPageId, setCurrentPageId] = useState(null);
+  const [page, setPage] = useState(null); // NEW: page from useEffect
   const [history, setHistory] = useState([]);
   const [decisionCount, setDecisionCount] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(0));
@@ -46,10 +40,12 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
   const [showChapterPopup, setShowChapterPopup] = useState(false);
   const [confettiKey, setConfettiKey] = useState(0);
   const [lastShownChapterId, setLastShownChapterId] = useState(null);
+  const router = useRouter();
+  const { t } = useLanguage();
 
   const startPageId = "intro";
 
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+  // Load saved progress
   useEffect(() => {
     const load = async () => {
       const savedPageId = await loadProgress(meta.id);
@@ -71,79 +67,14 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
     load();
   }, []);
 
+  // Keep page in sync with currentPageId
   useEffect(() => {
-    if (history.length > 0) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1.2,
-            duration: 500,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 500,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-    }
-  }, [history]);
+    const found = story.find((p) => p.id === currentPageId);
+    console.log("✅ currentPageId changed:", currentPageId);
+    setPage(found || null);
+  }, [currentPageId, story]);
 
-  const page = story.find((p) => p.id === currentPageId);
-
-  useEffect(() => {
-    if (currentPageId) fadeIn();
-
-    if (
-      currentPageId &&
-      page?.chapter?.title &&
-      currentPageId !== lastShownChapterId
-    ) {
-      const isAlreadyUnlocked = unlockedChapters.some(
-        (ch) => ch.id === currentPageId
-      );
-
-      if (!isAlreadyUnlocked) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        setShowChapterPopup(true);
-        setConfettiKey((prev) => prev + 1);
-
-        setUnlockedChapters((prev) => {
-          const newChapter = {
-            title: page.chapter.title,
-            order: page.chapter.order,
-            id: currentPageId,
-          };
-          const chapterMap = new Map(prev.map((ch) => [ch.id, ch]));
-          chapterMap.set(newChapter.id, newChapter);
-          const updated = Array.from(chapterMap.values()).sort(
-            (a, b) => a.order - b.order
-          );
-
-          AsyncStorage.setItem(
-            `unlockedChapters-${meta.id}`,
-            JSON.stringify(updated)
-          ).catch((err) =>
-            console.warn("Failed to save unlocked chapters:", err)
-          );
-
-          return updated;
-        });
-      }
-
-      setLastShownChapterId(currentPageId);
-
-      const timeout = setTimeout(() => {
-        setShowChapterPopup(false);
-      }, 2500);
-
-      return () => clearTimeout(timeout);
-    }
-  }, [currentPageId]);
-
+  // Page fade-in animation
   const fadeIn = () => {
     fadeAnim.setValue(0);
     Animated.timing(fadeAnim, {
@@ -154,12 +85,65 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
     }).start();
   };
 
-  const localizedContinue = stripEmoji(t("titleScreen.continue").toLowerCase());
-  const isSingleContinue =
-    page?.choices?.length === 1 &&
-    page.choices[0].text.trim().toLowerCase() === localizedContinue;
+  useEffect(() => {
+    if (currentPageId) fadeIn();
+  }, [currentPageId]);
 
+  // Handle chapter unlock
+  useEffect(() => {
+    if (!page || !page.chapter?.title || currentPageId === lastShownChapterId)
+      return;
+
+    const alreadyUnlocked = unlockedChapters.some(
+      (ch) => ch.id === currentPageId
+    );
+    if (!alreadyUnlocked) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      setShowChapterPopup(true);
+      setConfettiKey((prev) => prev + 1);
+
+      const newChapter = {
+        title: page.chapter.title,
+        order: page.chapter.order,
+        id: currentPageId,
+      };
+      const updated = [...unlockedChapters, newChapter]
+        .filter((v, i, a) => a.findIndex((t) => t.id === v.id) === i)
+        .sort((a, b) => a.order - b.order);
+
+      AsyncStorage.setItem(
+        `unlockedChapters-${meta.id}`,
+        JSON.stringify(updated)
+      ).catch((err) => console.warn("Failed to save unlocked chapters:", err));
+
+      setUnlockedChapters(updated);
+    }
+
+    setLastShownChapterId(currentPageId);
+
+    const timeout = setTimeout(() => setShowChapterPopup(false), 2500);
+    return () => clearTimeout(timeout);
+  }, [page]);
+
+  // Determine if this is a single "Continue" button
+  const isSingleContinue = useMemo(() => {
+    if (!page || !page.choices || page.choices.length !== 1) return false;
+    const stripped = (s) =>
+      s
+        .replace(/[^\p{L}\p{N}\s]/gu, "")
+        .trim()
+        .toLowerCase();
+    const expected = stripped(t("titleScreen.continue"));
+    const actual = stripped(page.choices[0].text);
+    return actual === expected;
+  }, [page, t]);
+
+  // Handle user making a choice
   const handleChoice = async (nextId) => {
+    console.log("The next ID:", nextId);
+    console.log("Prev:", [...history, currentPageId]);
+    console.log("Current Page ID:", currentPageId);
+
     setHistory((prev) => [...prev, currentPageId]);
     const unlocked = await isStoryUnlocked(meta.id);
     const nextCount = decisionCount + 1;
@@ -168,59 +152,14 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
       setShowPaywall(true);
       return;
     }
-    if (unlocked || TESTING) {
-      await saveProgress(meta.id, nextId);
-    }
+
+    await saveProgress(meta.id, nextId);
     setCurrentPageId(nextId);
     setDecisionCount(nextCount);
   };
 
   return (
-    <View style={{ flex: 1,  backgroundColor: theme === "dark" ? "#000" : "#fff" }}>
-      <View
-        style={{
-          position: "absolute",
-          top: 40,
-          left: 20,
-          zIndex: 10,
-          alignItems: "center",
-        }}
-      >
-
-
-        {history.length > 0 && (
-          <TouchableOpacity
-            onPress={() => {
-              const prev = [...history];
-              const last = prev.pop();
-              setHistory(prev);
-              if (last) {
-                setCurrentPageId(last);
-              }
-            }}
-            style={{ marginTop: 6 }}
-          >
-            <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-              <Ionicons
-                name="arrow-back-outline"
-                size={24}
-                color={iconColor}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              />
-            </Animated.View>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      <View
-        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-        style={{ position: "absolute", top: 40, right: 20, zIndex: 10 }}
-      >
-        <TouchableOpacity onPress={() => setChapterMenuVisible(true)}>
-          <Ionicons name="list-outline" size={28} color={iconColor} />
-        </TouchableOpacity>
-      </View>
-
+    <View style={{ flex: 1 }}>
       {page && (
         <StoryContent
           page={page}
@@ -244,19 +183,17 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
       />
 
       <ChapterSelectMenu
-        visible={chapterMenuVisible}
-        onClose={() => setChapterMenuVisible(false)}
+        visible={false}
+        onClose={() => {}}
         unlockedChapters={unlockedChapters}
         onSelectChapter={(item) => {
-          setChapterMenuVisible(false);
           if (item.id === "home") {
             router.replace("/");
-          } else if (item.id) {
+          } else {
             setCurrentPageId(item.id);
           }
         }}
       />
-
     </View>
   );
 }

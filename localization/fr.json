@@ -76,5 +76,9 @@
     "privacy": "Politique de confidentialité",
     "close": "❌ Fermer"
   },
-   "subtitle": "Un voyage commence avec un étranger venu des étoiles"
+  "subtitle": "Un voyage commence avec un étranger venu des étoiles",
+  "payWall": {
+    "returnToTitle": "Retour à la liste des histoires",
+    "pitch": "Achetez {{title}} pour continuer la lecture !"
+  }
 }

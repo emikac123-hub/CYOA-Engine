@@ -80,5 +80,10 @@
     "privacy": "Datenschutzrichtlinie",
     "close": "❌ Schließen"
   },
-  "subtitle": "Eine Reise beginnt mit einem Fremden aus den Sternen"
+  "subtitle": "Eine Reise beginnt mit einem Fremden aus den Sternen",
+  "payWall": {
+    "returnToTitle": "Zurück zur Geschichtenliste",
+    "pitch": "Kaufe „{{title}}“, um weiterzulesen!",
+    "currency": "€"
+  }
 }

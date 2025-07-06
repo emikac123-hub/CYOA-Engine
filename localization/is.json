@@ -76,5 +76,9 @@
     "privacy": "Persónuverndarstefna",
     "close": "❌ Loka"
   },
-  "subtitle": "Ferðalag hefst með ókunnugum frá stjörnunum"
+  "subtitle": "Ferðalag hefst með ókunnugum frá stjörnunum",
+  "payWall": {
+    "returnToTitle": "Til baka á sögulista",
+    "pitch": "Kauptu {{title}} til að halda áfram að lesa!"
+  }
 }

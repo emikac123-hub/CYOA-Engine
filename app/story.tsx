@@ -129,10 +129,12 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
     if (!page || !page.chapter?.title || currentPageId === lastShownChapterId)
       return;
 
-    const alreadyUnlocked = unlockedChapters.some(
+    const alreadyVisible = unlockedChapters.some(
       (ch) => ch.id === currentPageId
     );
-    if (!alreadyUnlocked) {
+    if (alreadyVisible) return; // ✅ Prevent confetti & popup if chapter is already in menu
+
+    const unlockNewChapter = async () => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
       setShowChapterPopup(true);
       setConfettiKey((prev) => prev + 1);
@@ -142,19 +144,22 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
         order: page.chapter.order,
         id: currentPageId,
       };
+
       const updated = [...unlockedChapters, newChapter]
         .filter((v, i, a) => a.findIndex((t) => t.id === v.id) === i)
         .sort((a, b) => a.order - b.order);
 
-      AsyncStorage.setItem(
+      await AsyncStorage.setItem(
         `unlockedChapters-${meta.id}`,
         JSON.stringify(updated)
       ).catch((err) => console.warn("Failed to save unlocked chapters:", err));
 
       setUnlockedChapters(updated);
-    }
+      setLastShownChapterId(currentPageId);
+    };
 
-    setLastShownChapterId(currentPageId);
+    unlockNewChapter();
+
     const timeout = setTimeout(() => setShowChapterPopup(false), 2500);
     return () => clearTimeout(timeout);
   }, [page]);

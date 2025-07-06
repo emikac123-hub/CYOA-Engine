@@ -24,7 +24,7 @@ const storyMap: Record<string, Record<string, () => Promise<any>>> = {
 export const loadStory = async (
   storyId: string,
   lang: string = "en"
-): Promise<{ meta: any; story: any[]; chapters: any }> => {
+): Promise<{ meta: any; story: any[]; chapters: any[] }> => {
   const meta = storyIndex.find((story) => story.id === storyId);
   if (!meta) throw new Error(`Metadata for story "${storyId}" not found.`);
 
@@ -36,9 +36,16 @@ export const loadStory = async (
   }
 
   const mod = await loader();
+
+  // ⬇️ This line is the key change
+  const storyBlock = mod[storyId];
+  if (!storyBlock) {
+    throw new Error(`Story block "${storyId}" not found in loaded file.`);
+  }
+
   return {
-    meta, // App-level metadata
-    story: mod.story,
-    chapters: mod.meta?.chapters || [], // Add fallback to empty array just in case
+    meta,
+    story: storyBlock.story,
+    chapters: storyBlock.meta?.chapters || [],
   };
 };

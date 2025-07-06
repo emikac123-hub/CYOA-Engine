@@ -65,7 +65,17 @@ const LanguageSelection = () => {
 
                       const loader = storyFiles[pendingLang];
                       const mod = await loader();
-                      const localizedChapters = mod.meta?.chapters || [];
+                      const storyId = "covarnius"; // This should match the actual top-level key
+                      const storyBlock = mod[storyId];
+
+                      if (!storyBlock || !storyBlock.meta) {
+                        throw new Error(
+                          `Missing story block or meta for ${storyId}`
+                        );
+                      }
+
+                      const localizedChapters = storyBlock.meta.chapters || [];
+                      console.log("📘 localizedChapters:\n", JSON.stringify(localizedChapters, null, 2));
 
                       const savedChapters = await AsyncStorage.getItem(
                         "unlockedChapters-covarnius"

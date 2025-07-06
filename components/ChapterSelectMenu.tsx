@@ -26,7 +26,7 @@ const ChapterSelectMenu = ({
   const insets = useSafeAreaInsets();
   const chaptersWithHome = [
     { title: `${t("home")}`, id: "home" },
-    ...unlockedChapters,
+    ...Array.from(new Map(unlockedChapters.map((ch) => [ch.id, ch])).values()),
   ];
 
   return (
@@ -37,7 +37,11 @@ const ChapterSelectMenu = ({
     >
       <SafeAreaView style={[s.safeArea, { paddingTop: insets.top + 16 }]}>
         <View style={[s.header, { paddingTop: 24, paddingHorizontal: 20 }]}>
-          <Ionicons name="book-outline" size={24}      color={theme === "dark" ? "#fff" : "#000"} />
+          <Ionicons
+            name="book-outline"
+            size={24}
+            color={theme === "dark" ? "#fff" : "#000"}
+          />
           <Text style={s.title}>{t("selectChapter")}</Text>
         </View>
 

@@ -15,13 +15,13 @@
   },
   "home": "🏠 Inicio",
   "languageChoice": "Elige tu idioma",
-  "selectChapter": "Selección de capítulo",
+  "selectChapter": "Selección de Capítulo",
   "settings": {
     "title": "Configuración",
-    "language": "Configuración de idioma",
+    "language": "Configuración de Idioma",
     "support": "Soporte",
-    "terms": "Términos de uso",
-    "privacy": "Política de privacidad",
+    "terms": "Términos de Uso",
+    "privacy": "Política de Privacidad",
     "close": "❌ Cerrar"
   },
   "subtitle": "Un viaje comienza con un extraño de las estrellas",

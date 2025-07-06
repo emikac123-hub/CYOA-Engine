@@ -158,6 +158,7 @@ const StoryContent = ({
                     if (isGameOver) {
                       handleGameOver();
                     } else {
+                      console.log("NEXT ID:")
                         console.log(choice.nextId)
                       handleChoice(pageRef.current.id, choice.nextId);
                     }

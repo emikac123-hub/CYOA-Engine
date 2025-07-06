@@ -1,11 +1,11 @@
 {
   "titleScreen": {
     "mainTitle": "Die Geschichten von Covarnius",
-    "start": "Neues Abenteuer starten",
+    "start": "Reise beginnen",
     "continue": "🕹️ Weiter",
     "delete": "❌ Fortschritt Löschen",
     "confirmClear": "Bist du sicher, dass du deinen Fortschritt löschen möchtest?",
-    "cancel": "❌ Abbrechen",
+    "cancel": "Abbrechen",
     "ok": "OK",
     "unlockPrice": "Freischalten für {{price}}€",
     "unlock": "✅ Freischalten",

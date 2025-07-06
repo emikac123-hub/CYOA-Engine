@@ -148,7 +148,7 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       };
 
       const updated = [...unlockedChapters, newChapter]
-        .filter((v, i, a) => a.findIndex((t) => t.id === v.id) === i)
+        .filter((v, i, a) => a.findIndex((t) => stripEmoji(t.title) === stripEmoji(v.title)) === i)
         .sort((a, b) => a.order - b.order);
 
       await AsyncStorage.setItem(

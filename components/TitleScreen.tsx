@@ -66,7 +66,7 @@ export default function TitleScreen() {
         </Animated.View>
 
         <GleamingButton
-          title={t("titleScreen.start")}
+          title={`⚔️ ${t("titleScreen.start")}`}
           onPress={async () => {
         
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);

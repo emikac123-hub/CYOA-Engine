@@ -1,8 +1,8 @@
 {
   "titleScreen": {
     "mainTitle": "Les Contes de Covarnius",
-    "start": "Commencer une nouvelle aventure",
-    "continue": "Continuer",
+    "start": "Début du voyage",
+    "continue": "🕹️ Continuer",
     "delete": "❌ Supprimer la Progression",
     "confirmClear": "Êtes-vous sûr de vouloir supprimer votre progression ?",
     "cancel": "Annuler",

@@ -12,6 +12,7 @@ import { useLanguage } from "../localization/LanguageProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "context/ThemeContext";
+import { stripEmoji } from "app/story";
 
 const ChapterSelectMenu = ({
   visible,
@@ -26,9 +27,12 @@ const ChapterSelectMenu = ({
   const insets = useSafeAreaInsets();
   const chaptersWithHome = [
     { title: `${t("home")}`, id: "home" },
-    ...Array.from(new Map(unlockedChapters.map((ch) => [ch.id, ch])).values()),
+    ...Array.from(
+      new Map(unlockedChapters.map((ch) => [stripEmoji(ch.title), ch])).values()
+    ).sort((a, b) => a.order - b.order),
   ];
 
+  console.log(chaptersWithHome);
   return (
     <Modal
       isVisible={visible}

@@ -65,16 +65,28 @@ const StoryContent = ({
   };
 
   const [dotIndex, setDotIndex] = useState(0);
-  const [fullPath, setFullPath] = useState(
+  const [basePageId, setBasePageId] = useState(page?.id);
+  const [fullPath, setFullPath] = useState(() =>
     getFullPathFromCurrent(page?.id, story)
   );
 
-  useEffect(() => {
-    const newPath = getFullPathFromCurrent(page?.id, story);
+  const updatePathForCurrent = (currentId) => {
+    setBasePageId(currentId);
+    const newPath = getFullPathFromCurrent(currentId, story);
     setFullPath(newPath);
-    const index = newPath.indexOf(page?.id);
-    if (index !== -1) setDotIndex(index);
-  }, [page?.id, story]);
+    setDotIndex(0);
+  };
+
+  useEffect(() => {
+    const isOnSinglePath = page?.choices?.length === 1;
+    const index = fullPath.indexOf(page?.id);
+
+    if (!isOnSinglePath || index === -1) {
+      updatePathForCurrent(page?.id);
+    } else {
+      setDotIndex(index);
+    }
+  }, [page?.id]);
 
   const handleGameOver = async () => {
     const storyId = meta?.id;
@@ -110,20 +122,26 @@ const StoryContent = ({
         );
 
         const nextId = currentPage.choices[0]?.nextId;
-
-        if (isGameOverPage) return;
-
+        if (isGameOverPage) {
+          Haptics.selectionAsync();
+          handleGameOver();
+          return;
+        }
         if (Math.abs(dx) < 10) {
-          if (isSingleContinue && currentPage?.choices?.length === 1) {
+          if (isGameOverPage) {
             Haptics.selectionAsync();
-            handleChoice(pageRef.current.id, nextId);
+            handleGameOver();
+            return;
+          } else if (currentPage?.choices?.length === 1) {
+            Haptics.selectionAsync();
+            handleChoice(currentPage.id, nextId);
           } else {
             choiceRefs.current.forEach((ref) => ref?.pulse?.());
           }
         } else if (dx < -threshold) {
-          if (isSingleContinue && currentPage?.choices?.length === 1) {
+          if (currentPage?.choices?.length === 1) {
             Haptics.selectionAsync();
-            handleChoice(pageRef.current.id, nextId);
+            handleChoice(currentPage.id, nextId);
           } else {
             choiceRefs.current.forEach((ref) => ref?.pulse?.());
           }
@@ -154,53 +172,73 @@ const StoryContent = ({
       </Animated.View>
 
       <View style={s.storyContent} pointerEvents="box-none">
-        {page.choices.length > 1 && (
-          <View style={s.choicesContainer}>
-            {page.choices.map((choice, index) => {
-              const stripped = choice.text
-                .replace(
-                  /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
-                  ""
-                )
-                .trim()
-                .toLowerCase();
-              const gameOverText = t("gameOver")?.toLowerCase();
-              const isGameOver = stripped === gameOverText;
-              return (
-                <ChoiceButton
-                  key={index}
-                  ref={(el) => (choiceRefs.current[index] = el)}
-                  text={choice.text}
-                  onPress={() => {
-                    Haptics.selectionAsync();
-                    if (isGameOver) {
-                      handleGameOver();
-                    } else {
-                      handleChoice(pageRef.current.id, choice.nextId);
-                    }
-                  }}
-                  style={s.choiceButton}
-                  textStyle={s.choiceText}
-                />
-              );
-            })}
-          </View>
-        )}
-      </View>
-
-      {fullPath.length > 0 && (
-        <View style={styles.choiceTracker}>
-          {fullPath.map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.dot,
-                i === dotIndex ? styles.activeDot : styles.inactiveDot,
-              ]}
-            />
-          ))}
+        <View style={s.choicesContainer}>
+          {page.choices.map((choice, index) => {
+            const stripped = choice.text
+              .replace(
+                /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
+                ""
+              )
+              .trim()
+              .toLowerCase();
+            const gameOverText = t("gameOver")?.toLowerCase();
+            const isGameOver = stripped === gameOverText;
+            if (isSingleContinue) return;
+            return (
+              <ChoiceButton
+                key={index}
+                ref={(el) => (choiceRefs.current[index] = el)}
+                text={choice.text}
+                onPress={() => {
+                  Haptics.selectionAsync();
+                  if (isGameOver) {
+                    handleGameOver();
+                  } else {
+                    updatePathForCurrent(choice.nextId);
+                    handleChoice(pageRef.current.id, choice.nextId);
+                  }
+                }}
+                style={s.choiceButton}
+                textStyle={s.choiceText}
+              />
+            );
+          })}
         </View>
-      )}
+      </View>
+      {(() => {
+        const gameOverText = t("gameOver")?.toLowerCase();
+        const hasGameOverInPath = fullPath.some((id) => {
+          const p = story.find((pg) => pg.id === id);
+          return p?.choices?.some(
+            (choice) =>
+              choice.text
+                .replace(/[^\p{L}\p{N}\s]/gu, "")
+                .trim()
+                .toLowerCase() === gameOverText
+          );
+        });
+
+        const dotCount = hasGameOverInPath
+          ? fullPath.length - 1
+          : fullPath.length;
+
+        if (dotCount > 0) {
+          return (
+            <View style={styles.choiceTracker}>
+              {Array.from({ length: dotCount }).map((_, i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.dot,
+                    i === dotIndex ? styles.activeDot : styles.inactiveDot,
+                  ]}
+                />
+              ))}
+            </View>
+          );
+        }
+        return null;
+      })()}
     </View>
   );
 };

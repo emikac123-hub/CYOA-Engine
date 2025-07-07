@@ -9,13 +9,13 @@
     "ok": "OK",
     "unlockPrice": "Débloquer pour {{price}}",
     "unlock": "✅ Débloquer",
-    "sampleLimit": "🔓 Extrait seulement ({{count}} choix)",
+
     "back": "⬅️ Retour",
     "selectStory": "Choisissez une histoire"
   },
   "home": "🏠 Accueil",
   "languageChoice": "Choisissez votre langue",
-  "selectChapter": "Sélection de chapitre",
+
   "settings": {
     "title": "Paramètres",
     "language": "Paramètres de langue",
@@ -29,6 +29,17 @@
     "returnToTitle": "Retour à la liste des histoires",
     "pitch": "Achetez {{title}} pour continuer la lecture !"
   },
-   "gameOver": "Veuillez réessayer !",
-   "languageChangeWarning": "Si vous changez de langue, vous serez renvoyé à l’écran d’accueil. Êtes-vous sûr ?"
+  "gameOver": "Veuillez réessayer !",
+  "languageChangeWarning": "Si vous changez de langue, vous serez renvoyé à l’écran d’accueil. Êtes-vous sûr ?",
+  "storyList": {
+    "continueChapter": "Reprendre l'aventure",
+    "sampleLimit": "🔓 Extrait seulement ({{count}} choix)"
+  },
+  "chapterMenu": {
+    "chaptersUnlocked": "Chapitres débloqués",
+    "selectChapter": "Sélection de chapitre"
+  },
+    "unlockPopup": {
+    "unlocked": "Chapitre débloqué !"
+  }
 }

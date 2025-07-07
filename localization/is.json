@@ -9,13 +9,12 @@
     "ok": "Í lagi",
     "unlockPrice": "Opna fyrir {{price}}",
     "unlock": "✅ Opna",
-    "sampleLimit": "🔓 Aðeins sýnishorn ({{count}} valmöguleikar)",
+
     "back": "⬅️ Til baka",
     "selectStory": "Veldu sögu"
   },
   "home": "🏠 Heim",
   "languageChoice": "Veldu tungumál þitt",
-  "selectChapter": "Kaflaval",
   "settings": {
     "title": "Stillingar",
     "language": "Tungumálastillingar",
@@ -29,6 +28,18 @@
     "returnToTitle": "Til baka á sögulista",
     "pitch": "Kauptu {{title}} til að halda áfram að lesa!"
   },
-    "gameOver": "Leik Lokið",
-    "languageChangeWarning": "Ef þú breytir tungumáli verður þér vísað aftur á upphafsskjáinn. Ertu viss?"
+  "gameOver": "Leik Lokið",
+  "languageChangeWarning": "Ef þú breytir tungumáli verður þér vísað aftur á upphafsskjáinn. Ertu viss?",
+  "storyList": {
+    "continueChapter": "Haltu áfram ævintýrinu",
+    "sampleLimit": "🔓 Aðeins sýnishorn ({{count}} valmöguleikar)"
+  },
+  "chapterMenu": {
+    "selectChapter": "Kaflaval",
+    "chaptersUnlocked": "Læstir kaflar opnaðir"
+  },
+
+  "unlockPopup": {
+    "unlocked": "Kafli opnaður!"
+  }
 }

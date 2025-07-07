@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-import { TESTING } from "../constants/Constants";
 
 const languages = ["en", "de", "es", "fr", "is", "jp"];
 const isCapitalized = (text) => {
@@ -14,7 +13,7 @@ const isCapitalized = (text) => {
 };
 
 languages.forEach((lang) => {
-  const filePath = path.join(__dirname, `../stories/covarnius-${lang}.json`);
+  const filePath = path.join(__dirname, `../stories/stories-${lang}.json`);
 
   describe(`🌐 Translation: ${lang.toUpperCase()}`, () => {
     let story;
@@ -46,7 +45,7 @@ languages.forEach((lang) => {
     });
     test("All 'text' fields should start with a capital letter (excluding known exceptions)", () => {
       if (lang === 'jp') return;
-      
+
         const EXCLUDED_IDS = new Set([
         "DedicationView",
         "Silver_Ending",

@@ -1,7 +1,7 @@
 import { useLanguage } from "../localization/LanguageProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import * as Haptics from "expo-haptics";
 import {
   FlatList,
@@ -10,11 +10,12 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Animated,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../context/ThemeContext";
 import { clearProgressOnly } from "storage/progressManager";
-const { theme } = useTheme();
+
 const languages = [
   { code: "en", label: "🇺🇸/🇬🇧 English" },
   { code: "de", label: "🇩🇪 Deutsch" },
@@ -24,98 +25,113 @@ const languages = [
   { code: "jp", label: "🇯🇵 日本語" },
 ];
 
+const storyFileMap: Record<string, () => Promise<any>> = {
+  en: () => import("../stories/stories-en.json"),
+  de: () => import("../stories/stories-de.json"),
+  es: () => import("../stories/stories-es.json"),
+  fr: () => import("../stories/stories-fr.json"),
+  is: () => import("../stories/stories-is.json"),
+  jp: () => import("../stories/stories-jp.json"),
+};
+
 const LanguageSelection = () => {
   const { theme } = useTheme();
   const s = styles(theme);
   const navigation = useNavigation();
-  const { setLang, t } = useLanguage(); // ✅ get the `t` function from context
+  const { setLang, t } = useLanguage();
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingLang, setPendingLang] = useState<string | null>(null);
   const router = useRouter();
+  const [showModalText, setShowModalText] = useState(true);
+  const modalOpacity = useRef(new Animated.Value(1)).current;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Modal visible={showConfirm} transparent animationType="fade">
         <View style={s.modalBackdrop}>
-          <View style={s.modalBox}>
-            <Text style={s.modalText}>
-              {t("languageChangeWarning") ||
-                "Changing language will return you to the title screen. Continue?"}
-            </Text>
-            <View style={s.modalButtons}>
-              <TouchableOpacity onPress={() => setShowConfirm(false)}>
-                <Text style={s.cancelButton}>❌ {t("titleScreen.cancel")}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={async () => {
-                  if (pendingLang) {
-                    await AsyncStorage.setItem("selectedLanguage", pendingLang);
-                    setLang(pendingLang);
-
-                    // 👇 Try to relabel unlocked chapters before clearing progress
-                    try {
-                      const storyFiles = {
-                        en: () => import("../stories/covarnius-en.json"),
-                        de: () => import("../stories/covarnius-de.json"),
-                        fr: () => import("../stories/covarnius-fr.json"),
-                        es: () => import("../stories/covarnius-es.json"),
-                        is: () => import("../stories/covarnius-is.json"),
-                        jp: () => import("../stories/covarnius-jp.json"),
-                      };
-
-                      const loader = storyFiles[pendingLang];
-                      const mod = await loader();
-                      const storyId = "covarnius"; // This should match the actual top-level key
-                      const storyBlock = mod[storyId];
-
-                      if (!storyBlock || !storyBlock.meta) {
-                        throw new Error(
-                          `Missing story block or meta for ${storyId}`
-                        );
-                      }
-
-                      const localizedChapters = storyBlock.meta.chapters || [];
-                      console.log("📘 localizedChapters:\n", JSON.stringify(localizedChapters, null, 2));
-
-                      const savedChapters = await AsyncStorage.getItem(
-                        "unlockedChapters-covarnius"
+          <Animated.View style={[s.modalBox, { opacity: modalOpacity }]}>
+            {showModalText && (
+              <Text style={s.modalText}>
+                {t("languageChangeWarning") ||
+                  "Changing language will return you to the title screen. Continue?"}
+              </Text>
+            )}
+            {showModalText && (
+              <View style={s.modalButtons}>
+                <TouchableOpacity onPress={() => setShowConfirm(false)}>
+                  <Text style={s.cancelButton}>
+                    ❌ {t("titleScreen.cancel")}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={async () => {
+                    setShowModalText(false);
+                    setTimeout(() => setShowModalText(true), 1000); // Delay rendering for 100ms
+                    if (pendingLang) {
+                      await AsyncStorage.setItem(
+                        "selectedLanguage",
+                        pendingLang
                       );
-                      if (savedChapters) {
-                        const parsed = JSON.parse(savedChapters);
-                        const relabeled = parsed
-                          .map((ch) => {
-                            const found = localizedChapters.find(
-                              (m) => m.id === ch.id
+                      setLang(pendingLang);
+
+                      try {
+                        const loader = storyFileMap[pendingLang];
+                        const fullStorySet = await loader?.();
+
+                        for (const storyId of Object.keys(fullStorySet)) {
+                          const storyBlock = fullStorySet[storyId];
+                          const localizedChapters =
+                            storyBlock?.meta?.chapters || [];
+
+                          const savedChaptersRaw = await AsyncStorage.getItem(
+                            `unlockedChapters-${storyId}`
+                          );
+                          if (savedChaptersRaw) {
+                            const savedChapters = JSON.parse(savedChaptersRaw);
+                            const relabeled = savedChapters
+                              .map((ch) => {
+                                const found = localizedChapters.find(
+                                  (m) => m.id === ch.id
+                                );
+                                return found
+                                  ? {
+                                      id: ch.id,
+                                      order: ch.order,
+                                      title: found.title,
+                                    }
+                                  : null;
+                              })
+                              .filter(Boolean)
+                              .sort((a, b) => a.order - b.order);
+
+                            await AsyncStorage.setItem(
+                              `unlockedChapters-${storyId}`,
+                              JSON.stringify(relabeled)
                             );
-                            return found
-                              ? {
-                                  id: ch.id,
-                                  order: ch.order,
-                                  title: found.title,
-                                }
-                              : null;
-                          })
-                          .filter(Boolean)
-                          .sort((a, b) => a.order - b.order);
+                          }
 
-                        await AsyncStorage.setItem(
-                          "unlockedChapters-covarnius",
-                          JSON.stringify(relabeled)
-                        );
+                          await clearProgressOnly(storyId);
+                        }
+                      } catch (err) {
+                        console.warn("⚠️ Failed to localize chapters:", err);
                       }
-                    } catch (err) {
-                      console.warn("⚠️ Failed to localize chapters:", err);
-                    }
 
-                    await clearProgressOnly("covarnius");
-                    router.replace("/");
-                  }
-                }}
-              >
-                <Text style={s.confirmButton}>✅ OK</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+                      Animated.timing(modalOpacity, {
+                        toValue: 0,
+                        duration: 250,
+                        useNativeDriver: true,
+                      }).start(() => {
+                        setShowConfirm(false);
+                        router.replace("/");
+                      });
+                    }
+                  }}
+                >
+                  <Text style={s.confirmButton}>✅ OK</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </Animated.View>
         </View>
       </Modal>
 
@@ -129,8 +145,9 @@ const LanguageSelection = () => {
               style={s.languageButton}
               onPress={() => {
                 Haptics.selectionAsync();
-                setPendingLang(item.code); // store temporarily
-                setShowConfirm(true); // show the confirmation modal
+                modalOpacity.setValue(1); // reset opacity
+                setPendingLang(item.code);
+                setShowConfirm(true);
               }}
             >
               <Text style={s.languageText}>{item.label}</Text>

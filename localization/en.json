@@ -1,7 +1,6 @@
 {
-
   "titleScreen": {
-    "mainTitle": "Tales of Covarnius",
+    "mainTitle": "Parallel Fates",
     "start": "Start New Adventure",
     "continue": "🕹️ Continue",
     "delete": "❌ Clear Progress",
@@ -10,13 +9,11 @@
     "ok": "OK",
     "unlockPrice": "Unlock for {{price}}",
     "unlock": "✅ Unlock",
-    "sampleLimit": "🔓 Sample only ({{count}} choices)",
     "back": "⬅️ Go Back",
     "selectStory": "Select Story"
   },
   "home": "🏠 Home",
   "languageChoice": "Choose Your Language",
-  "selectChapter": "Chapter Select",
   "settings": {
     "title": "Settings",
     "language": "Language Settings",
@@ -29,9 +26,19 @@
 
   "payWall": {
     "returnToTitle": "Back to story list",
-    "pitch": "Buy {{title}} to continue reading!",
+    "pitch": "Buy {{title}} to continue reading!"
   },
   "gameOver": "Game Over",
-  "languageChangeWarning": "If you change the language, you’ll be returned to the title screen. Are you sure?"
-  
+  "languageChangeWarning": "If you change the language, you’ll be returned to the title screen. Are you sure?",
+  "storyList": {
+    "continueChapter": "Continue Chapter",
+    "sampleLimit": "🔓 Sample only ({{count}} choices)"
+  },
+  "chapterMenu": {
+    "selectChapter": "Chapter Select",
+    "chaptersUnlocked": "Chapters Unlocked"
+  },
+  "unlockPopup": {
+    "unlocked": "Chapter Unlocked!"
+  }
 }

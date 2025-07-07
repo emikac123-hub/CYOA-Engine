@@ -1,26 +1,26 @@
-import os
 import json
-    
+import os
+
 # General Notes
 # I had to break up the different languages to fit onto the screen. 
 # Language	File	Continuation Pages Added
-# German	covarnius-de.json	144
-# Spanish	covarnius-es.json	113
-# French	covarnius-fr.json	158
-# Icelandic	covarnius-is.json	107
-# Japanese	covarnius-jp.json	1
+# German	stories-de.json	144
+# Spanish	stories-es.json	113
+# French	stories-fr.json	158
+# Icelandic	stories-is.json	107
+# Japanese	stories-jp.json	1
 # Japanese is the most concise language
 """
     Remove Duplicates from the stories. This probably happened when I was bringing them over from Swift UI and lost track.
 """
 # List of translation files
 file_names = [
-    "covarnius-en.json",
-    "covarnius-de.json",
-    "covarnius-es.json",
-    "covarnius-fr.json",
-    "covarnius-is.json",
-    "covarnius-jp.json"
+    "stories-en.json",
+    "stories-de.json",
+    "stories-es.json",
+    "stories-fr.json",
+    "stories-is.json",
+    "stories-jp.json"
 ]
 
 # Input/output folders

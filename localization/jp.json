@@ -9,13 +9,13 @@
     "ok": "OK",
     "unlockPrice": "{{price}}でロック解除",
     "unlock": "✅ でロック解除",
-    "sampleLimit": "🔓 お試し版（{{count}}つの選択肢）",
+
     "back": "⬅️ 戻る（もどる)",
     "selectStory": "物語を選んでください"
   },
   "home": "🏠 ホーム",
   "languageChoice": "言語を選択してください",
-  "selectChapter": "チャプター選択",
+
   "settings": {
     "title": "設定",
     "language": "言語設定",
@@ -30,5 +30,17 @@
     "pitch": "{{title}}を購入して続きを読む！"
   },
   "gameOver": "ゲーム終了",
-  "languageChangeWarning": "言語を変更すると、タイトル画面に戻ります。よろしいですか？"
+  "languageChangeWarning": "言語を変更すると、タイトル画面に戻ります。よろしいですか？",
+  "storyList": {
+    "continueChapter": "冒険の続きを始める",
+    "sampleLimit": "🔓 お試し版（{{count}}つの選択肢）"
+  },
+  "chapterMenu": {
+    "selectChapter": "チャプター選択",
+    "chaptersUnlocked": "アンロック済みの章"
+  },
+
+  "unlockPopup": {
+    "unlocked": "チャプターをアンロック！"
+  }
 }

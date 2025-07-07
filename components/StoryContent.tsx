@@ -63,7 +63,6 @@ const StoryContent = ({
         const threshold = 50;
         const currentPage = pageRef.current;
         const currentHistory = historyRef.current;
-        console.log(currentHistory);
 
         // ✅ NEW: Determine dynamically if it's a Game Over page
         const gameOverText = t("gameOver")?.toLowerCase();
@@ -84,10 +83,7 @@ const StoryContent = ({
         }
         if (Math.abs(dx) < 10) {
           // Tap
-          console.log("⚡ Tap detected");
           if (isSingleContinue && currentPage?.choices?.length === 1) {
-            
-            console.log("➡️ Continue to:", nextId);
             Haptics.selectionAsync();
             handleChoice(pageRef.current.id, nextId);
           } else {
@@ -95,19 +91,15 @@ const StoryContent = ({
           }
         } else if (dx < -threshold) {
           // Swipe left
-          console.log("IsSingle Continue: " + isSingleContinue);
           if (isSingleContinue && currentPage?.choices?.length === 1) {
             const nextId = currentPage.choices[0]?.nextId;
-            console.log("➡️ Swipe left to:", nextId);
             Haptics.selectionAsync();
             handleChoice(pageRef.current.id, nextId);
           } else {
-            console.log("⛔ Swipe left with multiple choices → pulse");
             choiceRefs.current.forEach((ref) => ref?.pulse?.());
           }
         } else if (dx > threshold && currentHistory.length > 0) {
           // Swipe right
-          console.log("⬅️ Swipe right to go back");
           const prev = [...currentHistory];
           const last = prev.pop();
           setHistory(prev);
@@ -158,8 +150,6 @@ const StoryContent = ({
                     if (isGameOver) {
                       handleGameOver();
                     } else {
-                      console.log("NEXT ID:")
-                        console.log(choice.nextId)
                       handleChoice(pageRef.current.id, choice.nextId);
                     }
                   }}

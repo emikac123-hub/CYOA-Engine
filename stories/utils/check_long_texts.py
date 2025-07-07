@@ -1,14 +1,14 @@
-import os
 import json
+import os
 
 # List of translation files
 file_names = [
-    "covarnius-en.json",
-    "covarnius-de.json",
-    "covarnius-es.json",
-    "covarnius-fr.json",
-    "covarnius-is.json",
-    "covarnius-jp.json"
+    "stories-en.json",
+    "stories-de.json",
+    "stories-es.json",
+    "stories-fr.json",
+    "stories-is.json",
+    "stories-jp.json"
 ]
 
 # Directory containing your story files

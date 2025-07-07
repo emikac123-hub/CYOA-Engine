@@ -9,14 +9,12 @@
     "ok": "OK",
     "unlockPrice": "Freischalten für {{price}}€",
     "unlock": "✅ Freischalten",
-    "sampleLimit": "🔓 Nur Vorschau ({{count}} Auswahlmöglichkeiten)",
     "back": "⬅️ Zurück",
     "selectStory": "Wähle eine Geschichte"
   },
   "home": "🏠 Startseite",
 
   "languageChoice": "Wähle deine Sprache",
-  "selectChapter": "Kapitel Auswählen",
   "settings": {
     "title": "Einstellungen",
     "language": "Spracheinstellungen",
@@ -32,6 +30,16 @@
     "currency": "€"
   },
   "gameOver": "Spiel beendet!",
-  "languageChangeWarning": "Wenn du die Sprache änderst, wirst du zum Startbildschirm zurückgebracht. Bist du sicher?"
-
+  "languageChangeWarning": "Wenn du die Sprache änderst, wirst du zum Startbildschirm zurückgebracht. Bist du sicher?",
+  "storyList": {
+    "continueChapter": "Abenteuer fortsetzen",
+    "sampleLimit": "🔓 Nur Vorschau ({{count}} Auswahlmöglichkeiten)"
+  },
+  "chapterMenu": {
+    "selectChapter": "Kapitel Auswählen",
+    "chaptersUnlocked": "Freigeschaltete Kapitel"
+  },
+  "unlockPopup": {
+    "unlocked": "Kapitel freigeschaltet!"
+  }
 }

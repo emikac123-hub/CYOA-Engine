@@ -1,6 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import storyIndex from "../stories/storyIndex.json";
+import storyData from "../stories/stories-en.json";
+
 const PROGRESS_KEY_PREFIX = "story_progress_";
+const CHAPTER_KEY_PREFIX = "story_chapter_";
 
 export const saveProgress = async (storyId: string, pageId: string) => {
   await AsyncStorage.setItem(PROGRESS_KEY_PREFIX + storyId, pageId);
@@ -16,7 +18,7 @@ export const clearProgress = async (storyId: string) => {
     `unlockedChapters-${storyId}`,
   ]);
 };
-// storage/progressManager.ts
+
 export const clearProgressOnly = async (storyId: string) => {
   await AsyncStorage.removeItem(`story_progress_${storyId}`);
 };
@@ -30,7 +32,12 @@ export const getLastPlayedStory = async (): Promise<{
   pageId: string;
   title: string;
 }> => {
-  for (const story of storyIndex) {
+  const allStories = Object.entries(storyData).map(([id, block]: any) => ({
+    id,
+    title: block.meta?.title || id,
+  }));
+
+  for (const story of allStories) {
     const pageId = await AsyncStorage.getItem(PROGRESS_KEY_PREFIX + story.id);
     if (pageId) {
       return {
@@ -41,21 +48,15 @@ export const getLastPlayedStory = async (): Promise<{
     }
   }
 
-  // Fallback to the first story in the index
-  const fallback = storyIndex[0];
+  // Fallback to the first story
+  const fallback = allStories[0];
   return {
     storyId: fallback.id,
-    pageId: "intro", // assumes the starting point is always "intro"
+    pageId: "intro",
     title: fallback.title,
   };
 };
-const CHAPTER_KEY_PREFIX = "story_chapter_";
 
-/**
- * Saves the latest unlocked chapter for a story.
- * @param storyId The unique identifier of the story.
- * @param chapterId The chapter ID to save (e.g., "Part_1_Cowboys_Of_Katonia").
- */
 export const saveChapterProgress = async (
   storyId: string,
   chapterId: string
@@ -67,11 +68,6 @@ export const saveChapterProgress = async (
   }
 };
 
-/**
- * Loads the most recently unlocked chapter for a story.
- * @param storyId The unique identifier of the story.
- * @returns The saved chapter ID, or null if none is found.
- */
 export const loadChapterProgress = async (
   storyId: string
 ): Promise<string | null> => {
@@ -83,10 +79,6 @@ export const loadChapterProgress = async (
   }
 };
 
-/**
- * Clears the chapter progress for a story.
- * @param storyId The unique identifier of the story.
- */
 export const clearChapterProgress = async (storyId: string) => {
   try {
     await AsyncStorage.removeItem(CHAPTER_KEY_PREFIX + storyId);

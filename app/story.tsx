@@ -1,9 +1,10 @@
 import { useLanguage } from "../localization/LanguageProvider";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { SAMPLE_LIMIT } from "../constants/Constants";
 import React, { useEffect, useMemo, useState } from "react";
+import { saveChapterProgress } from "../storage/progressManager";
 import {
   Animated,
   Easing,
@@ -34,6 +35,7 @@ const StoryScreen = () => {
 function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   const [unlockedChapters, setUnlockedChapters] = useState([]);
   const [currentPageId, setCurrentPageId] = useState(null);
+  const [currentChapterTitle, setCurrentChapterTitle] = useState(null);
   const [page, setPage] = useState(null);
   const [history, setHistory] = useState([]);
   const [decisionCount, setDecisionCount] = useState(0);
@@ -48,6 +50,7 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   const startPageId = "intro";
   const [chapterMenuVisible, setChapterMenuVisible] = useState(false);
   const insets = useSafeAreaInsets();
+  const { id } = useLocalSearchParams();
 
   useEffect(() => {
     const loadInitialState = async () => {
@@ -128,27 +131,38 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   }, [currentPageId]);
 
   useEffect(() => {
-    if (!page || !page.chapter?.title || currentPageId === lastShownChapterId)
-      return;
+    if (!page || currentPageId === lastShownChapterId) return;
+
+    const foundChapter = chapters.find((ch) => ch.id === currentPageId);
+    if (!foundChapter) return;
 
     const alreadyVisible = unlockedChapters.some(
       (ch) => ch.id === currentPageId
     );
-    if (alreadyVisible) return; // ✅ Prevent confetti & popup if chapter is already in menu
+    if (alreadyVisible) return;
 
     const unlockNewChapter = async () => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
       setShowChapterPopup(true);
+
+      const foundChapter = chapters.find((ch) => ch.id === currentPageId);
+      if (!foundChapter) return; // don't unlock if no matching chapter
+
       setConfettiKey((prev) => prev + 1);
+      setCurrentChapterTitle(foundChapter.title); // ✅ set title for popup
 
       const newChapter = {
-        title: page.chapter.title,
-        order: page.chapter.order,
+        title: foundChapter.title,
+        order: foundChapter.order,
         id: currentPageId,
       };
 
       const updated = [...unlockedChapters, newChapter]
-        .filter((v, i, a) => a.findIndex((t) => stripEmoji(t.title) === stripEmoji(v.title)) === i)
+        .filter(
+          (v, i, a) =>
+            a.findIndex((t) => stripEmoji(t.title) === stripEmoji(v.title)) ===
+            i
+        )
         .sort((a, b) => a.order - b.order);
 
       await AsyncStorage.setItem(
@@ -156,14 +170,14 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
         JSON.stringify(updated)
       ).catch((err) => console.warn("Failed to save unlocked chapters:", err));
 
+      await saveChapterProgress(meta.id, currentPageId);
+
       setUnlockedChapters(updated);
       setLastShownChapterId(currentPageId);
     };
 
     unlockNewChapter();
 
-    const timeout = setTimeout(() => setShowChapterPopup(false), 2500);
-    return () => clearTimeout(timeout);
   }, [page]);
 
   const isSingleContinue = useMemo(() => {
@@ -231,9 +245,14 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
 
       <ChapterUnlockPopup
         visible={showChapterPopup}
-        title={page?.chapter?.title}
+        title={currentChapterTitle}
         confettiKey={confettiKey}
+        onClose={() => {
+          console.log("Popup dismissed");
+          setShowChapterPopup(false); // ✅ FIXED
+        }}
       />
+
       <ChapterSelectMenu
         visible={chapterMenuVisible}
         onClose={() => setChapterMenuVisible(false)}
@@ -247,16 +266,21 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
           }
         }}
         currentPageId={currentPageId}
+        allChapters={chapters} // ✅ add this line
       />
     </View>
   );
 }
 
-export default () => (
-  <StoryLoaderGate>
-    <StoryScreen />
-  </StoryLoaderGate>
-);
+export default function StoryWrapper() {
+  const { id } = useLocalSearchParams();
+  const storyId = id;
+  return (
+    <StoryLoaderGate storyId={storyId}>
+      <StoryScreen />
+    </StoryLoaderGate>
+  );
+}
 
 export function stripEmoji(text: string): string {
   const emojiRegex = /^[\p{Extended_Pictographic}\uFE0F\s]+/u;

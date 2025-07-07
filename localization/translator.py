@@ -1,8 +1,9 @@
 import json
+
 from deep_translator import GoogleTranslator
 
 # Load your JSON file
-input_file = "../stories/covarnius-en.json"  # Replace with your actual file name
+input_file = "../stories/stories-en.json"  # Replace with your actual file name
 output_file = "covarnius_texts_translated_to_japanse.json"
 target_language = 'ja'
 # Recursive function to translate all "text" fields

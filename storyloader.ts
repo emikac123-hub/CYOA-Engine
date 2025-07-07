@@ -1,16 +1,4 @@
-import storyIndex from "./stories/storyIndex.json";
-
-// Manually map story content by storyId and language
-const storyMap: Record<string, Record<string, () => Promise<any>>> = {
-  covarnius: {
-    en: () => import("./stories/covarnius-en.json"),
-    de: () => import("./stories/covarnius-de.json"),
-    fr: () => import("./stories/covarnius-fr.json"),
-    es: () => import("./stories/covarnius-es.json"),
-    is: () => import("./stories/covarnius-is.json"),
-    ja: () => import("./stories/covarnius-jp.json"),
-  },
-};
+import storyIndex from "./stories/stories-en.json";
 
 /**
  * Loads a specific story by its ID and language.
@@ -24,18 +12,31 @@ const storyMap: Record<string, Record<string, () => Promise<any>>> = {
 export const loadStory = async (
   storyId: string,
   lang: string = "en"
-): Promise<{ meta: any; story: any[] }> => {
-  const meta = storyIndex.find((story) => story.id === storyId);
-  if (!meta) throw new Error(`Metadata for story "${storyId}" not found.`);
+): Promise<{ meta: any; story: any[]; chapters: any[] }> => {
+  const storyFileMap = {
+    en: () => import("./stories/stories-en.json"),
+    de: () => import("./stories/stories-de.json"),
+    fr: () => import("./stories/stories-fr.json"),
+    es: () => import("./stories/stories-es.json"),
+    is: () => import("./stories/stories-is.json"),
+    jp: () => import("./stories/stories-jp.json"),
+  };
 
-  const loader = storyMap[storyId]?.[lang];
+  const loader = storyFileMap[lang];
   if (!loader) {
-    throw new Error(`Story content for "${storyId}" in language "${lang}" not found.`);
+    throw new Error(`Unsupported language: ${lang}`);
   }
 
   const mod = await loader();
+  const storyBlock = mod[storyId];
+
+  if (!storyBlock) {
+    throw new Error(`Story block for "${storyId}" not found in ${lang}`);
+  }
+
   return {
-    meta,
-    story: mod.story,
+    meta: storyBlock.meta,
+    story: storyBlock.story,
+    chapters: storyBlock.meta?.chapters || [],
   };
 };

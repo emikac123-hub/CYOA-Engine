@@ -1,5 +1,6 @@
-from openai import OpenAI
 import json
+
+from openai import OpenAI
 
 # Initialize OpenAI client
 client = OpenAI(api_key="sk")  # Replace with your actual key
@@ -43,8 +44,8 @@ def polish_text_fields(obj, language):
             polish_text_fields(item, language)
 
 # File paths
-input_path = "../stories/covarnius-jp.json"
-output_path = "polished-covarnius-jp.json"
+input_path = "../stories/stories-jp.json"
+output_path = "polished-stories-jp.json"
 
 # Load JSON input
 with open(input_path, "r", encoding="utf-8") as infile:

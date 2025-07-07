@@ -1,18 +1,19 @@
 import { useLanguage } from "../localization/LanguageProvider";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { useRouter } from "expo-router";
-import { SAMPLE_LIMIT, TESTING } from "../constants/Constants";
-import React, { useEffect, useRef, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { SAMPLE_LIMIT } from "../constants/Constants";
+import React, { useEffect, useMemo, useState } from "react";
+import { saveChapterProgress } from "../storage/progressManager";
 import {
   Animated,
   Easing,
+  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-
 
 import SettingsModal from "../components/SettingsMenu";
 import StoryLoaderGate, { useStory } from "../components/StoryLoaderGate";
@@ -24,21 +25,18 @@ import StoryContent from "../components/StoryContent";
 import ChapterUnlockPopup from "../components/ChapterUnlockPopup";
 import ChapterSelectMenu from "../components/ChapterSelectMenu";
 import { useTheme } from "../context/ThemeContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const StoryScreen = () => {
-  const { meta, story } = useStory();
-  return <ActualStoryEngine meta={meta} story={story} />;
+  const { meta, story, chapters } = useStory(); // ✅ Now includes chapters
+  return <ActualStoryEngine meta={meta} story={story} chapters={chapters} />;
 };
 
-function ActualStoryEngine({ meta, story, resumePageId }) {
-  const { theme } = useTheme();
-  const iconColor = theme === "dark" ? "#fff" : "#000";
+function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   const [unlockedChapters, setUnlockedChapters] = useState([]);
-  const router = useRouter();
-  const { t } = useLanguage();
-  const [chapterMenuVisible, setChapterMenuVisible] = useState(false);
-
   const [currentPageId, setCurrentPageId] = useState(null);
+  const [currentChapterTitle, setCurrentChapterTitle] = useState(null);
+  const [page, setPage] = useState(null);
   const [history, setHistory] = useState([]);
   const [decisionCount, setDecisionCount] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(0));
@@ -46,103 +44,75 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
   const [showChapterPopup, setShowChapterPopup] = useState(false);
   const [confettiKey, setConfettiKey] = useState(0);
   const [lastShownChapterId, setLastShownChapterId] = useState(null);
-
+  const router = useRouter();
+  const { t } = useLanguage();
+  const { theme } = useTheme();
   const startPageId = "intro";
+  const [chapterMenuVisible, setChapterMenuVisible] = useState(false);
+  const insets = useSafeAreaInsets();
+  const { id } = useLocalSearchParams();
 
-  const pulseAnim = useRef(new Animated.Value(1)).current;
   useEffect(() => {
-    const load = async () => {
-      const savedPageId = await loadProgress(meta.id);
-      const initialPage = savedPageId || startPageId;
-      setCurrentPageId(initialPage);
+    const loadInitialState = async () => {
+      const allPageIds = new Set(story.map((p) => p.id));
+      let initialPageId: string | null = null;
 
+      try {
+        const savedPageId = await loadProgress(meta.id);
+        if (savedPageId && allPageIds.has(savedPageId)) {
+          initialPageId = savedPageId;
+        } else {
+          const savedChapters = await AsyncStorage.getItem(
+            `unlockedChapters-${meta.id}`
+          );
+          if (savedChapters) {
+            const parsed = JSON.parse(savedChapters);
+            const mostRecent = parsed[parsed.length - 1];
+            if (mostRecent && allPageIds.has(mostRecent.id)) {
+              initialPageId = mostRecent.id;
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Error loading progress or chapters:", err);
+      }
+
+      setCurrentPageId(initialPageId || startPageId);
+
+      // ✅ Localize chapters using `chapters` from useStory
       try {
         const savedChapters = await AsyncStorage.getItem(
           `unlockedChapters-${meta.id}`
         );
         if (savedChapters) {
           const parsed = JSON.parse(savedChapters);
-          setUnlockedChapters(parsed);
+          const localizedChapters = parsed
+            .map((ch) => {
+              const found = chapters.find((m) => m.id === ch.id);
+              return found
+                ? {
+                    id: ch.id,
+                    order: ch.order,
+                    title: found.title,
+                  }
+                : null;
+            })
+            .filter(Boolean)
+            .sort((a, b) => a.order - b.order);
+          setUnlockedChapters(localizedChapters);
         }
       } catch (err) {
-        console.warn("Failed to load unlocked chapters:", err);
+        console.warn("Failed to localize unlocked chapters:", err);
       }
     };
-    load();
+
+    loadInitialState();
   }, []);
 
   useEffect(() => {
-    if (history.length > 0) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1.2,
-            duration: 500,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 500,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-    }
-  }, [history]);
-
-  const page = story.find((p) => p.id === currentPageId);
-
-  useEffect(() => {
-    if (currentPageId) fadeIn();
-
-    if (
-      currentPageId &&
-      page?.chapter?.title &&
-      currentPageId !== lastShownChapterId
-    ) {
-      const isAlreadyUnlocked = unlockedChapters.some(
-        (ch) => ch.id === currentPageId
-      );
-
-      if (!isAlreadyUnlocked) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        setShowChapterPopup(true);
-        setConfettiKey((prev) => prev + 1);
-
-        setUnlockedChapters((prev) => {
-          const newChapter = {
-            title: page.chapter.title,
-            order: page.chapter.order,
-            id: currentPageId,
-          };
-          const chapterMap = new Map(prev.map((ch) => [ch.id, ch]));
-          chapterMap.set(newChapter.id, newChapter);
-          const updated = Array.from(chapterMap.values()).sort(
-            (a, b) => a.order - b.order
-          );
-
-          AsyncStorage.setItem(
-            `unlockedChapters-${meta.id}`,
-            JSON.stringify(updated)
-          ).catch((err) =>
-            console.warn("Failed to save unlocked chapters:", err)
-          );
-
-          return updated;
-        });
-      }
-
-      setLastShownChapterId(currentPageId);
-
-      const timeout = setTimeout(() => {
-        setShowChapterPopup(false);
-      }, 2500);
-
-      return () => clearTimeout(timeout);
-    }
-  }, [currentPageId]);
+    const found = story.find((p) => p.id === currentPageId);
+    setPage(found || null);
+  }, [currentPageId, story]);
 
   const fadeIn = () => {
     fadeAnim.setValue(0);
@@ -153,14 +123,77 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
       useNativeDriver: true,
     }).start();
   };
+  useEffect(() => {
+    console.log("🧠 History:", history);
+  }, [history]);
+  useEffect(() => {
+    if (currentPageId) fadeIn();
+  }, [currentPageId]);
 
-  const localizedContinue = stripEmoji(t("titleScreen.continue").toLowerCase());
-  const isSingleContinue =
-    page?.choices?.length === 1 &&
-    page.choices[0].text.trim().toLowerCase() === localizedContinue;
+  useEffect(() => {
+    if (!page || currentPageId === lastShownChapterId) return;
 
-  const handleChoice = async (nextId) => {
-    setHistory((prev) => [...prev, currentPageId]);
+    const foundChapter = chapters.find((ch) => ch.id === currentPageId);
+    if (!foundChapter) return;
+
+    const alreadyVisible = unlockedChapters.some(
+      (ch) => ch.id === currentPageId
+    );
+    if (alreadyVisible) return;
+
+    const unlockNewChapter = async () => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      setShowChapterPopup(true);
+
+      const foundChapter = chapters.find((ch) => ch.id === currentPageId);
+      if (!foundChapter) return; // don't unlock if no matching chapter
+
+      setConfettiKey((prev) => prev + 1);
+      setCurrentChapterTitle(foundChapter.title); // ✅ set title for popup
+
+      const newChapter = {
+        title: foundChapter.title,
+        order: foundChapter.order,
+        id: currentPageId,
+      };
+
+      const updated = [...unlockedChapters, newChapter]
+        .filter(
+          (v, i, a) =>
+            a.findIndex((t) => stripEmoji(t.title) === stripEmoji(v.title)) ===
+            i
+        )
+        .sort((a, b) => a.order - b.order);
+
+      await AsyncStorage.setItem(
+        `unlockedChapters-${meta.id}`,
+        JSON.stringify(updated)
+      ).catch((err) => console.warn("Failed to save unlocked chapters:", err));
+
+      await saveChapterProgress(meta.id, currentPageId);
+
+      setUnlockedChapters(updated);
+      setLastShownChapterId(currentPageId);
+    };
+
+    unlockNewChapter();
+
+  }, [page]);
+
+  const isSingleContinue = useMemo(() => {
+    if (!page || !page.choices || page.choices.length !== 1) return false;
+    const stripped = (s) =>
+      s
+        .replace(/[^\p{L}\p{N}\s]/gu, "")
+        .trim()
+        .toLowerCase();
+    const expected = stripped(t("titleScreen.continue"));
+    const actual = stripped(page.choices[0].text);
+    return actual === expected;
+  }, [page, t]);
+  const handleChoice = async (fromId: string, nextId: string) => {
+    setHistory((prev) => [...prev, fromId]);
+
     const unlocked = await isStoryUnlocked(meta.id);
     const nextCount = decisionCount + 1;
 
@@ -168,56 +201,29 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
       setShowPaywall(true);
       return;
     }
-    if (unlocked || TESTING) {
-      await saveProgress(meta.id, nextId);
-    }
+
+    await saveProgress(meta.id, nextId);
     setCurrentPageId(nextId);
     setDecisionCount(nextCount);
   };
 
   return (
-    <View style={{ flex: 1,  backgroundColor: theme === "dark" ? "#000" : "#fff" }}>
+    <View style={{ flex: 1 }}>
       <View
         style={{
           position: "absolute",
-          top: 40,
-          left: 20,
+          top: insets.top + 10,
+          right: 20,
           zIndex: 10,
-          alignItems: "center",
         }}
       >
-
-
-        {history.length > 0 && (
-          <TouchableOpacity
-            onPress={() => {
-              const prev = [...history];
-              const last = prev.pop();
-              setHistory(prev);
-              if (last) {
-                setCurrentPageId(last);
-              }
-            }}
-            style={{ marginTop: 6 }}
-          >
-            <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-              <Ionicons
-                name="arrow-back-outline"
-                size={24}
-                color={iconColor}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              />
-            </Animated.View>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      <View
-        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-        style={{ position: "absolute", top: 40, right: 20, zIndex: 10 }}
-      >
         <TouchableOpacity onPress={() => setChapterMenuVisible(true)}>
-          <Ionicons name="list-outline" size={28} color={iconColor} />
+          <Ionicons
+            name="book-outline"
+            size={28}
+            color={theme === "dark" ? "#fff" : "#000"}
+            style={{ opacity: 0.9 }}
+          />
         </TouchableOpacity>
       </View>
 
@@ -239,8 +245,12 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
 
       <ChapterUnlockPopup
         visible={showChapterPopup}
-        title={page?.chapter?.title}
+        title={currentChapterTitle}
         confettiKey={confettiKey}
+        onClose={() => {
+          console.log("Popup dismissed");
+          setShowChapterPopup(false); // ✅ FIXED
+        }}
       />
 
       <ChapterSelectMenu
@@ -251,23 +261,28 @@ function ActualStoryEngine({ meta, story, resumePageId }) {
           setChapterMenuVisible(false);
           if (item.id === "home") {
             router.replace("/");
-          } else if (item.id) {
+          } else {
             setCurrentPageId(item.id);
           }
         }}
+        currentPageId={currentPageId}
+        allChapters={chapters} // ✅ add this line
       />
-
     </View>
   );
 }
 
-export default () => (
-  <StoryLoaderGate>
-    <StoryScreen />
-  </StoryLoaderGate>
-);
+export default function StoryWrapper() {
+  const { id } = useLocalSearchParams();
+  const storyId = id;
+  return (
+    <StoryLoaderGate storyId={storyId}>
+      <StoryScreen />
+    </StoryLoaderGate>
+  );
+}
+
 export function stripEmoji(text: string): string {
-  // This removes emojis and common variation selectors (e.g., U+FE0F)
   const emojiRegex = /^[\p{Extended_Pictographic}\uFE0F\s]+/u;
   return text.replace(emojiRegex, "").trim();
 }

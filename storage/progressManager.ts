@@ -1,6 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import storyIndex from "../stories/storyIndex.json";
+import storyData from "../stories/stories-en.json";
+
 const PROGRESS_KEY_PREFIX = "story_progress_";
+const CHAPTER_KEY_PREFIX = "story_chapter_";
 
 export const saveProgress = async (storyId: string, pageId: string) => {
   await AsyncStorage.setItem(PROGRESS_KEY_PREFIX + storyId, pageId);
@@ -17,12 +19,25 @@ export const clearProgress = async (storyId: string) => {
   ]);
 };
 
+export const clearProgressOnly = async (storyId: string) => {
+  await AsyncStorage.removeItem(`story_progress_${storyId}`);
+};
+
+/**
+ * Returns the last played story and pageId.
+ * Falls back to the first story's "intro" page if no progress found.
+ */
 export const getLastPlayedStory = async (): Promise<{
   storyId: string;
   pageId: string;
   title: string;
-} | null> => {
-  for (const story of storyIndex) {
+}> => {
+  const allStories = Object.entries(storyData).map(([id, block]: any) => ({
+    id,
+    title: block.meta?.title || id,
+  }));
+
+  for (const story of allStories) {
     const pageId = await AsyncStorage.getItem(PROGRESS_KEY_PREFIX + story.id);
     if (pageId) {
       return {
@@ -32,5 +47,42 @@ export const getLastPlayedStory = async (): Promise<{
       };
     }
   }
-  return null;
+
+  // Fallback to the first story
+  const fallback = allStories[0];
+  return {
+    storyId: fallback.id,
+    pageId: "intro",
+    title: fallback.title,
+  };
+};
+
+export const saveChapterProgress = async (
+  storyId: string,
+  chapterId: string
+) => {
+  try {
+    await AsyncStorage.setItem(CHAPTER_KEY_PREFIX + storyId, chapterId);
+  } catch (error) {
+    console.error("Failed to save chapter progress:", error);
+  }
+};
+
+export const loadChapterProgress = async (
+  storyId: string
+): Promise<string | null> => {
+  try {
+    return await AsyncStorage.getItem(CHAPTER_KEY_PREFIX + storyId);
+  } catch (error) {
+    console.error("Failed to load chapter progress:", error);
+    return null;
+  }
+};
+
+export const clearChapterProgress = async (storyId: string) => {
+  try {
+    await AsyncStorage.removeItem(CHAPTER_KEY_PREFIX + storyId);
+  } catch (error) {
+    console.error("Failed to clear chapter progress:", error);
+  }
 };

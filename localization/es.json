@@ -1,7 +1,7 @@
 {
   "titleScreen": {
     "mainTitle": "Cuentos de Covarnius",
-    "start": "Comenzar nueva aventura",
+    "start": "Iniciar viaje",
     "continue": "🕹️ Continuar",
     "delete": "❌ Eliminar Progreso",
     "confirmClear": "¿Estás seguro de que deseas eliminar tu progreso?",
@@ -9,76 +9,37 @@
     "ok": "Aceptar",
     "unlockPrice": "Desbloquear por {{price}}",
     "unlock": "✅ Desbloquear",
-    "sampleLimit": "🔓 Solo muestra ({{count}} opciones)",
+
     "back": "⬅️ Volver",
-    "selectStory": "Selecciona una historia",
-    "chapters": [
-      { "title": "¡Hora de aventura!", "order": 2, "id": "intro" },
-      { "title": "Encrucijada", "order": 3, "id": "Part_1_Fork_In_The_Road" },
-      {
-        "title": "Los vaqueros de Katonia 🤠",
-        "order": 4,
-        "id": "Part_1_Cowboys_Of_Katonia"
-      },
-      {
-        "title": "Hapalstancia Aleatoria",
-        "order": 5,
-        "id": "Part_1_Hapalstance"
-      },
-      {
-        "title": "¡Salva al Hapal!",
-        "order": 6,
-        "id": "Part_1_Save_The_Hapal"
-      },
-      {
-        "title": "Decepcionamos a Hapal 😢",
-        "order": 6,
-        "id": "Part_1_Hapal_Down"
-      },
-      { "title": "El Rey 👑", "order": 7, "id": "Part_1_Greatest_Scientist" },
-      {
-        "title": "Fingiendo ser quien no soy",
-        "order": 8,
-        "id": "Part_1_Fake_Til_You_Make"
-      },
-      {
-        "title": "¡Es hora de ayudar! 🕒",
-        "order": 9,
-        "id": "Part_1_Not_Scientist"
-      },
-      {
-        "title": "Inmunidad Diplomática",
-        "order": 10,
-        "id": "Part_1_Diplomatic_Immunity"
-      },
-      {
-        "title": "¿Tu boleto de embarque?",
-        "order": 11,
-        "id": "Part_1_Boarding_Ticket"
-      },
-      {
-        "title": "¡Arriba, que ya es hora! ☀️",
-        "order": 12,
-        "id": "Part_2_Hypersleep"
-      },
-      { "title": "Ataque a Covarnius", "order": 12, "id": "Part_1_Sneak" },
-      {
-        "title": "🏠 Inicio",
-        "order": 999,
-        "id": "home"
-      }
-    ]
+    "selectStory": "Selecciona una historia"
   },
   "home": "🏠 Inicio",
   "languageChoice": "Elige tu idioma",
-    "selectChapter": "📖 Selección de capítulo",
+
   "settings": {
     "title": "Configuración",
-    "language": "Configuración de idioma",
+    "language": "Configuración de Idioma",
     "support": "Soporte",
-    "terms": "Términos de uso",
-    "privacy": "Política de privacidad",
+    "terms": "Términos de Uso",
+    "privacy": "Política de Privacidad",
     "close": "❌ Cerrar"
   },
-  "subtitle": "Un viaje comienza con un extraño de las estrellas"
+  "subtitle": "Un viaje comienza con un extraño de las estrellas",
+  "payWall": {
+    "returnToTitle": "Volver a la lista de historias",
+    "pitch": "¡Compra {{title}} para seguir leyendo!"
+  },
+  "gameOver": "Fin del juego",
+  "languageChangeWarning": "Si cambias el idioma, volverás a la pantalla de inicio. ¿Estás seguro?",
+  "storyList": {
+    "continueChapter": "Reanudar la aventura",
+    "sampleLimit": "🔓 Solo muestra ({{count}} opciones)"
+  },
+  "chapterMenu": {
+    "selectChapter": "Selección de Capítulo",
+    "chaptersUnlocked": "Capítulos desbloqueados"
+  },
+  "unlockPopup": {
+    "unlocked": "¡Capítulo desbloqueado!"
+  }
 }

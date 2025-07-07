@@ -87,7 +87,9 @@ const styles = (theme: "light" | "dark") =>
       fontSize: 17,
       fontWeight: "500",
       letterSpacing: 0.3,
+      textAlign: "center",
       zIndex: 2,
+        flexShrink: 1,
     },
     shimmerOverlay: {
       ...StyleSheet.absoluteFillObject,

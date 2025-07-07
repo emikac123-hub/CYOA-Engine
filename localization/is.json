@@ -1,7 +1,7 @@
 {
   "titleScreen": {
     "mainTitle": "Sögur af Kóvarníus",
-    "start": "Byrja nýja ævintýrið",
+    "start": "Byrja ferðalagið",
     "continue": "🕹️ Haltu áfram",
     "delete": "❌ Hreinsa Framvindu",
     "confirmClear": "Ertu viss um að þú viljir eyða framvindunni þinni?",
@@ -9,65 +9,12 @@
     "ok": "Í lagi",
     "unlockPrice": "Opna fyrir {{price}}",
     "unlock": "✅ Opna",
-    "sampleLimit": "🔓 Aðeins sýnishorn ({{count}} valmöguleikar)",
+
     "back": "⬅️ Til baka",
-    "selectStory": "Veldu sögu",
-    "chapters": [
-      { "title": "Tími til ævintýra!", "order": 2, "id": "intro" },
-      { "title": "Á vegamótum", "order": 3, "id": "Part_1_Fork_In_The_Road" },
-      {
-        "title": "Kúrekarnir frá Katonia 🤠",
-        "order": 4,
-        "id": "Part_1_Cowboys_Of_Katonia"
-      },
-      {
-        "title": "Tilviljun Hapal-stílsins",
-        "order": 5,
-        "id": "Part_1_Hapalstance"
-      },
-      { "title": "Bjargið Hapal", "order": 6, "id": "Part_1_Save_The_Hapal" },
-      {
-        "title": "Við svikuðum Hapal 😢",
-        "order": 6,
-        "id": "Part_1_Hapal_Down"
-      },
-      {
-        "title": "Kóngurinn 👑",
-        "order": 7,
-        "id": "Part_1_Greatest_Scientist"
-      },
-      { "title": "Að þykjast", "order": 8, "id": "Part_1_Fake_Til_You_Make" },
-      {
-        "title": "Tími til að hjálpa! 🕒",
-        "order": 9,
-        "id": "Part_1_Not_Scientist"
-      },
-      {
-        "title": "Friðhelgi diplómata",
-        "order": 10,
-        "id": "Part_1_Diplomatic_Immunity"
-      },
-      {
-        "title": "Brottfararmiðinn þinn?",
-        "order": 11,
-        "id": "Part_1_Boarding_Ticket"
-      },
-      { "title": "Árás á Covarnius", "order": 12, "id": "Part_1_Sneak" },
-      {
-        "title": "Rífið ykkur á fætur! ☀️",
-        "order": 12,
-        "id": "Part_2_Hypersleep"
-      },
-      {
-        "title": "🏠 Heim",
-        "order": 999,
-        "id": "home"
-      }
-    ]
+    "selectStory": "Veldu sögu"
   },
   "home": "🏠 Heim",
   "languageChoice": "Veldu tungumál þitt",
-  "selectChapter": "📖 Kaflaval",
   "settings": {
     "title": "Stillingar",
     "language": "Tungumálastillingar",
@@ -76,5 +23,23 @@
     "privacy": "Persónuverndarstefna",
     "close": "❌ Loka"
   },
-  "subtitle": "Ferðalag hefst með ókunnugum frá stjörnunum"
+  "subtitle": "Ferðalag hefst með ókunnugum frá stjörnunum",
+  "payWall": {
+    "returnToTitle": "Til baka á sögulista",
+    "pitch": "Kauptu {{title}} til að halda áfram að lesa!"
+  },
+  "gameOver": "Leik Lokið",
+  "languageChangeWarning": "Ef þú breytir tungumáli verður þér vísað aftur á upphafsskjáinn. Ertu viss?",
+  "storyList": {
+    "continueChapter": "Haltu áfram ævintýrinu",
+    "sampleLimit": "🔓 Aðeins sýnishorn ({{count}} valmöguleikar)"
+  },
+  "chapterMenu": {
+    "selectChapter": "Kaflaval",
+    "chaptersUnlocked": "Læstir kaflar opnaðir"
+  },
+
+  "unlockPopup": {
+    "unlocked": "Kafli opnaður!"
+  }
 }

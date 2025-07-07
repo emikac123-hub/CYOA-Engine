@@ -136,6 +136,73 @@ Then refine the translations using AI. The translator is not enough to proivde a
     python localization/translator.py
     ```
 
+## Story File Structure
+
+Stories are defined in JSON files located in the `stories/` directory. Each story file has a top-level object with two keys: `meta` and `story`.
+
+### The `meta` Object
+
+The `meta` object contains metadata about the story, including:
+
+-   `id`: A unique identifier for the story. This ID must match the key used in the `storyMap` in `storyloader.ts`.
+-   `title`: The title of the story.
+-   `author`: The author of the story.
+-   `sampleLimit`: The number of choices a user can make in a sample story before being prompted to purchase the full story.
+-   `chapters`: An array of chapter objects, each with a `title`, `order`, and `id`. The `id` must match the `id` of the page where the chapter begins.
+
+### The `story` Array
+
+The `story` array contains the content of the story, with each element representing a page in the adventure. Each page object has the following structure:
+
+-   `id`: A unique identifier for the page. The entry point for the story must have an `id` of `"intro"`.
+-   `text`: The text to display on the page.
+-   `image`: The filename of the image to display on the page.
+-   `backgroundMusic`: The filename of the background music to play on the page.
+-   `choices`: An array of choice objects, each with a `text` and `nextId`. The `nextId` is the `id` of the page to navigate to when the user selects that choice.
+-   `chapter`: An object with a `title` and `order`. The `title` and `id` must match the corresponding chapter in the `meta` object.
+
+### Example
+
+```json
+{
+  "meta": {
+    "id": "covarnius",
+    "title": "Tales of Covarnius",
+    "author": "Your Name",
+    "sampleLimit": 15,
+    "chapters": [
+      {
+        "title": "Adventure Time!",
+        "order": 2,
+        "id": "intro"
+      }
+    ]
+  },
+  "story": [
+    {
+      "id": "intro",
+      "text": "You find yourself at a fork in the road.",
+      "image": "fork-in-the-road.png",
+      "backgroundMusic": "mysterious-tunes.mp3",
+      "choices": [
+        {
+          "text": "Go left",
+          "nextId": "left-path"
+        },
+        {
+          "text": "Go right",
+          "nextId": "right-path"
+        }
+      ],
+      "chapter": {
+        "title": "Adventure Time!",
+        "order": 2
+      }
+    }
+  ]
+}
+```
+
 ## Testing
 
 The project includes a comprehensive test suite to ensure the quality and integrity of the stories.

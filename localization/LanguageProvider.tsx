@@ -7,9 +7,9 @@ import es from "./es.json";
 import is from "./is.json";
 import de from "./de.json";
 import fr from "./fr.json";
-import ja from "./jp.json";
+import jp from "./jp.json";
 
-const LANGUAGES: any = { en, es, is, de, fr, ja };
+const LANGUAGES: any = { en, es, is, de, fr, jp };
 type LangCode = keyof typeof LANGUAGES;
 
 const LanguageContext = createContext({

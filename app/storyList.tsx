@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics";
 import React, { useEffect, useState } from "react";
-import { SAMPLE_LIMIT } from "../constants/Constants";
+import { SAMPLE_LIMIT, TESTING } from "../constants/Constants";
 import { useLanguage } from "../localization/LanguageProvider";
 import { useRouter } from "expo-router";
 import {
@@ -18,6 +18,8 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { isStoryUnlocked } from "../storage/unlockManager";
+import { loadChapterProgress } from "../storage/progressManager";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const coverImages: Record<string, any> = {
   korgle: require("../assets/images/KorgleTitle.png"),
@@ -27,34 +29,66 @@ const coverImages: Record<string, any> = {
 export default function StoryListScreen() {
   const [stories, setStories] = useState<any[]>([]);
   const [unlockedMap, setUnlockedMap] = useState<Record<string, boolean>>({});
+  const [chapterMap, setChapterMap] = useState<Record<string, string | null>>(
+    {}
+  );
+  const [chapterTitles, setChapterTitles] = useState<
+    Record<string, Record<string, string>>
+  >({});
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const load = async () => {
-      const data = await import("../stories/storyIndex.json").then(
-        (mod) => mod.default
-      );
-      setStories(data);
+      const storyFileMap = {
+        en: () => import("../stories/stories-en.json"),
+        de: () => import("../stories/stories-de.json"),
+        fr: () => import("../stories/stories-fr.json"),
+        es: () => import("../stories/stories-es.json"),
+        is: () => import("../stories/stories-is.json"),
+        jp: () => import("../stories/stories-jp.json"),
+      };
+
+      const loader = storyFileMap[lang];
+      const data = await loader().then((mod) => mod.default);
+      const allStories = Object.keys(data).map((key) => data[key].meta);
+      setStories(allStories);
 
       const unlockStatus = await Promise.all(
-        data.map((s: any) => isStoryUnlocked(s.id))
+        allStories.map((s: any) => isStoryUnlocked(s.id))
       );
       const unlockedMap: Record<string, boolean> = {};
-      data.forEach((s: any, i: number) => {
-        unlockedMap[s.id] = unlockStatus[i];
-      });
+      const chapterMap: Record<string, string | null> = {};
+      const titleMap: Record<string, Record<string, string>> = {};
+
+      for (let i = 0; i < allStories.length; i++) {
+        const story = allStories[i];
+        const block = data[story.id];
+        unlockedMap[story.id] = unlockStatus[i];
+        chapterMap[story.id] = await loadChapterProgress(story.id);
+
+        const map: Record<string, string> = {};
+        for (const chapter of block.meta?.chapters || []) {
+          map[chapter.id] = chapter.title;
+        }
+        titleMap[story.id] = map;
+      }
       setUnlockedMap(unlockedMap);
+      setChapterMap(chapterMap);
+      setChapterTitles(titleMap);
     };
 
     load();
-  }, []);
+  }, [lang]);
 
-  const renderItem = ({ item }: { item: any }) => {
+  const renderItem = async ({ item }: { item: any }) => {
     const unlocked = unlockedMap[item.id];
-
+    const currentChapterId = chapterMap[item.id] || "intro";
+    console.log("current item id: " + item.id)
+    console.log("current Chapter ID: " + currentChapterId);
+    const chapterTitle = chapterTitles[item.id]?.[currentChapterId || ""];
     return (
       <TouchableOpacity
         style={[styles.card, theme === "light" && lightStyles.card]}
@@ -77,18 +111,22 @@ export default function StoryListScreen() {
               { color: theme === "dark" ? "#fff" : "#000" },
             ]}
           >
-            {t("titleScreen.mainTitle")}
+            {item.title}
           </Text>
           <Text
             style={[styles.desc, { color: theme === "dark" ? "#ccc" : "#444" }]}
           >
-            {t("subtitle")}
+            {item.description || t("subtitle")}
           </Text>
-          <Text style={styles.status}>
-            {unlocked
-              ? t("unlocked")
-              : t("titleScreen.sampleLimit", { count: `${SAMPLE_LIMIT}` })}
-          </Text>
+          {unlocked ? (
+            <Text style={styles.status}>
+              ✅ {t("storyList.continueChapter")}: {chapterTitle || t("intro")}
+            </Text>
+          ) : (
+            <Text style={styles.status}>
+              {t("storyList.sampleLimit", { count: `${SAMPLE_LIMIT}` })}
+            </Text>
+          )}
         </View>
       </TouchableOpacity>
     );
@@ -172,7 +210,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// Optional overrides for light mode
 const lightStyles = StyleSheet.create({
   card: {
     backgroundColor: "#f8f8f8",

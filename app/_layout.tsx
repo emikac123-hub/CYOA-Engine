@@ -13,7 +13,7 @@ export default function RootLayout() {
       <LanguageProvider>
         <ThemedHeader onSettingsPress={() => setSettingsVisible(true)} />
           <SettingsModal visible={settingsVisible} onClose={() => setSettingsVisible(false)} />
-        <Stack screenOptions={{ headerShown: false }} />
+        <Stack screenOptions={{ headerShown: false,  gestureEnabled: false, }} />
       </LanguageProvider>
     </ThemeProvider>
   );

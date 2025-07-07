@@ -38,10 +38,10 @@ yarn-error.*
 
 app-example
 stories/covarnius.json
-stories/covarnius-jp.json
+stories/stories-jp.json
 stories/storyIndex.json
-stories/covarnius-is.json
-stories/covarnius-fr.json
-stories/covarnius-es.json
-stories/covarnius-en.json
-stories/covarnius-de.json
+stories/stories-is.json
+stories/stories-fr.json
+stories/stories-es.json
+stories/stories-en.json
+stories/stories-de.json

@@ -3,7 +3,7 @@
     "mainTitle": "Sögur af Kóvarníus",
     "start": "Byrja ferðalagið",
     "continue": "🕹️ Haltu áfram",
-    "delete": "❌ Hreinsa Framvindu",
+    "delete": "Eyða",
     "confirmClear": "Ertu viss um að þú viljir eyða framvindunni þinni?",
     "cancel": "Hætta við",
     "ok": "Í lagi",
@@ -32,11 +32,16 @@
   "languageChangeWarning": "Ef þú breytir tungumáli verður þér vísað aftur á upphafsskjáinn. Ertu viss?",
   "storyList": {
     "continueChapter": "Haltu áfram ævintýrinu",
-    "sampleLimit": "🔓 Aðeins sýnishorn ({{count}} valmöguleikar)"
+    "sampleLimit": "🔓 Aðeins sýnishorn ({{count}} valmöguleikar)",
+        "deleteProgressTitle": "Hreinsa Framvindu?",
+    "deleteProgressBody": "Framvindu fyrir „{{title}}“ verður eytt. Ertu viss?",
+    "deleted": "Eytt",
+    "deletedMessage": "Framvindu var eytt með góðum árangri."
   },
   "chapterMenu": {
     "selectChapter": "Kaflaval",
     "chaptersUnlocked": "Læstir kaflar opnaðir"
+
   },
 
   "unlockPopup": {

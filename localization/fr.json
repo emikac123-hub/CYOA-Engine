@@ -3,7 +3,7 @@
     "mainTitle": "Les Contes de Covarnius",
     "start": "Début du voyage",
     "continue": "🕹️ Continuer",
-    "delete": "❌ Supprimer la Progression",
+    "delete": "Supprimer",
     "confirmClear": "Êtes-vous sûr de vouloir supprimer votre progression ?",
     "cancel": "Annuler",
     "ok": "OK",
@@ -33,13 +33,17 @@
   "languageChangeWarning": "Si vous changez de langue, vous serez renvoyé à l’écran d’accueil. Êtes-vous sûr ?",
   "storyList": {
     "continueChapter": "Reprendre l'aventure",
-    "sampleLimit": "🔓 Extrait seulement ({{count}} choix)"
+    "sampleLimit": "🔓 Extrait seulement ({{count}} choix)",
+    "deleteProgressTitle": "Supprimer la Progression?",
+    "deleteProgressBody": "La progression pour « {{title}} » sera supprimée. Êtes-vous sûr(e) ?",
+    "deleted": "Supprimé",
+    "deletedMessage": "La progression a été supprimée avec succès."
   },
   "chapterMenu": {
     "chaptersUnlocked": "Chapitres débloqués",
     "selectChapter": "Sélection de chapitre"
   },
-    "unlockPopup": {
+  "unlockPopup": {
     "unlocked": "Chapitre débloqué !"
   }
 }

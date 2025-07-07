@@ -91,4 +91,25 @@ export const storyStyles = (theme: "light" | "dark") =>
       fontSize: 16,
       textAlign: "center",
     },
+    choiceTracker: {
+      flexDirection: "row",
+      justifyContent: "center",
+      marginBottom: 20,
+      opacity: 0.6,
+    },
+
+    dot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      marginHorizontal: 4,
+    },
+
+    activeDot: {
+      backgroundColor: "#00ccff",
+    },
+
+    inactiveDot: {
+      backgroundColor: "#aaa",
+    },
   });

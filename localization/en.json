@@ -3,7 +3,7 @@
     "mainTitle": "Parallel Fates",
     "start": "Start New Adventure",
     "continue": "🕹️ Continue",
-    "delete": "❌ Clear Progress",
+    "delete": "Delete",
     "confirmClear": "Are you sure you want to delete your progress?",
     "cancel": "Cancel",
     "ok": "OK",
@@ -32,7 +32,11 @@
   "languageChangeWarning": "If you change the language, you’ll be returned to the title screen. Are you sure?",
   "storyList": {
     "continueChapter": "Continue Chapter",
-    "sampleLimit": "🔓 Sample only ({{count}} choices)"
+    "sampleLimit": "🔓 Sample only ({{count}} choices)",
+    "deleteProgressTitle": "Delete Progress?",
+    "deleteProgressBody": "This will remove saved progress for \"{{title}}\". Are you sure?",
+    "deleted": "Deleted",
+    "deletedMessage": "Progress cleared successfully."
   },
   "chapterMenu": {
     "selectChapter": "Chapter Select",

@@ -3,7 +3,7 @@
     "mainTitle": "Die Geschichten von Covarnius",
     "start": "Reise beginnen",
     "continue": "🕹️ Weiter",
-    "delete": "❌ Fortschritt Löschen",
+    "delete": "Löschen",
     "confirmClear": "Bist du sicher, dass du deinen Fortschritt löschen möchtest?",
     "cancel": "Abbrechen",
     "ok": "OK",
@@ -33,7 +33,11 @@
   "languageChangeWarning": "Wenn du die Sprache änderst, wirst du zum Startbildschirm zurückgebracht. Bist du sicher?",
   "storyList": {
     "continueChapter": "Abenteuer fortsetzen",
-    "sampleLimit": "🔓 Nur Vorschau ({{count}} Auswahlmöglichkeiten)"
+    "sampleLimit": "🔓 Nur Vorschau ({{count}} Auswahlmöglichkeiten)",
+    "deleteProgressTitle": "Fortschritt Löschen?",
+    "deleteProgressBody": "Der Fortschritt für „{{title}}“ wird gelöscht. Bist du sicher?",
+    "deleted": "Gelöscht",
+    "deletedMessage": "Fortschritt wurde erfolgreich gelöscht."
   },
   "chapterMenu": {
     "selectChapter": "Kapitel Auswählen",

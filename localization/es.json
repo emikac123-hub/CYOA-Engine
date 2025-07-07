@@ -3,7 +3,7 @@
     "mainTitle": "Cuentos de Covarnius",
     "start": "Iniciar viaje",
     "continue": "🕹️ Continuar",
-    "delete": "❌ Eliminar Progreso",
+    "delete": "Eliminar",
     "confirmClear": "¿Estás seguro de que deseas eliminar tu progreso?",
     "cancel": "Cancelar",
     "ok": "Aceptar",
@@ -33,7 +33,11 @@
   "languageChangeWarning": "Si cambias el idioma, volverás a la pantalla de inicio. ¿Estás seguro?",
   "storyList": {
     "continueChapter": "Reanudar la aventura",
-    "sampleLimit": "🔓 Solo muestra ({{count}} opciones)"
+    "sampleLimit": "🔓 Solo muestra ({{count}} opciones)",
+    "deleteProgressTitle": "Eliminar Progreso?",
+    "deleteProgressBody": "Se eliminará el progreso de «{{title}}». ¿Estás seguro?",
+    "deleted": "Eliminado",
+    "deletedMessage": "El progreso se eliminó correctamente."
   },
   "chapterMenu": {
     "selectChapter": "Selección de Capítulo",

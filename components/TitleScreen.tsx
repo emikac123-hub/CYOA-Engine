@@ -73,52 +73,6 @@ export default function TitleScreen() {
             router.push("/storyList");
           }}
         />
-
-        {lastPlayed && (
-          <View style={s.continueContainer}>
-            <TouchableOpacity
-              style={s.button}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                router.push({
-                  pathname: "/story",
-                  params: {
-                    id: lastPlayed.storyId,
-                    resume: lastPlayed.pageId,
-                  },
-                });
-              }}
-            >
-              <ThemedText style={s.buttonText}>
-                {t("titleScreen.continue", {
-                  title: `${lastPlayed.title}`,
-                })}
-              </ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[s.button, s.deleteButton]}
-              onPress={() =>
-                Alert.alert(
-                  t("titleScreen.delete"),
-                  t("titleScreen.confirmClear"),
-                  [
-                    { text: t("titleScreen.cancel"), style: "cancel" },
-                    {
-                      text: t("titleScreen.ok"),
-                      onPress: () => clearProgress(lastPlayed.storyId),
-                    },
-                  ],
-                  { cancelable: false }
-                )
-              }
-            >
-              <ThemedText style={[s.buttonText]}>
-                <DeleteButtonText />
-              </ThemedText>
-            </TouchableOpacity>
-          </View>
-        )}
       </View>
     </View>
   );

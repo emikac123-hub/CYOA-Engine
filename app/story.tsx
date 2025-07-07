@@ -50,7 +50,8 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   const startPageId = "intro";
   const [chapterMenuVisible, setChapterMenuVisible] = useState(false);
   const insets = useSafeAreaInsets();
-  const { id } = useLocalSearchParams();
+
+  const { id, reset } = useLocalSearchParams();
 
   useEffect(() => {
     const loadInitialState = async () => {
@@ -58,7 +59,11 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       let initialPageId: string | null = null;
 
       try {
-        const savedPageId = await loadProgress(meta.id);
+        const savedPageId =
+          reset === "true" ? null : await loadProgress(meta.id); // ✅ Skip if reset
+
+        console.log("saved page ID:", savedPageId);
+
         if (savedPageId && allPageIds.has(savedPageId)) {
           initialPageId = savedPageId;
         } else {
@@ -79,7 +84,6 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
 
       setCurrentPageId(initialPageId || startPageId);
 
-      // ✅ Localize chapters using `chapters` from useStory
       try {
         const savedChapters = await AsyncStorage.getItem(
           `unlockedChapters-${meta.id}`
@@ -177,7 +181,6 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
     };
 
     unlockNewChapter();
-
   }, [page]);
 
   const isSingleContinue = useMemo(() => {
@@ -230,6 +233,7 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       {page && (
         <StoryContent
           page={page}
+          story={story}
           fadeAnim={fadeAnim}
           handleChoice={handleChoice}
           history={history}

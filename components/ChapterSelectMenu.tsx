@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   View,
   StyleSheet,
+  Dimensions,
 } from "react-native";
 import Modal from "react-native-modal";
 import { useLanguage } from "../localization/LanguageProvider";
@@ -13,22 +14,24 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "context/ThemeContext";
 import { stripEmoji } from "app/story";
-import { useStory } from "./StoryLoaderGate";
-import { Dimensions } from "react-native";
+import { BlurView } from "expo-blur";
+
 const ChapterSelectMenu = ({
   visible,
   onClose,
   unlockedChapters,
   onSelectChapter,
   currentPageId,
-  allChapters, // 👈 NEW PROP
+  allChapters,
 }) => {
+  const numberOfDuplicateChaptersAndHomeScreen = 2;
   const { t } = useLanguage();
   const { theme } = useTheme();
   const s = styles(theme);
   const insets = useSafeAreaInsets();
   const totalChapters = allChapters.length;
   const unlockedCount = unlockedChapters.length;
+
   const chaptersWithStatus = [
     {
       title: t("home"),
@@ -37,13 +40,18 @@ const ChapterSelectMenu = ({
       unlocked: true,
     },
     ...allChapters
+      .filter(
+        (ch, index, self) =>
+          self.findIndex(
+            (c) => stripEmoji(c.title) === stripEmoji(ch.title)
+          ) === index
+      )
       .filter((ch) => ch.id !== "home")
       .map((ch) => {
         const isUnlocked = unlockedChapters.some((uc) => uc.id === ch.id);
         return {
           ...ch,
-          title: isUnlocked ? ch.title : "❓ ???",
-          unlocked: isUnlocked, // ✅ set this for TouchableOpacity
+          unlocked: isUnlocked,
         };
       })
       .sort((a, b) => a.order - b.order),
@@ -72,42 +80,62 @@ const ChapterSelectMenu = ({
           />
           <Text style={s.title}>{t("chapterMenu.selectChapter")}</Text>
           <Text style={s.progressText}>
-            {`${unlockedCount}/${totalChapters || "?"} ${t(
-              "chapterMenu.chaptersUnlocked"
-            )}`}
+            {`${unlockedCount}/${
+              totalChapters - numberOfDuplicateChaptersAndHomeScreen || "?"
+            } ${t("chapterMenu.chaptersUnlocked")}`}
           </Text>
         </View>
+
         <FlatList
           data={chaptersWithStatus}
           keyExtractor={(item, index) => `${item.id || item.title}-${index}`}
           renderItem={({ item }) => {
             const isActive = item.id === currentPageId;
+
             return (
               <View style={{ paddingHorizontal: 20 }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (item.unlocked) {
-                      onSelectChapter(item);
-                    }
-                  }}
-                  disabled={!item.unlocked}
-                  activeOpacity={item.unlocked ? 0.8 : 1}
-                  style={[
-                    s.chapterButton,
-                    isActive && s.activeChapterButton,
-                    !item.unlocked && { opacity: 0.5 },
-                  ]}
-                >
-                  <Text
+                {item.unlocked ? (
+                  <TouchableOpacity
+                    onPress={() => onSelectChapter(item)}
                     style={[
-                      s.chapterText,
-                      isActive && s.activeChapterText,
-                      !item.unlocked && { fontStyle: "italic" },
+                      s.chapterButton,
+                      isActive && s.activeChapterButton,
                     ]}
                   >
-                    {item.title}
-                  </Text>
-                </TouchableOpacity>
+                    <Text
+                      style={[
+                        s.chapterText,
+                        isActive && s.activeChapterText,
+                      ]}
+                    >
+                      {item.title}
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <BlurView
+                    intensity={70}
+                    tint={theme === "dark" ? "dark" : "light"}
+                    style={s.lockedChapterBlur}
+                  >
+                    <View
+                      style={[
+                        s.lockedChapterContent,
+                        {
+                          backgroundColor:
+                            theme === "dark"
+                              ? "rgba(0,0,0,0.3)"
+                              : "rgba(255,255,255,0.3)",
+                        },
+                      ]}
+                    >
+                      <Ionicons
+                        name="lock-closed-outline"
+                        size={20}
+                        color={theme === "dark" ? "#ccc" : "#555"}
+                      />
+                    </View>
+                  </BlurView>
+                )}
               </View>
             );
           }}
@@ -117,6 +145,7 @@ const ChapterSelectMenu = ({
     </Modal>
   );
 };
+
 const styles = (theme: "light" | "dark") =>
   StyleSheet.create({
     safeArea: {
@@ -156,7 +185,7 @@ const styles = (theme: "light" | "dark") =>
     chapterText: {
       color: theme === "dark" ? "#fff" : "#000",
       fontSize: 16,
-      fontWeight: "500",
+      fontWeight: "600",
     },
     activeChapterButton: {
       backgroundColor: theme === "dark" ? "#00ccff" : "#0077aa",
@@ -165,6 +194,18 @@ const styles = (theme: "light" | "dark") =>
     activeChapterText: {
       color: theme === "dark" ? "#000" : "#fff",
       fontWeight: "bold",
+    },
+    lockedChapterBlur: {
+      borderRadius: 14,
+      overflow: "hidden",
+      marginBottom: 12,
+    },
+    lockedChapterContent: {
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: 14,
+      paddingHorizontal: 16,
+      borderRadius: 14,
     },
   });
 

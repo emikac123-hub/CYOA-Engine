@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   PanResponder,
   GestureResponderEvent,
   PanResponderGestureState,
+  StyleSheet,
 } from "react-native";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "context/ThemeContext";
@@ -17,6 +18,7 @@ import { clearProgressOnly } from "storage/progressManager";
 
 const StoryContent = ({
   page,
+  story,
   fadeAnim,
   handleChoice,
   history,
@@ -30,12 +32,12 @@ const StoryContent = ({
 }) => {
   const { theme } = useTheme();
   const s = storyStyles(theme);
+  const styles = dotStyles(theme);
   const choiceRefs = useRef([]);
   const { t } = useLanguage();
-  // Track latest page and history with refs
+
   const pageRef = useRef(page);
   const historyRef = useRef(history);
-
 
   useEffect(() => {
     pageRef.current = page;
@@ -44,13 +46,44 @@ const StoryContent = ({
   useEffect(() => {
     historyRef.current = history;
   }, [history]);
+
+  const getFullPathFromCurrent = (currentPageId, story) => {
+    let path = [];
+    let currentId = currentPageId;
+    while (true) {
+      const currentPage = story.find((p) => p.id === currentId);
+      if (
+        !currentPage ||
+        !currentPage.choices ||
+        currentPage.choices.length !== 1
+      )
+        break;
+      path.push(currentId);
+      currentId = currentPage.choices[0].nextId;
+    }
+    return path;
+  };
+
+  const [dotIndex, setDotIndex] = useState(0);
+  const [fullPath, setFullPath] = useState(
+    getFullPathFromCurrent(page?.id, story)
+  );
+
+  useEffect(() => {
+    const newPath = getFullPathFromCurrent(page?.id, story);
+    setFullPath(newPath);
+    const index = newPath.indexOf(page?.id);
+    if (index !== -1) setDotIndex(index);
+  }, [page?.id, story]);
+
   const handleGameOver = async () => {
     const storyId = meta?.id;
     if (storyId) {
       await clearProgressOnly(storyId);
     }
-    router.replace("/storyList"); // or router.push if you want stack behavior
+    router.replace("/storyList");
   };
+
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -64,7 +97,6 @@ const StoryContent = ({
         const currentPage = pageRef.current;
         const currentHistory = historyRef.current;
 
-        // ✅ NEW: Determine dynamically if it's a Game Over page
         const gameOverText = t("gameOver")?.toLowerCase();
         const isGameOverPage = currentPage?.choices?.some(
           (choice) =>
@@ -76,13 +108,12 @@ const StoryContent = ({
               .trim()
               .toLowerCase() === gameOverText
         );
+
         const nextId = currentPage.choices[0]?.nextId;
-        if (isGameOverPage) {
-          console.log("🚫 Swipe disabled — Game Over page");
-          return;
-        }
+
+        if (isGameOverPage) return;
+
         if (Math.abs(dx) < 10) {
-          // Tap
           if (isSingleContinue && currentPage?.choices?.length === 1) {
             Haptics.selectionAsync();
             handleChoice(pageRef.current.id, nextId);
@@ -90,16 +121,13 @@ const StoryContent = ({
             choiceRefs.current.forEach((ref) => ref?.pulse?.());
           }
         } else if (dx < -threshold) {
-          // Swipe left
           if (isSingleContinue && currentPage?.choices?.length === 1) {
-            const nextId = currentPage.choices[0]?.nextId;
             Haptics.selectionAsync();
             handleChoice(pageRef.current.id, nextId);
           } else {
             choiceRefs.current.forEach((ref) => ref?.pulse?.());
           }
         } else if (dx > threshold && currentHistory.length > 0) {
-          // Swipe right
           const prev = [...currentHistory];
           const last = prev.pop();
           setHistory(prev);
@@ -126,7 +154,7 @@ const StoryContent = ({
       </Animated.View>
 
       <View style={s.storyContent} pointerEvents="box-none">
-        {!isSingleContinue && (
+        {page.choices.length > 1 && (
           <View style={s.choicesContainer}>
             {page.choices.map((choice, index) => {
               const stripped = choice.text
@@ -137,9 +165,7 @@ const StoryContent = ({
                 .trim()
                 .toLowerCase();
               const gameOverText = t("gameOver")?.toLowerCase();
-
               const isGameOver = stripped === gameOverText;
-
               return (
                 <ChoiceButton
                   key={index}
@@ -162,23 +188,43 @@ const StoryContent = ({
         )}
       </View>
 
-      {showPaywall && (
-        <View style={s.paywall}>
-          <Text style={s.paywallText}>
-            Buy “{meta.title}” to continue reading!
-          </Text>
-          <Animated.View style={s.purchaseButton}>
-            <Text style={s.purchaseButtonText}>
-              {meta?.price ? `$${meta.price}` : "$1.99"}
-            </Text>
-          </Animated.View>
-          <Text onPress={() => router.replace("/")} style={s.cancelText}>
-            {t("paywall.returnToTitle")}
-          </Text>
+      {fullPath.length > 0 && (
+        <View style={styles.choiceTracker}>
+          {fullPath.map((_, i) => (
+            <View
+              key={i}
+              style={[
+                styles.dot,
+                i === dotIndex ? styles.activeDot : styles.inactiveDot,
+              ]}
+            />
+          ))}
         </View>
       )}
     </View>
   );
 };
+
+const dotStyles = (theme) =>
+  StyleSheet.create({
+    choiceTracker: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 24,
+    },
+    dot: {
+      width: 10,
+      height: 10,
+      borderRadius: 5,
+      marginHorizontal: 3,
+    },
+    activeDot: {
+      backgroundColor: "#00ccff",
+    },
+    inactiveDot: {
+      backgroundColor: theme === "dark" ? "#555" : "#ccc",
+    },
+  });
 
 export default StoryContent;

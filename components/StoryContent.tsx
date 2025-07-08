@@ -16,6 +16,7 @@ import { storyStyles } from "./storyStyles";
 import ChoiceButton from "./ChoiceButton";
 import { useLanguage } from "localization/LanguageProvider";
 import { clearProgressOnly } from "storage/progressManager";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const StoryContent = ({
   page,
@@ -36,7 +37,7 @@ const StoryContent = ({
   const styles = dotStyles(theme);
   const choiceRefs = useRef([]);
   const { t } = useLanguage();
-
+  const insets = useSafeAreaInsets();
   const pageRef = useRef(page);
   const historyRef = useRef(history);
 
@@ -45,6 +46,8 @@ const StoryContent = ({
   }, [page]);
 
   useEffect(() => {
+    console.log("HISTORY");
+    console.log(history)
     historyRef.current = history;
   }, [history]);
 
@@ -99,11 +102,12 @@ const StoryContent = ({
 
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        // Only capture if it's mostly horizontal movement
         const { dx, dy } = gestureState;
-        return Math.abs(dx) > Math.abs(dy); // horizontal > vertical
+        // Only claim responder if the swipe is primarily horizontal
+        // and has moved a minimum distance.
+        return Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10;
       },
       onPanResponderRelease: (
         _: GestureResponderEvent,
@@ -177,11 +181,14 @@ const StoryContent = ({
         accessibilityRole="text"
       >
         <ScrollView
-          contentContainerStyle={s.scrollContainer}
-          showsVerticalScrollIndicator={false}
-          
+          contentContainerStyle={[
+            s.scrollContainer,
+            { paddingTop: insets.top + 12, paddingBottom: 24 },
+            page?.text?.length < 100 && { flex: 1, justifyContent: "center" },
+          ]}
+          showsVerticalScrollIndicator={true}
         >
-          <Text allowFontScaling style={s.storyText}>
+          <Text style={s.storyText} allowFontScaling>
             {page.text}
           </Text>
         </ScrollView>
@@ -296,6 +303,9 @@ const dotStyles = (theme) =>
     },
     inactiveDot: {
       backgroundColor: theme === "dark" ? "#555" : "#ccc",
+    },
+    scrollContainer: {
+      paddingHorizontal: 20,
     },
   });
 

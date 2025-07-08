@@ -20,7 +20,7 @@ import StoryLoaderGate, { useStory } from "../components/StoryLoaderGate";
 import { loadProgress, saveProgress } from "../storage/progressManager";
 import { isStoryUnlocked } from "../storage/unlockManager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { HISTORY_KEY_PREFIX } from "../storage/progressManager";
 import StoryContent from "../components/StoryContent";
 import ChapterUnlockPopup from "../components/ChapterUnlockPopup";
 import ChapterSelectMenu from "../components/ChapterSelectMenu";
@@ -63,7 +63,16 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
           reset === "true" ? null : await loadProgress(meta.id); // ✅ Skip if reset
 
         console.log("saved page ID:", savedPageId);
-
+        const savedHistory = await AsyncStorage.getItem(
+          `${HISTORY_KEY_PREFIX}${meta.id}`
+        );
+        if (savedHistory) {
+          try {
+            setHistory(JSON.parse(savedHistory));
+          } catch (err) {
+            console.warn("Failed to parse history:", err);
+          }
+        }
         if (savedPageId && allPageIds.has(savedPageId)) {
           initialPageId = savedPageId;
         } else {
@@ -130,6 +139,16 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   useEffect(() => {
     console.log("🧠 History:", history);
   }, [history]);
+
+  useEffect(() => {
+    if (meta?.id && history.length > 0) {
+      AsyncStorage.setItem(
+        `${HISTORY_KEY_PREFIX}${meta.id}`,
+        JSON.stringify(history)
+      ).catch((err) => console.warn("Failed to save history:", err));
+    }
+  }, [history]);
+
   useEffect(() => {
     if (currentPageId) fadeIn();
   }, [currentPageId]);

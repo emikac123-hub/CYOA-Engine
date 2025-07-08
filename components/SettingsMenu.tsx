@@ -23,7 +23,9 @@ export default function SettingsModal({ visible, onClose }: Props) {
   const { t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const s = styles(theme);
-
+  const openSupportEmail = () => {
+    Linking.openURL("mailto:croquet_player@proton.me?subject=Support Request");
+  };
   return (
     <Modal
       animationType="slide"
@@ -55,7 +57,7 @@ export default function SettingsModal({ visible, onClose }: Props) {
                 marginBottom: 12,
               }}
             >
-              <Text style={s.optionText}>{t("settings.darkMode")}</Text>
+              <Text style={s.optionText}>🌗 {t("settings.darkMode")}</Text>
               <Switch
                 value={theme === "dark"}
                 onValueChange={toggleTheme}
@@ -82,7 +84,7 @@ export default function SettingsModal({ visible, onClose }: Props) {
             {/* Support */}
             <TouchableOpacity
               style={s.optionButton}
-              onPress={onClose}
+              onPress={openSupportEmail}
               accessibilityRole="button"
               accessibilityLabel={t("accessibility.support")}
               accessible={true}
@@ -95,7 +97,9 @@ export default function SettingsModal({ visible, onClose }: Props) {
               style={s.optionButton}
               onPress={() => {
                 onClose();
-                Linking.openURL("https://github.com/emikac123-hub/CYOA-Engine?tab=readme-ov-file#terms-of-use");
+                Linking.openURL(
+                  "https://github.com/emikac123-hub/CYOA-Engine?tab=readme-ov-file#terms-of-use"
+                );
               }}
               accessibilityRole="button"
               accessibilityLabel={t("accessibility.termsOfUse")}
@@ -109,7 +113,9 @@ export default function SettingsModal({ visible, onClose }: Props) {
               style={s.optionButton}
               onPress={() => {
                 onClose();
-                Linking.openURL("https://github.com/emikac123-hub/CYOA-Engine?tab=readme-ov-file#terms-of-use");
+                Linking.openURL(
+                  "https://github.com/emikac123-hub/CYOA-Engine?tab=readme-ov-file#terms-of-use"
+                );
               }}
               accessibilityRole="button"
               accessibilityLabel={t("accessibility.privacyPolicy")}
@@ -157,6 +163,7 @@ const styles = (theme: "light" | "dark") =>
       fontWeight: "bold",
       marginBottom: 20,
       textAlign: "center",
+      color: theme === "dark" ? "white" : "black",
     },
     optionButton: {
       paddingVertical: 14,

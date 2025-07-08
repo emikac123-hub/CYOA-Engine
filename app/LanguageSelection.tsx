@@ -46,7 +46,12 @@ const LanguageSelection = () => {
   const modalOpacity = useRef(new Animated.Value(1)).current;
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView
+      style={[
+        { flex: 1 },
+        { backgroundColor: theme === "dark" ? "#111" : "#fff" },
+      ]}
+    >
       <Modal
         visible={showConfirm}
         transparent
@@ -184,6 +189,25 @@ const LanguageSelection = () => {
             </TouchableOpacity>
           )}
         />
+        <TouchableOpacity
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel={t("titleScreen.back")}
+          style={{
+            marginTop: 24,
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "600",
+              color: theme === "dark" ? "#00ccff" : "#0077aa",
+            }}
+          >
+            🔙
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

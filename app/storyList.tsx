@@ -148,6 +148,7 @@ export default function StoryListScreen() {
 
     return (
       <TouchableOpacity
+        style={s.card}
         accessible={true}
         accessibilityRole="button"
         accessibilityLabel={
@@ -288,13 +289,17 @@ const styles = (theme: "light" | "dark") =>
       overflow: "hidden",
     },
     card: {
-      backgroundColor: "#111",
+      backgroundColor: theme === "dark" ? "#1a1a1a" : "#fff",
       marginBottom: 20,
-      borderRadius: 12,
+      borderRadius: 16,
       overflow: "hidden",
-      borderColor: "#444",
       borderWidth: 1,
-      width: "100%",
+      borderColor: theme === "dark" ? "#333" : "#ddd",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
+      elevation: 3,
     },
     image: {
       width: "100%",
@@ -316,10 +321,3 @@ const styles = (theme: "light" | "dark") =>
       fontWeight: "bold",
     },
   });
-
-const lightStyles = StyleSheet.create({
-  card: {
-    backgroundColor: "#f8f8f8",
-    borderColor: "#ddd",
-  },
-});

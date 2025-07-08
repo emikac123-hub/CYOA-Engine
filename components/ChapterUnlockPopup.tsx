@@ -12,6 +12,8 @@ import ConfettiCannon from "react-native-confetti-cannon";
 import { useLanguage } from "localization/LanguageProvider";
 import { useTheme } from "context/ThemeContext";
 import { stripEmoji } from "app/story";
+import { PixelRatio } from "react-native";
+
 type ChapterUnlockPopupProps = {
   visible: boolean;
   title: string | null;
@@ -62,6 +64,7 @@ const ChapterUnlockPopup = ({
           <View style={s.innerBox} accessible={true}>
             <Text
               style={s.subtitle}
+              allowFontScaling
               accessibilityRole="header"
               accessibilityLabel={t("accessibility.chapterUnlockedSubtitle")}
             >
@@ -70,6 +73,7 @@ const ChapterUnlockPopup = ({
 
             <Text
               style={s.title}
+              allowFontScaling
               accessibilityLabel={t("accessibility.chapterUnlockedTitle", {
                 title: stripEmoji(title),
               })}
@@ -83,7 +87,7 @@ const ChapterUnlockPopup = ({
               accessibilityRole="button"
               accessibilityLabel={t("accessibility.okButton")}
             >
-              <Text style={s.okText}>🫡 OK</Text>
+              <Text allowFontScaling style={s.okText}>🫡 OK</Text>
             </TouchableOpacity>
           </View>
         </LinearGradient>
@@ -91,8 +95,9 @@ const ChapterUnlockPopup = ({
     </Modal>
   );
 };
-const styles = (theme: "light" | "dark") =>
-  StyleSheet.create({
+const styles = (theme: "light" | "dark") => {
+    const fontScale = PixelRatio.getFontScale();
+  return StyleSheet.create({
     overlay: {
       flex: 1,
       backgroundColor: "rgba(0,0,0,0.6)", // semi-transparent overlay for both themes
@@ -131,9 +136,9 @@ const styles = (theme: "light" | "dark") =>
     },
     okText: {
       color: "#fff",
-      fontSize: 16,
+      fontSize: 16 * fontScale,
       fontWeight: "600",
     },
   });
-
+}
 export default ChapterUnlockPopup;

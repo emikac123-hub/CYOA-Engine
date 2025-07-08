@@ -1,48 +1,48 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
-  StyleSheet, // ✅ Add this
+  StyleSheet,
+  useWindowDimensions,
+  PixelRatio,
 } from "react-native";
 import { useLanguage } from "../localization/LanguageProvider";
-import { useWindowDimensions } from "react-native";
 import { useTheme } from "context/ThemeContext";
 
 export const DeleteButtonText = () => {
   const { theme } = useTheme();
-  const s = styles(theme);
   const { t } = useLanguage();
-  const [fontSize, setFontSize] = useState(16);
-  const windowWidth = useWindowDimensions().width;
-
+  const { width } = useWindowDimensions();
   const label = `${t("titleScreen.delete")}`;
+  const [fontSize, setFontSize] = useState(16);
 
   useEffect(() => {
-    // crude but effective: shrink font if too long
-    if (label.length > 20 || windowWidth < 350) {
-      setFontSize(14);
-    } else {
-      setFontSize(16);
-    }
-  }, [label, windowWidth]);
+    const baseSize = label.length > 20 || width < 350 ? 14 : 16;
+    const scaled = baseSize * PixelRatio.getFontScale();
+    setFontSize(scaled);
+  }, [label, width]);
+
+  const s = styles(theme, fontSize);
 
   return (
     <Text
       numberOfLines={1}
       ellipsizeMode="tail"
-      style={[s.buttonText, { fontSize }]}
-      accessible={true}
+      style={s.buttonText}
+      allowFontScaling
       accessibilityRole="text"
+      accessible={true}
       accessibilityLabel={t("accessibility.deleteStoryProgress")}
     >
       {label}
     </Text>
   );
 };
-const styles = (theme: "light" | "dark") =>
+
+const styles = (theme: "light" | "dark", fontSize: number) =>
   StyleSheet.create({
     buttonText: {
       color: theme === "dark" ? "#ffffff" : "#000000",
-      fontSize: 17,
+      fontSize,
       fontWeight: "500",
       letterSpacing: 0.3,
     },

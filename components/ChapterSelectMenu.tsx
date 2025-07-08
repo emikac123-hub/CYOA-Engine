@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Dimensions,
   AccessibilityProps,
+  PixelRatio,
 } from "react-native";
 import Modal from "react-native-modal";
 import { useLanguage } from "../localization/LanguageProvider";
@@ -68,7 +69,7 @@ const ChapterSelectMenu = ({
       })
       .sort((a, b) => a.order - b.order),
   ];
-
+  const fontScale = PixelRatio.getFontScale();
   return (
     <Modal
       isVisible={visible}
@@ -93,12 +94,14 @@ const ChapterSelectMenu = ({
             size={24}
             color={theme === "dark" ? "#fff" : "#000"}
           />
-          <Text style={s.title}>{t("chapterMenu.selectChapter")}</Text>
-          <Text style={s.progressText}>
-            {`${unlockedCount}/${
-              totalChapters - numberOfDuplicateChaptersAndHomeScreen || "?"
-            } ${t("chapterMenu.chaptersUnlocked")}`}
-          </Text>
+          <View style={{ flex: 1 }}>
+            <Text style={s.title}>{t("chapterMenu.selectChapter")}</Text>
+            <Text style={s.progressText}>
+              {`${unlockedCount}/${
+                totalChapters - numberOfDuplicateChaptersAndHomeScreen || "?"
+              } ${t("chapterMenu.chaptersUnlocked")}`}
+            </Text>
+          </View>
         </View>
 
         <FlatList
@@ -167,8 +170,8 @@ const ChapterSelectMenu = ({
   );
 };
 
-const styles = (theme: "light" | "dark") =>
-  StyleSheet.create({
+const styles = (theme: "light" | "dark") => {
+  return StyleSheet.create({
     safeArea: {
       backgroundColor: theme === "dark" ? "#111" : "#f2f2f2",
       paddingBottom: 20,
@@ -229,5 +232,6 @@ const styles = (theme: "light" | "dark") =>
       borderRadius: 14,
     },
   });
+};
 
 export default ChapterSelectMenu;

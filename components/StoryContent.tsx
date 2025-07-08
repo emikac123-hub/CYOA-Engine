@@ -8,6 +8,7 @@ import {
   GestureResponderEvent,
   PanResponderGestureState,
   StyleSheet,
+  ScrollView,
 } from "react-native";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "context/ThemeContext";
@@ -99,7 +100,11 @@ const StoryContent = ({
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        // Only capture if it's mostly horizontal movement
+        const { dx, dy } = gestureState;
+        return Math.abs(dx) > Math.abs(dy); // horizontal > vertical
+      },
       onPanResponderRelease: (
         _: GestureResponderEvent,
         gestureState: PanResponderGestureState
@@ -171,7 +176,15 @@ const StoryContent = ({
         accessibilityLabel={page.text}
         accessibilityRole="text"
       >
-        <Text style={s.storyText}>{page.text}</Text>
+        <ScrollView
+          contentContainerStyle={s.scrollContainer}
+          showsVerticalScrollIndicator={false}
+          
+        >
+          <Text allowFontScaling style={s.storyText}>
+            {page.text}
+          </Text>
+        </ScrollView>
       </Animated.View>
 
       <View style={s.storyContent} pointerEvents="box-none">

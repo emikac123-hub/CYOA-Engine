@@ -7,6 +7,7 @@ import {
   View,
   StyleSheet,
   Dimensions,
+  AccessibilityProps,
 } from "react-native";
 import Modal from "react-native-modal";
 import { useLanguage } from "../localization/LanguageProvider";
@@ -16,6 +17,14 @@ import { useTheme } from "context/ThemeContext";
 import { stripEmoji } from "app/story";
 import { BlurView } from "expo-blur";
 
+type ChapterSelectMenuProps = {
+  visible: boolean;
+  onClose: () => void;
+  unlockedChapters: any[];
+  onSelectChapter: (item: any) => void;
+  currentPageId: string;
+  allChapters: any[];
+} & AccessibilityProps;
 const ChapterSelectMenu = ({
   visible,
   onClose,
@@ -23,7 +32,10 @@ const ChapterSelectMenu = ({
   onSelectChapter,
   currentPageId,
   allChapters,
-}) => {
+  accessibilityLabel,
+  accessibilityViewIsModal,
+  accessible,
+}: ChapterSelectMenuProps) => {
   const numberOfDuplicateChaptersAndHomeScreen = 2;
   const { t } = useLanguage();
   const { theme } = useTheme();
@@ -62,6 +74,9 @@ const ChapterSelectMenu = ({
       isVisible={visible}
       onBackdropPress={onClose}
       style={{ justifyContent: "flex-end", margin: 0 }}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityViewIsModal={accessibilityViewIsModal}
+      accessible={accessible}
     >
       <SafeAreaView
         style={[
@@ -97,16 +112,19 @@ const ChapterSelectMenu = ({
                 {item.unlocked ? (
                   <TouchableOpacity
                     onPress={() => onSelectChapter(item)}
-                    style={[
-                      s.chapterButton,
-                      isActive && s.activeChapterButton,
-                    ]}
+                    style={[s.chapterButton, isActive && s.activeChapterButton]}
+                    accessibilityRole="button"
+                    accessibilityLabel={t("accessibility.chapterUnlocked", {
+                      title: item.title,
+                      current: isActive
+                        ? t("accessibility.currentChapter")
+                        : "",
+                    })}
+                    accessible={true}
                   >
                     <Text
-                      style={[
-                        s.chapterText,
-                        isActive && s.activeChapterText,
-                      ]}
+                      style={[s.chapterText, isActive && s.activeChapterText]}
+                      allowFontScaling
                     >
                       {item.title}
                     </Text>
@@ -116,6 +134,9 @@ const ChapterSelectMenu = ({
                     intensity={70}
                     tint={theme === "dark" ? "dark" : "light"}
                     style={s.lockedChapterBlur}
+                    accessible={true}
+                    accessibilityLabel={t("accessibility.chapterLocked")}
+                    accessibilityRole="text"
                   >
                     <View
                       style={[

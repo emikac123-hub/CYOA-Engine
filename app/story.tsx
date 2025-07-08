@@ -219,8 +219,15 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
           right: 20,
           zIndex: 10,
         }}
+        accessible={true}
+        accessibilityRole="header"
+        accessibilityLabel={t("accessibility.chapterMenuButtonHeader")}
       >
-        <TouchableOpacity onPress={() => setChapterMenuVisible(true)}>
+        <TouchableOpacity
+          onPress={() => setChapterMenuVisible(true)}
+          accessibilityLabel={t("accessibility.openChapterMenu")}
+          accessibilityRole="button"
+        >
           <Ionicons
             name="book-outline"
             size={28}
@@ -253,8 +260,11 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
         confettiKey={confettiKey}
         onClose={() => {
           console.log("Popup dismissed");
-          setShowChapterPopup(false); // ✅ FIXED
+          setShowChapterPopup(false);
         }}
+        accessibilityLabel={t("accessibility.chapterUnlockedPopup")}
+        accessibilityViewIsModal={true}
+        accessible={true}
       />
 
       <ChapterSelectMenu
@@ -270,7 +280,10 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
           }
         }}
         currentPageId={currentPageId}
-        allChapters={chapters} // ✅ add this line
+        allChapters={chapters}
+        accessibilityLabel={t("accessibility.chapterMenuList")}
+        accessibilityViewIsModal={true}
+        accessible={true}
       />
     </View>
   );

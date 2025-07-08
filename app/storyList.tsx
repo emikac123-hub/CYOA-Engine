@@ -148,7 +148,16 @@ export default function StoryListScreen() {
 
     return (
       <TouchableOpacity
-        style={[s.card, theme === "light" && lightStyles.card]}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={
+          unlocked
+            ? t("accessibility.continueStory", {
+                title: item.title,
+                chapter: chapterTitle || t("intro"),
+              })
+            : t("accessibility.startStory", { title: item.title })
+        }
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           const shouldReset = resetFlags[item.id];
@@ -161,7 +170,6 @@ export default function StoryListScreen() {
             },
           });
 
-          // Optional: clear reset flag after first use
           if (shouldReset) {
             setResetFlags((prev) => {
               const updated = { ...prev };
@@ -227,6 +235,8 @@ export default function StoryListScreen() {
         <TouchableOpacity
           onPress={() => router.replace("/")}
           style={{ paddingRight: 12 }}
+          accessibilityRole="button"
+          accessibilityLabel={t("accessibility.backToHome")}
         >
           <Ionicons
             name="arrow-back"
@@ -235,6 +245,8 @@ export default function StoryListScreen() {
           />
         </TouchableOpacity>
         <Text
+          accessibilityRole="header"
+          accessibilityLabel={t("accessibility.selectStoryHeader")}
           style={{
             color: theme === "dark" ? "#fff" : "#000",
             fontSize: 20,

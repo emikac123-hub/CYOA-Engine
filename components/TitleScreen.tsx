@@ -1,7 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
+
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { DeleteButtonText } from "./DeleteButtonText";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "../context/ThemeContext"; // ✅ import this
 
@@ -62,16 +61,24 @@ export default function TitleScreen() {
         <Animated.View
           style={{ opacity: fadeAnim, transform: [{ scale: scaleAnim }] }}
         >
-          <ThemedText style={s.title}>{t("titleScreen.mainTitle")}</ThemedText>
+          <ThemedText
+            style={s.title}
+            accessibilityRole="header"
+            accessibilityLabel={t("accessibility.mainTitle")}
+          >
+            {t("titleScreen.mainTitle")}
+          </ThemedText>
         </Animated.View>
 
         <GleamingButton
           title={`⚔️ ${t("titleScreen.start")}`}
           onPress={async () => {
-        
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             router.push("/storyList");
           }}
+          accessibilityRole="button"
+          accessibilityLabel={t("accessibility.startStoryTitleScreen")}
+          accessible={true}
         />
       </View>
     </View>

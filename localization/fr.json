@@ -9,7 +9,7 @@
     "ok": "OK",
     "unlockPrice": "Débloquer pour {{price}}",
     "unlock": "✅ Débloquer",
-
+    "returnToTitle": "Retourner au titre",
     "back": "⬅️ Retour",
     "selectStory": "Choisissez une histoire"
   },
@@ -20,6 +20,7 @@
     "title": "Paramètres",
     "language": "Paramètres de langue",
     "support": "Support",
+    "darkMode": "Mode sombre",
     "terms": "Conditions d'utilisation",
     "privacy": "Politique de confidentialité",
     "close": "❌ Fermer"
@@ -45,5 +46,47 @@
   },
   "unlockPopup": {
     "unlocked": "Chapitre débloqué !"
+  },
+  "accessibility": {
+    "languageSelectTitle": "Sélectionner la langue",
+    "selectLanguage": "Sélectionner la langue {{language}}",
+    "languageChangeModal": "Confirmation de changement de langue",
+    "languageWarning": "Changer de langue vous ramènera à l'écran titre. Continuer ?",
+    "languageModalActions": "Options de confirmation de langue",
+    "cancel": "Annuler et fermer",
+    "confirm": "Confirmer et changer de langue",
+    "openChapterMenu": "Ouvrir le menu des chapitres",
+    "chapterMenuButtonHeader": "Accès au menu des chapitres",
+    "chapterUnlockedPopup": "Nouveau chapitre débloqué",
+    "chapterMenuList": "Liste des chapitres disponibles dans cette histoire",
+    "startStory": "Commencer l'histoire {{title}}",
+    "continueStory": "Continuer {{title}}. Chapitre: {{chapter}}",
+    "backToHome": "Retourner à l'écran d'accueil",
+    "selectStoryHeader": "Sélectionner une histoire pour commencer",
+    "chapterUnlocked": "{{title}}. Chapitre {{current}} débloqué. Double-tapez pour lire.",
+    "currentChapter": "Chapitre actuellement sélectionné.",
+    "chapterLocked": "Chapitre verrouillé",
+    "chapterUnlockedSubtitle": "Nouveau chapitre débloqué",
+    "chapterUnlockedTitle": "Le chapitre {{title}} est maintenant disponible",
+    "okButton": "OK. Fermer cette popup",
+    "gameOverButton": "Fin du jeu. Tapez pour retourner à la liste des histoires",
+    "pageProgress": "Progrès de l'histoire. Page {{current}} sur {{total}}",
+    "deleteStoryProgress": "Supprimer le progrès de l'histoire sauvegardé",
+    "mainTitle": "Parallel Fates: Une bibliothèque d'aventures choisissez votre propre aventure titre principal",
+    "startStoryTitleScreen": "Aller à la liste des histoires et commencer l'aventure",
+    "openSettings": "Ouvrir le menu des paramètres",
+    "loadingStory": "Chargement de l'histoire, veuillez patienter",
+    "storyLoadError": "Erreur de chargement de l'histoire: {{message}}",
+    "returnToTitle": "Retourner à l'écran titre",
+    "settingsModal": "Menu des paramètres",
+    "darkModeToggle": "Basculer le mode sombre",
+    "languageSettings": "Changer la langue de l'application",
+    "support": "Contacter le support",
+    "termsOfUse": "Voir les conditions d'utilisation",
+    "privacyPolicy": "Voir la politique de confidentialité",
+    "closeSettings": "Fermer le menu des paramètres"
+  },
+  "error": {
+    "storyLoadFailed": "Impossible de charger l'histoire: {{message}}"
   }
 }

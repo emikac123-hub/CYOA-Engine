@@ -9,6 +9,7 @@
     "ok": "OK",
     "unlockPrice": "Unlock for {{price}}",
     "unlock": "✅ Unlock",
+    "returnToTitle": "Return to Title",
     "back": "⬅️ Go Back",
     "selectStory": "Select Story"
   },
@@ -17,6 +18,7 @@
   "settings": {
     "title": "Settings",
     "language": "Language Settings",
+    "darkMode": "Dark Mode",
     "support": "Support",
     "terms": "Terms of Use",
     "privacy": "Privacy Policy",
@@ -44,5 +46,47 @@
   },
   "unlockPopup": {
     "unlocked": "Chapter Unlocked!"
+  },
+  "accessibility": {
+    "languageSelectTitle": "Select language",
+    "selectLanguage": "Select language {{language}}",
+    "languageChangeModal": "Language change confirmation",
+    "languageWarning": "Changing language will return you to the title screen. Continue?",
+    "languageModalActions": "Language confirmation options",
+    "cancel": "Cancel and close",
+    "confirm": "Confirm and change language",
+    "openChapterMenu": "Open chapter menu",
+    "chapterMenuButtonHeader": "Chapter menu access",
+    "chapterUnlockedPopup": "New chapter unlocked",
+    "chapterMenuList": "List of chapters available in this story",
+    "startStory": "Start story {{title}}",
+    "continueStory": "Continue {{title}}. Chapter: {{chapter}}",
+    "backToHome": "Return to home screen",
+    "selectStoryHeader": "Select a story to begin",
+    "chapterUnlocked": "{{title}}. {{current}} Chapter unlocked. Double-tap to read.",
+    "currentChapter": "Currently selected.",
+    "chapterLocked": "Locked chapter",
+    "chapterUnlockedSubtitle": "New chapter unlocked",
+    "chapterUnlockedTitle": "Chapter {{title}} is now available",
+    "okButton": "OK. Dismiss this popup",
+    "gameOverButton": "Game Over. Tap to return to the story list",
+    "pageProgress": "Story progress. Page {{current}} of {{total}}",
+    "deleteStoryProgress": "Delete saved story progress",
+    "mainTitle": "Parallel Fates: A choose your own adventure library main title",
+    "startStoryTitleScreen": "Go to story list and begin adventure",
+    "openSettings": "Open settings menu",
+    "loadingStory": "Loading story, please wait",
+    "storyLoadError": "Error loading story: {{message}}",
+    "returnToTitle": "Return to the title screen",
+    "settingsModal": "Settings menu",
+    "darkModeToggle": "Toggle dark mode",
+    "languageSettings": "Change app language",
+    "support": "Contact support",
+    "termsOfUse": "View terms of use",
+    "privacyPolicy": "View privacy policy",
+    "closeSettings": "Close settings menu"
+  },
+  "error": {
+    "storyLoadFailed": "Unable to load story: {{message}}"
   }
 }

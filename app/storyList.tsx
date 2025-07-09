@@ -1,9 +1,11 @@
 import * as Haptics from "expo-haptics";
 import React, { useEffect, useState } from "react";
-import { SAMPLE_LIMIT, TESTING } from "../constants/Constants";
+import { SAMPLE_LIMIT } from "../constants/Constants";
 import { useLanguage } from "../localization/LanguageProvider";
 import { useRouter } from "expo-router";
+import { clearProgress } from "../storage/progressManager";
 import {
+  Alert,
   FlatList,
   Image,
   StyleSheet,
@@ -27,19 +29,27 @@ const coverImages: Record<string, any> = {
 };
 
 export default function StoryListScreen() {
+  const [resetFlags, setResetFlags] = useState<Record<string, boolean>>({});
+  const [hasSeenLongPressHint, setHasSeenLongPressHint] = useState(false);
   const [stories, setStories] = useState<any[]>([]);
   const [unlockedMap, setUnlockedMap] = useState<Record<string, boolean>>({});
   const [chapterMap, setChapterMap] = useState<Record<string, string | null>>(
     {}
   );
+  const [showHint, setShowHint] = useState(false);
   const [chapterTitles, setChapterTitles] = useState<
     Record<string, Record<string, string>>
   >({});
   const router = useRouter();
   const { t, lang } = useLanguage();
   const { theme } = useTheme();
+  const s = styles(theme);
   const insets = useSafeAreaInsets();
-
+  useEffect(() => {
+    AsyncStorage.getItem("hasSeenLongPressHint").then((val) => {
+      if (val === "true") setHasSeenLongPressHint(true);
+    });
+  }, []);
   useEffect(() => {
     const load = async () => {
       const storyFileMap = {
@@ -83,47 +93,117 @@ export default function StoryListScreen() {
     load();
   }, [lang]);
 
-  const renderItem = async ({ item }: { item: any }) => {
+  const renderItem = ({ item }: { item: any }) => {
     const unlocked = unlockedMap[item.id];
-    const currentChapterId = chapterMap[item.id] || "intro";
-    console.log("current item id: " + item.id)
-    console.log("current Chapter ID: " + currentChapterId);
+    let currentChapterId = chapterMap[item.id] || "intro";
     const chapterTitle = chapterTitles[item.id]?.[currentChapterId || ""];
+
+    const handleLongPress = () => {
+      if (!hasSeenLongPressHint) {
+        setShowHint(true);
+        setTimeout(() => setShowHint(false), 2500);
+
+        AsyncStorage.setItem("hasSeenLongPressHint", "true");
+        setHasSeenLongPressHint(true);
+      }
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      Alert.alert(
+        t("storyList.deleteProgressTitle", {
+          defaultValue: "Delete Progress?",
+        }),
+        t("storyList.deleteProgressBody", {
+          defaultValue: `This will remove saved progress for "${item.title}". Are you sure?`,
+          title: item.title,
+        }),
+        [
+          { text: t("titleScreen.cancel"), style: "cancel" },
+          {
+            text: t("titleScreen.delete"),
+            style: "destructive",
+            onPress: async () => {
+              try {
+                await clearProgress(item.id);
+                setChapterMap((prev) => ({ ...prev, [item.id]: "intro" }));
+                setUnlockedMap((prev) => ({ ...prev, [item.id]: false }));
+                setResetFlags((prev) => ({ ...prev, [item.id]: true })); // ✅ Flag it
+                Haptics.notificationAsync(
+                  Haptics.NotificationFeedbackType.Success
+                );
+                setStories((prev) => [...prev]);
+                Alert.alert(
+                  t("storyList.deleted"),
+                  t("storyList.deletedMessage", {
+                    defaultValue: "Progress cleared successfully.",
+                  })
+                );
+              } catch (err) {
+                console.warn("Failed to delete progress:", err);
+                Alert.alert("Error", "Unable to delete progress.");
+              }
+            },
+          },
+        ]
+      );
+    };
+
     return (
       <TouchableOpacity
-        style={[styles.card, theme === "light" && lightStyles.card]}
+        style={s.card}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={
+          unlocked
+            ? t("accessibility.continueStory", {
+                title: item.title,
+                chapter: chapterTitle || t("intro"),
+              })
+            : t("accessibility.startStory", { title: item.title })
+        }
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          router.push({ pathname: "/story", params: { id: item.id } });
+          const shouldReset = resetFlags[item.id];
+
+          router.push({
+            pathname: "/story",
+            params: {
+              id: item.id,
+              ...(shouldReset ? { reset: "true" } : {}),
+            },
+          });
+
+          if (shouldReset) {
+            setResetFlags((prev) => {
+              const updated = { ...prev };
+              delete updated[item.id];
+              return updated;
+            });
+          }
         }}
+        onLongPress={handleLongPress}
+        delayLongPress={500}
       >
         {item.coverImage && coverImages[item.coverImage] && (
           <Image
             source={coverImages[item.coverImage]}
-            style={styles.image}
+            style={s.image}
             resizeMode="cover"
           />
         )}
-        <View style={styles.info}>
+        <View style={s.info}>
           <Text
-            style={[
-              styles.title,
-              { color: theme === "dark" ? "#fff" : "#000" },
-            ]}
+            style={[s.title, { color: theme === "dark" ? "#fff" : "#000" }]}
           >
             {item.title}
           </Text>
-          <Text
-            style={[styles.desc, { color: theme === "dark" ? "#ccc" : "#444" }]}
-          >
+          <Text style={[s.desc, { color: theme === "dark" ? "#ccc" : "#444" }]}>
             {item.description || t("subtitle")}
           </Text>
           {unlocked ? (
-            <Text style={styles.status}>
+            <Text style={s.status}>
               ✅ {t("storyList.continueChapter")}: {chapterTitle || t("intro")}
             </Text>
           ) : (
-            <Text style={styles.status}>
+            <Text style={s.status}>
               {t("storyList.sampleLimit", { count: `${SAMPLE_LIMIT}` })}
             </Text>
           )}
@@ -141,6 +221,11 @@ export default function StoryListScreen() {
         paddingHorizontal: 16,
       }}
     >
+      {showHint && (
+        <View style={s.toast}>
+          <Text style={s.toastText}>Hold to reset progress</Text>
+        </View>
+      )}
       <View
         style={{
           flexDirection: "row",
@@ -151,6 +236,8 @@ export default function StoryListScreen() {
         <TouchableOpacity
           onPress={() => router.replace("/")}
           style={{ paddingRight: 12 }}
+          accessibilityRole="button"
+          accessibilityLabel={t("accessibility.backToHome")}
         >
           <Ionicons
             name="arrow-back"
@@ -159,6 +246,8 @@ export default function StoryListScreen() {
           />
         </TouchableOpacity>
         <Text
+          accessibilityRole="header"
+          accessibilityLabel={t("accessibility.selectStoryHeader")}
           style={{
             color: theme === "dark" ? "#fff" : "#000",
             fontSize: 20,
@@ -179,40 +268,56 @@ export default function StoryListScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#111",
-    marginBottom: 20,
-    borderRadius: 12,
-    overflow: "hidden",
-    borderColor: "#444",
-    borderWidth: 1,
-    width: "100%",
-  },
-  image: {
-    width: "100%",
-    height: 180,
-    resizeMode: "cover",
-  },
-  info: {
-    padding: 12,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  desc: {
-    marginVertical: 6,
-  },
-  status: {
-    color: "#0af",
-    fontWeight: "bold",
-  },
-});
+const styles = (theme: "light" | "dark") =>
+  StyleSheet.create({
+    toast: {
+      position: "absolute",
+      bottom: 30,
+      left: 0,
+      right: 0,
+      alignItems: "center",
+      zIndex: 1000,
+    },
 
-const lightStyles = StyleSheet.create({
-  card: {
-    backgroundColor: "#f8f8f8",
-    borderColor: "#ddd",
-  },
-});
+    toastText: {
+      backgroundColor: "rgba(0,0,0,0.7)",
+      color: "#fff",
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      borderRadius: 20,
+      fontSize: 13,
+      overflow: "hidden",
+    },
+    card: {
+      backgroundColor: theme === "dark" ? "#1a1a1a" : "#fff",
+      marginBottom: 20,
+      borderRadius: 16,
+      overflow: "hidden",
+      borderWidth: 1,
+      borderColor: theme === "dark" ? "#333" : "#ddd",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    image: {
+      width: "100%",
+      height: 180,
+      resizeMode: "cover",
+    },
+    info: {
+      padding: 12,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: "bold",
+    },
+    desc: {
+      marginVertical: 6,
+    },
+    status: {
+      color: "#0af",
+      fontWeight: "bold",
+    },
+  });

@@ -6,10 +6,14 @@ import {
   TouchableOpacity,
   StyleSheet,
   Easing,
+  AccessibilityProps,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "context/ThemeContext";
-
+type Props = {
+  title: string;
+  onPress: () => void;
+} & AccessibilityProps;
 export default function GleamingButton({
   title,
   onPress,

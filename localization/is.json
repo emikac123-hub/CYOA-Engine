@@ -3,14 +3,14 @@
     "mainTitle": "Sögur af Kóvarníus",
     "start": "Byrja ferðalagið",
     "continue": "🕹️ Haltu áfram",
-    "delete": "❌ Hreinsa Framvindu",
+    "delete": "Eyða",
     "confirmClear": "Ertu viss um að þú viljir eyða framvindunni þinni?",
     "cancel": "Hætta við",
     "ok": "Í lagi",
     "unlockPrice": "Opna fyrir {{price}}",
     "unlock": "✅ Opna",
-
-    "back": "⬅️ Til baka",
+    "returnToTitle": "Skila til baka á titil",
+    "back": "Til baka",
     "selectStory": "Veldu sögu"
   },
   "home": "🏠 Heim",
@@ -20,6 +20,7 @@
     "language": "Tungumálastillingar",
     "support": "Aðstoð",
     "terms": "Skilmálar",
+    "darkMode": "Dökk stilling",
     "privacy": "Persónuverndarstefna",
     "close": "❌ Loka"
   },
@@ -32,7 +33,11 @@
   "languageChangeWarning": "Ef þú breytir tungumáli verður þér vísað aftur á upphafsskjáinn. Ertu viss?",
   "storyList": {
     "continueChapter": "Haltu áfram ævintýrinu",
-    "sampleLimit": "🔓 Aðeins sýnishorn ({{count}} valmöguleikar)"
+    "sampleLimit": "🔓 Aðeins sýnishorn ({{count}} valmöguleikar)",
+    "deleteProgressTitle": "Hreinsa Framvindu?",
+    "deleteProgressBody": "Framvindu fyrir „{{title}}“ verður eytt. Ertu viss?",
+    "deleted": "Eytt",
+    "deletedMessage": "Framvindu var eytt með góðum árangri."
   },
   "chapterMenu": {
     "selectChapter": "Kaflaval",
@@ -41,5 +46,47 @@
 
   "unlockPopup": {
     "unlocked": "Kafli opnaður!"
+  },
+  "accessibility": {
+    "languageSelectTitle": "Velja tungumál",
+    "selectLanguage": "Velja tungumál {{language}}",
+    "languageChangeModal": "Staðfesting á tungumálabreytingu",
+    "languageWarning": "Að breyta tungumáli mun færa þig aftur á titilskjáinn. Halda áfram?",
+    "languageModalActions": "Tungumálastaðfestingarvalkostir",
+    "cancel": "Hætta við og loka",
+    "confirm": "Staðfesta og breyta tungumáli",
+    "openChapterMenu": "Opna kaflameny",
+    "chapterMenuButtonHeader": "Aðgangur að kaflameny",
+    "chapterUnlockedPopup": "Nýr kafli opnaður",
+    "chapterMenuList": "Listi yfir kafla sem eru tiltækir í þessari sögu",
+    "startStory": "Byrja sögu {{title}}",
+    "continueStory": "Halda áfram {{title}}. Kafli: {{chapter}}",
+    "backToHome": "Skila til baka á heimasíðu",
+    "selectStoryHeader": "Veldu sögu til að byrja",
+    "chapterUnlocked": "{{title}}. Kafli {{current}} opnaður. Smelltu tvisvar til að lesa.",
+    "currentChapter": "Valinn núna.",
+    "chapterLocked": "Læstur kafli",
+    "chapterUnlockedSubtitle": "Nýr kafli opnaður",
+    "chapterUnlockedTitle": "Kafli {{title}} er nú tiltækur",
+    "okButton": "OK. Loka þessu sprettiglugga",
+    "gameOverButton": "Leik lokið. Smelltu til að skila til baka á sögulista",
+    "pageProgress": "Framvinda sögu. Síða {{current}} af {{total}}",
+    "deleteStoryProgress": "Eyða vistaðri framvindu sögu",
+    "mainTitle": "Parallel Fates: A choose your own adventure library aðalheiti",
+    "startStoryTitleScreen": "Fara á sögulista og byrja ævintýri",
+    "openSettings": "Opna stillingarmeny",
+    "loadingStory": "Sagan er að hlaðast, vinsamlegast bíðið",
+    "storyLoadError": "Villa við að hlaða sögu: {{message}}",
+    "returnToTitle": "Skila til baka á titilskjáinn",
+    "settingsModal": "Stillingarmeny",
+    "darkModeToggle": "Víxla dimmum ham",
+    "languageSettings": "Breyta tungumáli forritsins",
+    "support": "Hafðu samband við stuðning",
+    "termsOfUse": "Skoða notkunarskilmála",
+    "privacyPolicy": "Skoða persónuverndarstefnu",
+    "closeSettings": "Loka stillingarmeny"
+  },
+  "error": {
+    "storyLoadFailed": "Ekki tókst að hlaða sögu: {{message}}"
   }
 }

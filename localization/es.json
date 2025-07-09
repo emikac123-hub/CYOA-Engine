@@ -3,14 +3,15 @@
     "mainTitle": "Cuentos de Covarnius",
     "start": "Iniciar viaje",
     "continue": "🕹️ Continuar",
-    "delete": "❌ Eliminar Progreso",
+    "delete": "Eliminar",
+
     "confirmClear": "¿Estás seguro de que deseas eliminar tu progreso?",
     "cancel": "Cancelar",
     "ok": "Aceptar",
     "unlockPrice": "Desbloquear por {{price}}",
     "unlock": "✅ Desbloquear",
-
-    "back": "⬅️ Volver",
+    "returnToTitle": "Regresar al título",
+    "back": "Volver",
     "selectStory": "Selecciona una historia"
   },
   "home": "🏠 Inicio",
@@ -20,6 +21,7 @@
     "title": "Configuración",
     "language": "Configuración de Idioma",
     "support": "Soporte",
+    "darkMode": "Modo oscuro",
     "terms": "Términos de Uso",
     "privacy": "Política de Privacidad",
     "close": "❌ Cerrar"
@@ -33,7 +35,11 @@
   "languageChangeWarning": "Si cambias el idioma, volverás a la pantalla de inicio. ¿Estás seguro?",
   "storyList": {
     "continueChapter": "Reanudar la aventura",
-    "sampleLimit": "🔓 Solo muestra ({{count}} opciones)"
+    "sampleLimit": "🔓 Solo muestra ({{count}} opciones)",
+    "deleteProgressTitle": "Eliminar Progreso?",
+    "deleteProgressBody": "Se eliminará el progreso de «{{title}}». ¿Estás seguro?",
+    "deleted": "Eliminado",
+    "deletedMessage": "El progreso se eliminó correctamente."
   },
   "chapterMenu": {
     "selectChapter": "Selección de Capítulo",
@@ -41,5 +47,47 @@
   },
   "unlockPopup": {
     "unlocked": "¡Capítulo desbloqueado!"
+  },
+  "accessibility": {
+    "languageSelectTitle": "Seleccionar idioma",
+    "selectLanguage": "Seleccionar idioma {{language}}",
+    "languageChangeModal": "Confirmación de cambio de idioma",
+    "languageWarning": "¿Cambiar el idioma te devolverá a la pantalla de título. ¿Continuar?",
+    "languageModalActions": "Opciones de confirmación de idioma",
+    "cancel": "Cancelar y cerrar",
+    "confirm": "Confirmar y cambiar idioma",
+    "openChapterMenu": "Abrir menú de capítulos",
+    "chapterMenuButtonHeader": "Acceso al menú de capítulos",
+    "chapterUnlockedPopup": "Nuevo capítulo desbloqueado",
+    "chapterMenuList": "Lista de capítulos disponibles en esta historia",
+    "startStory": "Comenzar historia {{title}}",
+    "continueStory": "Continuar {{title}}. Capítulo: {{chapter}}",
+    "backToHome": "Regresar a la pantalla de inicio",
+    "selectStoryHeader": "Selecciona una historia para comenzar",
+    "chapterUnlocked": "{{title}}. Capítulo {{current}} desbloqueado. Toca dos veces para leer.",
+    "currentChapter": "Capítulo actual seleccionado.",
+    "chapterLocked": "Capítulo bloqueado",
+    "chapterUnlockedSubtitle": "Nuevo capítulo desbloqueado",
+    "chapterUnlockedTitle": "El capítulo {{title}} está ahora disponible",
+    "okButton": "OK. Cerrar este popup",
+    "gameOverButton": "Fin del juego. Toca para regresar a la lista de historias",
+    "pageProgress": "Progreso de la historia. Página {{current}} de {{total}}",
+    "deleteStoryProgress": "Eliminar progreso de historia guardado",
+    "mainTitle": "Parallel Fates: Una biblioteca de aventuras elige tu propia aventura título principal",
+    "startStoryTitleScreen": "Ir a la lista de historias y comenzar la aventura",
+    "openSettings": "Abrir menú de configuraciones",
+    "loadingStory": "Cargando historia, por favor espera",
+    "storyLoadError": "Error al cargar la historia: {{message}}",
+    "returnToTitle": "Regresar a la pantalla de título",
+    "settingsModal": "Menú de configuraciones",
+    "darkModeToggle": "Alternar modo oscuro",
+    "languageSettings": "Cambiar idioma de la app",
+    "support": "Contactar soporte",
+    "termsOfUse": "Ver términos de uso",
+    "privacyPolicy": "Ver política de privacidad",
+    "closeSettings": "Cerrar menú de configuraciones"
+  },
+  "error": {
+    "storyLoadFailed": "No se pudo cargar la historia: {{message}}"
   }
 }

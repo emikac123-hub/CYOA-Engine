@@ -3,6 +3,7 @@ import storyData from "../stories/stories-en.json";
 
 const PROGRESS_KEY_PREFIX = "story_progress_";
 const CHAPTER_KEY_PREFIX = "story_chapter_";
+export const HISTORY_KEY_PREFIX = "story_history_"; // e.g. story_history-covarnius
 
 export const saveProgress = async (storyId: string, pageId: string) => {
   await AsyncStorage.setItem(PROGRESS_KEY_PREFIX + storyId, pageId);
@@ -16,11 +17,15 @@ export const clearProgress = async (storyId: string) => {
   await AsyncStorage.multiRemove([
     PROGRESS_KEY_PREFIX + storyId,
     `unlockedChapters-${storyId}`,
+    HISTORY_KEY_PREFIX + storyId,
   ]);
 };
 
 export const clearProgressOnly = async (storyId: string) => {
-  await AsyncStorage.removeItem(`story_progress_${storyId}`);
+  await AsyncStorage.multiRemove([
+    PROGRESS_KEY_PREFIX + storyId,
+    HISTORY_KEY_PREFIX + storyId,
+  ]);
 };
 
 /**

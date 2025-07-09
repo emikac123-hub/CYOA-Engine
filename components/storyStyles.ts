@@ -6,7 +6,6 @@ export const storyStyles = (theme: "light" | "dark") =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme === "dark" ? "#000" : "#fff",
       padding: 16,
     },
     image: {
@@ -90,5 +89,35 @@ export const storyStyles = (theme: "light" | "dark") =>
       color: theme === "dark" ? "#ccc" : "#000",
       fontSize: 16,
       textAlign: "center",
+    },
+    choiceTracker: {
+      flexDirection: "row",
+      justifyContent: "center",
+      marginBottom: 20,
+      opacity: 0.6,
+    },
+
+    dot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      marginHorizontal: 4,
+    },
+
+    activeDot: {
+      backgroundColor: "#00ccff",
+    },
+
+    inactiveDot: {
+      backgroundColor: "#aaa",
+    },
+    // Inside your stylesheet (e.g., storyStyles.ts or inline)
+    blurContainer: {
+      backgroundColor: "transparent", // optional; lets the blur show through
+      borderRadius: 12,
+      padding: 16,
+      marginHorizontal: 16,
+      marginVertical: 8,
+      overflow: "hidden", // ensures blur doesn't spill out
     },
   });

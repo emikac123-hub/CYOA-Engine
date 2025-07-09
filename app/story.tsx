@@ -3,7 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SAMPLE_LIMIT } from "../constants/Constants";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { saveChapterProgress } from "../storage/progressManager";
 import {
   Animated,
@@ -20,7 +20,7 @@ import StoryLoaderGate, { useStory } from "../components/StoryLoaderGate";
 import { loadProgress, saveProgress } from "../storage/progressManager";
 import { isStoryUnlocked } from "../storage/unlockManager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { HISTORY_KEY_PREFIX } from "../storage/progressManager";
 import StoryContent from "../components/StoryContent";
 import ChapterUnlockPopup from "../components/ChapterUnlockPopup";
 import ChapterSelectMenu from "../components/ChapterSelectMenu";
@@ -45,12 +45,14 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   const [confettiKey, setConfettiKey] = useState(0);
   const [lastShownChapterId, setLastShownChapterId] = useState(null);
   const router = useRouter();
+  const previousPageIdRef = useRef(null);
   const { t } = useLanguage();
   const { theme } = useTheme();
   const startPageId = "intro";
   const [chapterMenuVisible, setChapterMenuVisible] = useState(false);
   const insets = useSafeAreaInsets();
-  const { id } = useLocalSearchParams();
+
+  const { id, reset } = useLocalSearchParams();
 
   useEffect(() => {
     const loadInitialState = async () => {
@@ -58,7 +60,20 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       let initialPageId: string | null = null;
 
       try {
-        const savedPageId = await loadProgress(meta.id);
+        const savedPageId =
+          reset === "true" ? null : await loadProgress(meta.id); // ✅ Skip if reset
+
+        console.log("saved page ID:", savedPageId);
+        const savedHistory = await AsyncStorage.getItem(
+          `${HISTORY_KEY_PREFIX}${meta.id}`
+        );
+        if (savedHistory) {
+          try {
+            setHistory(JSON.parse(savedHistory));
+          } catch (err) {
+            console.warn("Failed to parse history:", err);
+          }
+        }
         if (savedPageId && allPageIds.has(savedPageId)) {
           initialPageId = savedPageId;
         } else {
@@ -79,7 +94,6 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
 
       setCurrentPageId(initialPageId || startPageId);
 
-      // ✅ Localize chapters using `chapters` from useStory
       try {
         const savedChapters = await AsyncStorage.getItem(
           `unlockedChapters-${meta.id}`
@@ -113,6 +127,13 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
     const found = story.find((p) => p.id === currentPageId);
     setPage(found || null);
   }, [currentPageId, story]);
+  useEffect(() => {
+    if (currentPageId && currentPageId !== previousPageIdRef.current) {
+      fadeIn(); // Trigger fade for both forward and backward
+
+      previousPageIdRef.current = currentPageId;
+    }
+  }, [currentPageId]);
 
   const fadeIn = () => {
     fadeAnim.setValue(0);
@@ -126,6 +147,16 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   useEffect(() => {
     console.log("🧠 History:", history);
   }, [history]);
+
+  useEffect(() => {
+    if (meta?.id && history.length > 0) {
+      AsyncStorage.setItem(
+        `${HISTORY_KEY_PREFIX}${meta.id}`,
+        JSON.stringify(history)
+      ).catch((err) => console.warn("Failed to save history:", err));
+    }
+  }, [history]);
+
   useEffect(() => {
     if (currentPageId) fadeIn();
   }, [currentPageId]);
@@ -177,7 +208,6 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
     };
 
     unlockNewChapter();
-
   }, [page]);
 
   const isSingleContinue = useMemo(() => {
@@ -216,8 +246,15 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
           right: 20,
           zIndex: 10,
         }}
+        accessible={true}
+        accessibilityRole="header"
+        accessibilityLabel={t("accessibility.chapterMenuButtonHeader")}
       >
-        <TouchableOpacity onPress={() => setChapterMenuVisible(true)}>
+        <TouchableOpacity
+          onPress={() => setChapterMenuVisible(true)}
+          accessibilityLabel={t("accessibility.openChapterMenu")}
+          accessibilityRole="button"
+        >
           <Ionicons
             name="book-outline"
             size={28}
@@ -230,6 +267,7 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       {page && (
         <StoryContent
           page={page}
+          story={story}
           fadeAnim={fadeAnim}
           handleChoice={handleChoice}
           history={history}
@@ -249,8 +287,11 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
         confettiKey={confettiKey}
         onClose={() => {
           console.log("Popup dismissed");
-          setShowChapterPopup(false); // ✅ FIXED
+          setShowChapterPopup(false);
         }}
+        accessibilityLabel={t("accessibility.chapterUnlockedPopup")}
+        accessibilityViewIsModal={true}
+        accessible={true}
       />
 
       <ChapterSelectMenu
@@ -266,7 +307,10 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
           }
         }}
         currentPageId={currentPageId}
-        allChapters={chapters} // ✅ add this line
+        allChapters={chapters}
+        accessibilityLabel={t("accessibility.chapterMenuList")}
+        accessibilityViewIsModal={true}
+        accessible={true}
       />
     </View>
   );

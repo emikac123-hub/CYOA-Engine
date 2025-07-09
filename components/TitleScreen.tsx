@@ -1,25 +1,24 @@
-import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { DeleteButtonText } from "./DeleteButtonText";
 import React, { useEffect, useState } from "react";
-import { useTheme } from "../context/ThemeContext"; // ✅ import this
-
 import {
   Alert,
   Animated,
+  Easing,
+  ImageBackground,
   Platform,
   StatusBar,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "../context/ThemeContext";
 import { clearProgress, getLastPlayedStory } from "../storage/progressManager";
 import GleamingButton from "./GleamingButton";
-import SettingsModal from "./SettingsMenu";
-import { ThemedText } from "./ThemedText";
 import { useLanguage } from "../localization/LanguageProvider";
+
+// 👇 Import your background image
+const background = require("../assets/images/Two-Roads.png");
 
 export default function TitleScreen() {
   const { theme } = useTheme();
@@ -29,19 +28,29 @@ export default function TitleScreen() {
   const router = useRouter();
 
   const [lastPlayed, setLastPlayed] = useState(null);
-  const [fadeAnim] = useState(new Animated.Value(0));
-  const [scaleAnim] = useState(new Animated.Value(0.95));
-  const iconColor = theme === "dark" ? "#fff" : "#000";
+
+  // Animations for dramatic title
+  const [fatesAnim] = useState(new Animated.Value(100)); // Fates slides from right
+  const [parallelAnim] = useState(new Animated.Value(-100)); // Parallel slides from left
+  const [opacityAnim] = useState(new Animated.Value(0)); // Initial fade-in
+
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
+      Animated.timing(fatesAnim, {
+        toValue: 0,
+        duration: 2000,
+        easing: Easing.out(Easing.exp),
         useNativeDriver: true,
       }),
-      Animated.spring(scaleAnim, {
+      Animated.timing(parallelAnim, {
+        toValue: 0,
+        duration: 2000,
+        easing: Easing.out(Easing.exp),
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacityAnim, {
         toValue: 1,
-        friction: 6,
+        duration: 1000,
         useNativeDriver: true,
       }),
     ]).start();
@@ -50,86 +59,63 @@ export default function TitleScreen() {
   useEffect(() => {
     const fetchProgress = async () => {
       const progress = await getLastPlayedStory();
-      console.log("📦 Last Played Progress:", progress); // Add this line
+      console.log("📦 Last Played Progress:", progress);
       setLastPlayed(progress);
     };
     fetchProgress();
-  }, [t]); // 👈 re-run when language (t) changes
+  }, [t]);
 
   return (
-    <View style={[s.container, StyleSheet.absoluteFill]}>
-      <View style={s.content}>
-        <Animated.View
-          style={{ opacity: fadeAnim, transform: [{ scale: scaleAnim }] }}
-        >
-          <ThemedText style={s.title}>{t("titleScreen.mainTitle")}</ThemedText>
-        </Animated.View>
+    <ImageBackground
+      source={background}
+      style={s.background}
+      resizeMode="cover"
+    >
+      <View style={s.overlay}>
+        <View style={s.content}>
+          <Animated.View style={{ opacity: opacityAnim }}>
+            <View style={s.titleContainer}>
+              <Animated.Text
+                style={[
+                  s.parallel,
+                  { transform: [{ translateX: parallelAnim }] },
+                ]}
+              >
+                Two
+              </Animated.Text>
+              <Animated.Text
+                style={[s.fates, { transform: [{ translateX: fatesAnim }] }]}
+              >
+                Roads
+              </Animated.Text>
+            </View>
+          </Animated.View>
 
-        <GleamingButton
-          title={`⚔️ ${t("titleScreen.start")}`}
-          onPress={async () => {
-        
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            router.push("/storyList");
-          }}
-        />
-
-        {lastPlayed && (
-          <View style={s.continueContainer}>
-            <TouchableOpacity
-              style={s.button}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                router.push({
-                  pathname: "/story",
-                  params: {
-                    id: lastPlayed.storyId,
-                    resume: lastPlayed.pageId,
-                  },
-                });
-              }}
-            >
-              <ThemedText style={s.buttonText}>
-                {t("titleScreen.continue", {
-                  title: `${lastPlayed.title}`,
-                })}
-              </ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[s.button, s.deleteButton]}
-              onPress={() =>
-                Alert.alert(
-                  t("titleScreen.delete"),
-                  t("titleScreen.confirmClear"),
-                  [
-                    { text: t("titleScreen.cancel"), style: "cancel" },
-                    {
-                      text: t("titleScreen.ok"),
-                      onPress: () => clearProgress(lastPlayed.storyId),
-                    },
-                  ],
-                  { cancelable: false }
-                )
-              }
-            >
-              <ThemedText style={[s.buttonText]}>
-                <DeleteButtonText />
-              </ThemedText>
-            </TouchableOpacity>
-          </View>
-        )}
+          <GleamingButton
+            title={`⚔️ ${t("titleScreen.start")}`}
+            onPress={async () => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              router.push("/storyList");
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={t("accessibility.startStoryTitleScreen")}
+            accessible={true}
+          />
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = (theme: "light" | "dark") =>
   StyleSheet.create({
-    container: {
+    background: {
       flex: 1,
-      position: "relative",
-      backgroundColor: theme === "dark" ? "#000" : "#fff",
+    },
+    overlay: {
+      flex: 1,
+      backgroundColor:
+        theme === "dark" ? "rgba(0, 0, 0, 0.2)" : "rgba(255, 255, 255, 0.2)",
     },
     content: {
       flex: 1,
@@ -138,53 +124,26 @@ const styles = (theme: "light" | "dark") =>
       paddingHorizontal: 24,
       paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
-    title: {
-      fontSize: 44,
-      lineHeight: 54,
-      fontWeight: "600",
-      color: theme === "dark" ? "#ffffff" : "#111111",
+    titleContainer: {
+      alignItems: "center",
       marginBottom: 48,
-      textAlign: "center",
-      letterSpacing: 1,
-      opacity: 0.95,
-      textShadowColor:
-        theme === "dark" ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.1)",
+    },
+    parallel: {
+      fontSize: 48,
+      fontWeight: "600",
+      color: "#ffffff",
+      letterSpacing: 1.2,
+      textShadowColor: "rgba(255,255,255,0.25)",
+      textShadowOffset: { width: 0, height: 0 },
+      textShadowRadius: 6,
+    },
+    fates: {
+      fontSize: 48,
+      fontWeight: "600",
+      color: "#ffffff",
+      letterSpacing: 2,
+      textShadowColor: "rgba(255,255,255,0.35)",
       textShadowOffset: { width: 0, height: 0 },
       textShadowRadius: 10,
-    },
-    button: {
-      backgroundColor:
-        theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
-      paddingVertical: 14,
-      paddingHorizontal: 24,
-      borderRadius: 16,
-      marginVertical: 10,
-      width: "80%",
-      alignItems: "center",
-      borderWidth: 1,
-      borderColor:
-        theme === "dark" ? "rgba(255, 255, 255, 0.25)" : "rgba(0, 0, 0, 0.1)",
-    },
-    buttonText: {
-      color: theme === "dark" ? "#ffffff" : "#000000",
-      fontSize: 17,
-      fontWeight: "500",
-      letterSpacing: 0.3,
-    },
-    continueContainer: {
-      marginTop: 28,
-      width: "80%",
-      alignItems: "center",
-    },
-    deleteButton: {
-      backgroundColor:
-        theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
-      borderColor:
-        theme === "dark" ? "rgba(255, 0, 0, 0.4)" : "rgba(200, 0, 0, 0.6)",
-    },
-    gearIcon: {
-      position: "absolute",
-      left: 20,
-      zIndex: 10,
     },
   });

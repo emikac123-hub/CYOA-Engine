@@ -1,5 +1,4 @@
 import { Text, type TextProps, StyleSheet } from 'react-native';
-
 import { useThemeColor } from '../hooks/useThemeColor';
 
 export type ThemedTextProps = TextProps & {
@@ -8,7 +7,13 @@ export type ThemedTextProps = TextProps & {
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
 };
 
-export function ThemedText({ style, lightColor, darkColor, type = 'default', ...rest }: ThemedTextProps) {
+export function ThemedText({
+  style,
+  lightColor,
+  darkColor,
+  type = 'default',
+  ...rest
+}: ThemedTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
   return (
@@ -22,10 +27,14 @@ export function ThemedText({ style, lightColor, darkColor, type = 'default', ...
         type === 'link' ? styles.link : undefined,
         style,
       ]}
-      {...rest}
+      accessible={rest.accessible}
+      accessibilityLabel={rest.accessibilityLabel}
+      accessibilityRole={rest.accessibilityRole}
+      {...rest} // ✅ fallback for any other accessibility or text props
     />
   );
 }
+
 
 const styles = StyleSheet.create({
   default: {

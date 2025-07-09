@@ -3,13 +3,14 @@
     "mainTitle": "Die Geschichten von Covarnius",
     "start": "Reise beginnen",
     "continue": "🕹️ Weiter",
-    "delete": "❌ Fortschritt Löschen",
+    "delete": "Löschen",
     "confirmClear": "Bist du sicher, dass du deinen Fortschritt löschen möchtest?",
     "cancel": "Abbrechen",
     "ok": "OK",
     "unlockPrice": "Freischalten für {{price}}€",
     "unlock": "✅ Freischalten",
-    "back": "⬅️ Zurück",
+    "returnToTitle": "Zurück zum Titel",
+    "back": "Zurück",
     "selectStory": "Wähle eine Geschichte"
   },
   "home": "🏠 Startseite",
@@ -19,6 +20,7 @@
     "title": "Einstellungen",
     "language": "Spracheinstellungen",
     "support": "Support",
+    "darkMode": "Dunkler Modus",
     "terms": "Nutzungsbedingungen",
     "privacy": "Datenschutzrichtlinie",
     "close": "❌ Schließen"
@@ -26,14 +28,17 @@
   "subtitle": "Eine Reise beginnt mit einem Fremden aus den Sternen",
   "payWall": {
     "returnToTitle": "Zurück zur Geschichtenliste",
-    "pitch": "Kaufe „{{title}}“, um weiterzulesen!",
-    "currency": "€"
+    "pitch": "Kaufe „{{title}}“, um weiterzulesen!"
   },
   "gameOver": "Spiel beendet!",
   "languageChangeWarning": "Wenn du die Sprache änderst, wirst du zum Startbildschirm zurückgebracht. Bist du sicher?",
   "storyList": {
     "continueChapter": "Abenteuer fortsetzen",
-    "sampleLimit": "🔓 Nur Vorschau ({{count}} Auswahlmöglichkeiten)"
+    "sampleLimit": "🔓 Nur Vorschau ({{count}} Auswahlmöglichkeiten)",
+    "deleteProgressTitle": "Fortschritt Löschen?",
+    "deleteProgressBody": "Der Fortschritt für „{{title}}“ wird gelöscht. Bist du sicher?",
+    "deleted": "Gelöscht",
+    "deletedMessage": "Fortschritt wurde erfolgreich gelöscht."
   },
   "chapterMenu": {
     "selectChapter": "Kapitel Auswählen",
@@ -41,5 +46,47 @@
   },
   "unlockPopup": {
     "unlocked": "Kapitel freigeschaltet!"
+  },
+  "accessibility": {
+    "languageSelectTitle": "Sprache auswählen",
+    "selectLanguage": "Sprache auswählen {{language}}",
+    "languageChangeModal": "Bestätigung der Sprachänderung",
+    "languageWarning": "Das Ändern der Sprache bringt Sie zurück zum Titelschirm. Fortfahren?",
+    "languageModalActions": "Sprachbestätigungsoptionen",
+    "cancel": "Abbrechen und schließen",
+    "confirm": "Bestätigen und Sprache ändern",
+    "openChapterMenu": "Kapitelmenü öffnen",
+    "chapterMenuButtonHeader": "Kapitelmenüzugriff",
+    "chapterUnlockedPopup": "Neues Kapitel entsperrt",
+    "chapterMenuList": "Liste der verfügbaren Kapitel in dieser Geschichte",
+    "startStory": "Geschichte starten {{title}}",
+    "continueStory": "{{title}} fortsetzen. Kapitel: {{chapter}}",
+    "backToHome": "Zurück zum Startbildschirm",
+    "selectStoryHeader": "Wählen Sie eine Geschichte, um zu beginnen",
+    "chapterUnlocked": "{{title}}. Kapitel {{current}} entsperrt. Doppelklicken, um zu lesen.",
+    "currentChapter": "Aktuell ausgewählt.",
+    "chapterLocked": "Gesperrtes Kapitel",
+    "chapterUnlockedSubtitle": "Neues Kapitel entsperrt",
+    "chapterUnlockedTitle": "Kapitel {{title}} ist jetzt verfügbar",
+    "okButton": "OK. Dieses Popup schließen",
+    "gameOverButton": "Spielende. Tippen, um zur Geschichteliste zurückzukehren",
+    "pageProgress": "Geschichtsfortschritt. Seite {{current}} von {{total}}",
+    "deleteStoryProgress": "Gespeicherten Geschichtsfortschritt löschen",
+    "mainTitle": "Parallel Fates: Eine wähle-dein-eigenes-Abenteuer-Bibliothek Haupttitel",
+    "startStoryTitleScreen": "Zur Geschichteliste gehen und Abenteuer beginnen",
+    "openSettings": "Einstellungsmenü öffnen",
+    "loadingStory": "Geschichte wird geladen, bitte warten",
+    "storyLoadError": "Fehler beim Laden der Geschichte: {{message}}",
+    "returnToTitle": "Zurück zum Titelschirm",
+    "settingsModal": "Einstellungsmenü",
+    "darkModeToggle": "Dunkelmodus umschalten",
+    "languageSettings": "App-Sprache ändern",
+    "support": "Support kontaktieren",
+    "termsOfUse": "Nutzungsbedingungen anzeigen",
+    "privacyPolicy": "Datenschutzrichtlinie anzeigen",
+    "closeSettings": "Einstellungsmenü schließen"
+  },
+  "error": {
+    "storyLoadFailed": "Kann Geschichte nicht laden: {{message}}"
   }
 }

@@ -3,14 +3,14 @@
     "mainTitle": "コヴァーニアスの物語",
     "start": "新しい冒険を始める",
     "continue": "🕹️ 次へ",
-    "delete": "❌ 進行状況を削除",
+    "delete": "削除",
     "confirmClear": "進行状況を削除してもよろしいですか？",
     "cancel": "キャンセル",
     "ok": "OK",
     "unlockPrice": "{{price}}でロック解除",
     "unlock": "✅ でロック解除",
-
-    "back": "⬅️ 戻る（もどる)",
+    "returnToTitle": "タイトルに戻る",
+    "back": "戻る（もどる)",
     "selectStory": "物語を選んでください"
   },
   "home": "🏠 ホーム",
@@ -21,6 +21,7 @@
     "language": "言語設定",
     "support": "サポート",
     "terms": "利用規約",
+    "darkMode": "ダークモード",
     "privacy": "プライバシーポリシー",
     "close": "❌ 閉じる"
   },
@@ -33,7 +34,11 @@
   "languageChangeWarning": "言語を変更すると、タイトル画面に戻ります。よろしいですか？",
   "storyList": {
     "continueChapter": "冒険の続きを始める",
-    "sampleLimit": "🔓 お試し版（{{count}}つの選択肢）"
+    "sampleLimit": "🔓 お試し版（{{count}}つの選択肢",
+    "deleteProgressTitle": "進行状況を削除しますか？",
+    "deleteProgressBody": "「{{title}}」の進行状況を削除します。よろしいですか？",
+    "deleted": "削除しました",
+    "deletedMessage": "進行状況を正常に削除しました。"
   },
   "chapterMenu": {
     "selectChapter": "チャプター選択",
@@ -42,5 +47,47 @@
 
   "unlockPopup": {
     "unlocked": "チャプターをアンロック！"
+  },
+  "accessibility": {
+    "languageSelectTitle": "言語を選択",
+    "selectLanguage": "言語を選択 {{language}}",
+    "languageChangeModal": "言語変更確認",
+    "languageWarning": "言語を変更するとタイトル画面に戻ります。続行しますか？",
+    "languageModalActions": "言語確認オプション",
+    "cancel": "キャンセルして閉じる",
+    "confirm": "確認して言語を変更",
+    "openChapterMenu": "章メニューを開く",
+    "chapterMenuButtonHeader": "章メニューアクセス",
+    "chapterUnlockedPopup": "新しい章がアンロックされました",
+    "chapterMenuList": "このストーリーで利用可能な章のリスト",
+    "startStory": "ストーリーを開始 {{title}}",
+    "continueStory": "{{title}} を続ける。章: {{chapter}}",
+    "backToHome": "ホーム画面に戻る",
+    "selectStoryHeader": "冒険を始めるためにストーリーを選択",
+    "chapterUnlocked": "{{title}}。{{current}} 章がアンロックされました。ダブルタップで読む。",
+    "currentChapter": "現在選択中。",
+    "chapterLocked": "ロックされた章",
+    "chapterUnlockedSubtitle": "新しい章がアンロックされました",
+    "chapterUnlockedTitle": "章 {{title}} が利用可能になりました",
+    "okButton": "OK。ポップアップを閉じる",
+    "gameOverButton": "ゲームオーバー。タップしてストーリーリストに戻る",
+    "pageProgress": "ストーリーの進行状況。ページ {{current}} / {{total}}",
+    "deleteStoryProgress": "保存されたストーリーの進行状況を削除",
+    "mainTitle": "Parallel Fates: A choose your own adventure library メインテーブル",
+    "startStoryTitleScreen": "ストーリーリストに行き、冒険を始める",
+    "openSettings": "設定メニューを開く",
+    "loadingStory": "ストーリーをロード中、しばらくお待ちください",
+    "storyLoadError": "ストーリーのロードエラー: {{message}}",
+    "returnToTitle": "タイトル画面に戻る",
+    "settingsModal": "設定メニュー",
+    "darkModeToggle": "ダークモードをトグル",
+    "languageSettings": "アプリの言語を変更",
+    "support": "サポートに連絡",
+    "termsOfUse": "利用規約を見る",
+    "privacyPolicy": "プライバシーポリシーをみる",
+    "closeSettings": "設定メニューを閉じる"
+  },
+  "error": {
+    "storyLoadFailed": "ストーリーをロードできません: {{message}}"
   }
 }

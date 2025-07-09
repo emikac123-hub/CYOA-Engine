@@ -1,21 +1,51 @@
 import React from "react";
-import { Modal, Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Modal,
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  AccessibilityProps,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import ConfettiCannon from "react-native-confetti-cannon";
 import { useLanguage } from "localization/LanguageProvider";
 import { useTheme } from "context/ThemeContext";
 import { stripEmoji } from "app/story";
-const ChapterUnlockPopup = ({ visible, title, confettiKey, onClose }) => {
+import { PixelRatio } from "react-native";
+
+type ChapterUnlockPopupProps = {
+  visible: boolean;
+  title: string | null;
+  confettiKey: number;
+  onClose: () => void;
+} & AccessibilityProps;
+const ChapterUnlockPopup = ({
+  visible,
+  title,
+  confettiKey,
+  onClose,
+  accessibilityLabel,
+  accessibilityRole,
+  accessibilityViewIsModal,
+  accessible,
+}: ChapterUnlockPopupProps) => {
   if (!visible) return null;
   const { t } = useLanguage();
   const { theme } = useTheme();
   const s = styles(theme);
-  
+
   return (
-    
-    <Modal transparent animationType="fade" visible={visible}>
+    <Modal
+      transparent
+      animationType="fade"
+      visible={visible}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityViewIsModal={accessibilityViewIsModal}
+      accessible={accessible}
+      accessibilityRole={accessibilityRole}
+    >
       <View style={s.overlay}>
-        {/* 🎊 Confetti */}
         <ConfettiCannon
           count={80}
           origin={{ x: 200, y: 0 }}
@@ -23,22 +53,41 @@ const ChapterUnlockPopup = ({ visible, title, confettiKey, onClose }) => {
           fallSpeed={2000}
           fadeOut
           autoStart
-          key={confettiKey} // ✅ rerun on key change
+          key={confettiKey}
         />
-
-        {/* 🌈 Gradient border box */}
         <LinearGradient
           colors={["#FF5F6D", "#FFC371", "#47CACC", "#7A5FFF", "#FF5F6D"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={s.gradientBorder}
         >
-          <View style={s.innerBox}>
-            <Text style={s.subtitle}>{t("unlockPopup.unlocked")}</Text>
-            <Text style={s.title}>🎉 {stripEmoji(title)}</Text>
+          <View style={s.innerBox} accessible={true}>
+            <Text
+              style={s.subtitle}
+              allowFontScaling
+              accessibilityRole="header"
+              accessibilityLabel={t("accessibility.chapterUnlockedSubtitle")}
+            >
+              {t("unlockPopup.unlocked")}
+            </Text>
 
-            <TouchableOpacity onPress={onClose} style={s.okButton}>
-              <Text style={s.okText}>🫡 OK</Text>
+            <Text
+              style={s.title}
+              allowFontScaling
+              accessibilityLabel={t("accessibility.chapterUnlockedTitle", {
+                title: stripEmoji(title),
+              })}
+            >
+              🎉 {stripEmoji(title)}
+            </Text>
+
+            <TouchableOpacity
+              onPress={onClose}
+              style={s.okButton}
+              accessibilityRole="button"
+              accessibilityLabel={t("accessibility.okButton")}
+            >
+              <Text allowFontScaling style={s.okText}>🫡 OK</Text>
             </TouchableOpacity>
           </View>
         </LinearGradient>
@@ -46,8 +95,9 @@ const ChapterUnlockPopup = ({ visible, title, confettiKey, onClose }) => {
     </Modal>
   );
 };
-const styles = (theme: "light" | "dark") =>
-  StyleSheet.create({
+const styles = (theme: "light" | "dark") => {
+    const fontScale = PixelRatio.getFontScale();
+  return StyleSheet.create({
     overlay: {
       flex: 1,
       backgroundColor: "rgba(0,0,0,0.6)", // semi-transparent overlay for both themes
@@ -86,9 +136,9 @@ const styles = (theme: "light" | "dark") =>
     },
     okText: {
       color: "#fff",
-      fontSize: 16,
+      fontSize: 16 * fontScale,
       fontWeight: "600",
     },
   });
-
+}
 export default ChapterUnlockPopup;

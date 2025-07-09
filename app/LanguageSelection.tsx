@@ -46,19 +46,44 @@ const LanguageSelection = () => {
   const modalOpacity = useRef(new Animated.Value(1)).current;
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Modal visible={showConfirm} transparent animationType="fade">
-        <View style={s.modalBackdrop}>
-          <Animated.View style={[s.modalBox, { opacity: modalOpacity }]}>
+    <SafeAreaView
+      style={[
+        { flex: 1 },
+        { backgroundColor: theme === "dark" ? "#111" : "#fff" },
+      ]}
+    >
+      <Modal
+        visible={showConfirm}
+        transparent
+        animationType="fade"
+        accessibilityViewIsModal={true}
+      >
+        <View style={s.modalBackdrop} accessible={false}>
+          <Animated.View
+            style={[s.modalBox, { opacity: modalOpacity }]}
+            accessibilityViewIsModal={true}
+            accessible={false} // important
+          >
             {showModalText && (
-              <Text style={s.modalText}>
+              <Text
+                style={s.modalText}
+                accessibilityRole="text"
+                accessibilityLabel={t("accessibility.languageWarning")}
+              >
                 {t("languageChangeWarning") ||
                   "Changing language will return you to the title screen. Continue?"}
               </Text>
             )}
             {showModalText && (
-              <View style={s.modalButtons}>
-                <TouchableOpacity onPress={() => setShowConfirm(false)}>
+              <View
+                style={s.modalButtons}
+                accessible={false} // ✅ Let the buttons get focus individually
+              >
+                <TouchableOpacity
+                  onPress={() => setShowConfirm(false)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("accessibility.cancel")}
+                >
                   <Text style={s.cancelButton}>
                     ❌ {t("titleScreen.cancel")}
                   </Text>
@@ -66,23 +91,21 @@ const LanguageSelection = () => {
                 <TouchableOpacity
                   onPress={async () => {
                     setShowModalText(false);
-                    setTimeout(() => setShowModalText(true), 1000); // Delay rendering for 100ms
+                    setTimeout(() => setShowModalText(true), 1000);
+
                     if (pendingLang) {
                       await AsyncStorage.setItem(
                         "selectedLanguage",
                         pendingLang
                       );
                       setLang(pendingLang);
-
                       try {
                         const loader = storyFileMap[pendingLang];
                         const fullStorySet = await loader?.();
-
                         for (const storyId of Object.keys(fullStorySet)) {
                           const storyBlock = fullStorySet[storyId];
                           const localizedChapters =
                             storyBlock?.meta?.chapters || [];
-
                           const savedChaptersRaw = await AsyncStorage.getItem(
                             `unlockedChapters-${storyId}`
                           );
@@ -126,6 +149,8 @@ const LanguageSelection = () => {
                       });
                     }
                   }}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("accessibility.confirm")}
                 >
                   <Text style={s.confirmButton}>✅ OK</Text>
                 </TouchableOpacity>
@@ -136,7 +161,13 @@ const LanguageSelection = () => {
       </Modal>
 
       <View style={s.container}>
-        <Text style={s.title}>{t("languageChoice")}</Text>
+        <Text
+          style={s.title}
+          accessibilityRole="header"
+          accessibilityLabel={t("accessibility.languageSelectTitle")}
+        >
+          {t("languageChoice")}
+        </Text>
         <FlatList
           data={languages}
           keyExtractor={(item) => item.code}
@@ -145,15 +176,38 @@ const LanguageSelection = () => {
               style={s.languageButton}
               onPress={() => {
                 Haptics.selectionAsync();
-                modalOpacity.setValue(1); // reset opacity
+                modalOpacity.setValue(1);
                 setPendingLang(item.code);
                 setShowConfirm(true);
               }}
+              accessibilityRole="button"
+              accessibilityLabel={t("accessibility.selectLanguage", {
+                language: item.label,
+              })}
             >
               <Text style={s.languageText}>{item.label}</Text>
             </TouchableOpacity>
           )}
         />
+        <TouchableOpacity
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel={t("titleScreen.back")}
+          style={{
+            marginTop: 24,
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "600",
+              color: theme === "dark" ? "#00ccff" : "#0077aa",
+            }}
+          >
+            🔙
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

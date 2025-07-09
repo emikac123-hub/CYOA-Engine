@@ -6,7 +6,6 @@ export const storyStyles = (theme: "light" | "dark") =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme === "dark" ? "#000" : "#fff",
       padding: 16,
     },
     image: {
@@ -111,5 +110,14 @@ export const storyStyles = (theme: "light" | "dark") =>
 
     inactiveDot: {
       backgroundColor: "#aaa",
+    },
+    // Inside your stylesheet (e.g., storyStyles.ts or inline)
+    blurContainer: {
+      backgroundColor: "transparent", // optional; lets the blur show through
+      borderRadius: 12,
+      padding: 16,
+      marginHorizontal: 16,
+      marginVertical: 8,
+      overflow: "hidden", // ensures blur doesn't spill out
     },
   });

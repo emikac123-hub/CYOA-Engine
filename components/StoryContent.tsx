@@ -9,6 +9,7 @@ import {
   PanResponderGestureState,
   StyleSheet,
   ScrollView,
+  ImageBackground,
 } from "react-native";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "context/ThemeContext";
@@ -17,6 +18,8 @@ import ChoiceButton from "./ChoiceButton";
 import { useLanguage } from "localization/LanguageProvider";
 import { clearProgressOnly } from "storage/progressManager";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import imageMap from "assets/imageMap";
+import { BlurView } from "expo-blur";
 
 const StoryContent = ({
   page,
@@ -40,14 +43,42 @@ const StoryContent = ({
   const insets = useSafeAreaInsets();
   const pageRef = useRef(page);
   const historyRef = useRef(history);
-
+  const fallbackImage = require("../assets/images/Earth.png");
+const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
+  const resolvedImage = imageMap[page.image] || fallbackImage;
+  const imageFadeAnim = useRef(new Animated.Value(1)).current;
+  const previousImageRef = useRef(resolvedImage);
+  console.log(page.image);
+  console.log("resolved image: " + resolvedImage);
+  if (!resolvedImage) {
+    console.warn("⚠️ Could not resolve image for:", page.image);
+  }
   useEffect(() => {
     pageRef.current = page;
   }, [page]);
+  useEffect(() => {
+    if (resolvedImage !== previousImageRef.current) {
+      // Fade out
+      Animated.timing(imageFadeAnim, {
+        toValue: 0,
+        duration: 2000,
+        useNativeDriver: true,
+      }).start(() => {
+        // After fade out, update previous image and fade in
+        previousImageRef.current = resolvedImage;
+        imageFadeAnim.setValue(0);
+        Animated.timing(imageFadeAnim, {
+          toValue: 1,
+          duration: 3000,
+          useNativeDriver: true,
+        }).start();
+      });
+    }
+  }, [resolvedImage]);
 
   useEffect(() => {
     console.log("HISTORY");
-    console.log(history)
+    console.log(history);
     historyRef.current = history;
   }, [history]);
 
@@ -165,113 +196,127 @@ const StoryContent = ({
   ).current;
 
   return (
-    <View {...panResponder.panHandlers} style={s.container}>
-      {page?.image && (
-        <Image
-          source={{ uri: page.image }}
-          style={s.image}
-          resizeMode="cover"
-        />
-      )}
-
-      <Animated.View
-        style={[s.textContainer, { opacity: fadeAnim }]}
-        accessible={true}
-        accessibilityLabel={page.text}
-        accessibilityRole="text"
-      >
-        <ScrollView
-          contentContainerStyle={[
-            s.scrollContainer,
-            { paddingTop: insets.top + 12, paddingBottom: 24 },
-            page?.text?.length < 100 && { flex: 1, justifyContent: "center" },
-          ]}
-          showsVerticalScrollIndicator={true}
+    <ImageBackground
+      source={resolvedImage}
+      resizeMode="cover"
+      style={{ flex: 1 }}
+    >
+      <View
+        style={{
+          ...StyleSheet.absoluteFillObject,
+          backgroundColor:
+            theme === "dark"
+              ? "rgba(0, 0, 0, 0.0)"
+              : "rgba(255, 255, 255, 0.0)",
+        }}
+      />
+      <View {...panResponder.panHandlers} style={s.container}>
+        <Animated.View
+          style={[s.textContainer, { opacity: fadeAnim }]}
+          accessible={true}
+          accessibilityLabel={page.text}
+          accessibilityRole="text"
         >
-          <Text style={s.storyText} allowFontScaling>
-            {page.text}
-          </Text>
-        </ScrollView>
-      </Animated.View>
+          <ScrollView
+            contentContainerStyle={[
+              s.scrollContainer,
+              {
+                paddingTop: insets.top + 12,
+                paddingBottom: 24,
+                flex: 1,
+                justifyContent: "center",
+              },
+            ]}
+            showsVerticalScrollIndicator={true}
+          >
+            {page.text?.length > 1 && (
+              <BlurView intensity={50} tint={theme} style={s.blurContainer}>
+                <Text style={s.storyText}>{page.text}</Text>
+              </BlurView>
+            )}
+          </ScrollView>
+        </Animated.View>
 
-      <View style={s.storyContent} pointerEvents="box-none">
-        <View style={s.choicesContainer}>
-          {page.choices.map((choice, index) => {
-            const stripped = choice.text
-              .replace(
-                /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
-                ""
-              )
-              .trim()
-              .toLowerCase();
-            const gameOverText = t("gameOver")?.toLowerCase();
-            const isGameOver = stripped === gameOverText;
-            if (isSingleContinue) return;
-            return (
-              <ChoiceButton
-                key={index}
-                ref={(el) => (choiceRefs.current[index] = el)}
-                text={choice.text}
-                onPress={() => {
-                  Haptics.selectionAsync();
-                  if (isGameOver) {
-                    handleGameOver();
-                  } else {
-                    updatePathForCurrent(choice.nextId);
-                    handleChoice(pageRef.current.id, choice.nextId);
-                  }
-                }}
-                style={s.choiceButton}
-                textStyle={s.choiceText}
-                isGameOverButton={isGameOver}
-              />
-            );
-          })}
-        </View>
-      </View>
-      {(() => {
-        const gameOverText = t("gameOver")?.toLowerCase();
-        const hasGameOverInPath = fullPath.some((id) => {
-          const p = story.find((pg) => pg.id === id);
-          return p?.choices?.some(
-            (choice) =>
-              choice.text
-                .replace(/[^\p{L}\p{N}\s]/gu, "")
+        <View style={s.storyContent} pointerEvents="box-none">
+          <View style={s.choicesContainer}>
+            {page.choices.map((choice, index) => {
+              const stripped = choice.text
+                .replace(
+                  /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
+                  ""
+                )
                 .trim()
-                .toLowerCase() === gameOverText
-          );
-        });
-
-        const dotCount = hasGameOverInPath
-          ? fullPath.length - 1
-          : fullPath.length;
-        if (dotCount > 0) {
-          return (
-            <View
-              style={styles.choiceTracker}
-              accessible={true}
-              accessibilityLabel={t("accessibility.pageProgress", {
-                current: dotIndex + 1,
-                total: dotCount,
-              })}
-              accessibilityRole="progressbar"
-            >
-              {Array.from({ length: dotCount }).map((_, i) => (
-                <View
-                  key={i}
-                  style={[
-                    styles.dot,
-                    i === dotIndex ? styles.activeDot : styles.inactiveDot,
-                  ]}
+                .toLowerCase();
+              const gameOverText = t("gameOver")?.toLowerCase();
+              const isGameOver = stripped === gameOverText;
+              if (isSingleContinue) return;
+              return (
+                <ChoiceButton
+                  key={index}
+                  ref={(el) => (choiceRefs.current[index] = el)}
+                  text={choice.text}
+                  onPress={() => {
+                    Haptics.selectionAsync();
+                    if (isGameOver) {
+                      handleGameOver();
+                    } else {
+                      updatePathForCurrent(choice.nextId);
+                      handleChoice(pageRef.current.id, choice.nextId);
+                    }
+                  }}
+                  style={s.choiceButton}
+                  textStyle={s.choiceText}
+                  isGameOverButton={isGameOver}
                 />
-              ))}
-            </View>
-          );
-        }
+              );
+            })}
+          </View>
+        </View>
 
-        return null;
-      })()}
-    </View>
+        {(() => {
+          const gameOverText = t("gameOver")?.toLowerCase();
+          const hasGameOverInPath = fullPath.some((id) => {
+            const p = story.find((pg) => pg.id === id);
+            return p?.choices?.some(
+              (choice) =>
+                choice.text
+                  .replace(/[^\p{L}\p{N}\s]/gu, "")
+                  .trim()
+                  .toLowerCase() === gameOverText
+            );
+          });
+
+          const dotCount = hasGameOverInPath
+            ? fullPath.length - 1
+            : fullPath.length;
+          if (dotCount > 0) {
+            return (
+              <View
+                style={styles.choiceTracker}
+                accessible={true}
+                accessibilityLabel={t("accessibility.pageProgress", {
+                  current: dotIndex + 1,
+                  total: dotCount,
+                })}
+                accessibilityRole="progressbar"
+              >
+                {Array.from({ length: dotCount }).map((_, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.dot,
+                      i === dotIndex ? styles.activeDot : styles.inactiveDot,
+                    ]}
+                  />
+                ))}
+              </View>
+            );
+          }
+
+          return null;
+        })()}
+      </View>
+    </ImageBackground>
   );
 };
 

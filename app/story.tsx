@@ -3,7 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SAMPLE_LIMIT } from "../constants/Constants";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { saveChapterProgress } from "../storage/progressManager";
 import {
   Animated,
@@ -45,6 +45,7 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   const [confettiKey, setConfettiKey] = useState(0);
   const [lastShownChapterId, setLastShownChapterId] = useState(null);
   const router = useRouter();
+  const previousPageIdRef = useRef(null);
   const { t } = useLanguage();
   const { theme } = useTheme();
   const startPageId = "intro";
@@ -126,6 +127,13 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
     const found = story.find((p) => p.id === currentPageId);
     setPage(found || null);
   }, [currentPageId, story]);
+  useEffect(() => {
+    if (currentPageId && currentPageId !== previousPageIdRef.current) {
+      fadeIn(); // Trigger fade for both forward and backward
+
+      previousPageIdRef.current = currentPageId;
+    }
+  }, [currentPageId]);
 
   const fadeIn = () => {
     fadeAnim.setValue(0);

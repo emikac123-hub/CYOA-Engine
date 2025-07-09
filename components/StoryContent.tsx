@@ -14,12 +14,13 @@ import {
 import * as Haptics from "expo-haptics";
 import { useTheme } from "context/ThemeContext";
 import { storyStyles } from "./storyStyles";
-import ChoiceButton from "./ChoiceButton";
 import { useLanguage } from "localization/LanguageProvider";
 import { clearProgressOnly } from "storage/progressManager";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import imageMap from "assets/imageMap";
+
 import { BlurView } from "expo-blur";
+import imageMap from "assets/imageMap";
+import ChoiceButton from "./ChoiceButton";
 
 const StoryContent = ({
   page,
@@ -77,8 +78,6 @@ const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground
   }, [resolvedImage]);
 
   useEffect(() => {
-    console.log("HISTORY");
-    console.log(history);
     historyRef.current = history;
   }, [history]);
 

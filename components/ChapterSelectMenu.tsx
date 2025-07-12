@@ -18,6 +18,7 @@ import { useTheme } from "context/ThemeContext";
 import { stripEmoji } from "app/story";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
+import FallbackBlurView from "./FallBackBlurView";
 
 type ChapterSelectMenuProps = {
   visible: boolean;
@@ -170,7 +171,7 @@ const ChapterSelectMenu = ({
                     end={{ x: 1, y: 1 }}
                     style={s.lockedChapterBorder}
                   >
-                    <BlurView
+                    <FallbackBlurView
                       intensity={60}
                       tint={theme === "dark" ? "dark" : "light"}
                       style={s.lockedChapterBlur}
@@ -179,7 +180,7 @@ const ChapterSelectMenu = ({
                       accessibilityRole="text"
                     >
                       {card}
-                    </BlurView>
+                    </FallbackBlurView>
                   </LinearGradient>
                 )}
               </View>

@@ -81,12 +81,12 @@ export default function TitleScreen() {
                   { transform: [{ translateX: parallelAnim }] },
                 ]}
               >
-                Two
+                {t("titleScreen.mainTitleTop")}
               </Animated.Text>
               <Animated.Text
                 style={[s.fates, { transform: [{ translateX: fatesAnim }] }]}
               >
-                Roads
+                           {t("titleScreen.mainTitleBottom")}
               </Animated.Text>
             </View>
           </Animated.View>
@@ -115,7 +115,7 @@ const styles = (theme: "light" | "dark") =>
     overlay: {
       flex: 1,
       backgroundColor:
-        theme === "dark" ? "rgba(0, 0, 0, 0.2)" : "rgba(255, 255, 255, 0.2)",
+        theme === "dark" ? "rgba(0, 0, 0, 0.0)" : "rgba(255, 255, 255, 0.0)",
     },
     content: {
       flex: 1,

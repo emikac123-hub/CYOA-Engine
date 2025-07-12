@@ -120,4 +120,56 @@ export const storyStyles = (theme: "light" | "dark") =>
       marginVertical: 8,
       overflow: "hidden", // ensures blur doesn't spill out
     },
+    tapToRevealArea: {
+      height: 300,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    blurWrapper: {
+      width: "100%",
+      alignSelf: "center",
+    },
+
+    opaqueOverlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: "rgba(255, 255, 255, 0.25)",
+      borderRadius: 12,
+      zIndex: 1,
+    },
+    hintContainer: {
+      position: "absolute",
+      top: -28,
+      alignSelf: "center",
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 10,
+      zIndex: 10, // Ensure it's above BlurView
+    },
+    hintText: {
+      fontSize: 12,
+      color: theme === "dark" ? "beige" : "black",
+      textAlign: "center",
+      marginTop: 8,
+      opacity: 0.8,
+    },
+    tapToRevealMessage: {
+      position: "relative",
+      bottom: 24,
+      left: 0,
+      right: 0,
+      alignItems: "center",
+      zIndex: 10,
+    },
+
+    tapToRevealText: {
+      color: theme === "dark" ? "#fff" : "#000",
+      backgroundColor:
+        theme === "dark" ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.8)",
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      borderRadius: 12,
+      fontSize: 13,
+      fontStyle: "italic",
+    },
   });

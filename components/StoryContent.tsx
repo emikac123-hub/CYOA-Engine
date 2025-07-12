@@ -10,8 +10,11 @@ import {
   StyleSheet,
   ScrollView,
   ImageBackground,
+  Easing,
 } from "react-native";
+import { TouchableWithoutFeedback } from "react-native";
 import * as Haptics from "expo-haptics";
+import { Pressable } from "react-native";
 import { useTheme } from "context/ThemeContext";
 import { storyStyles } from "./storyStyles";
 import { useLanguage } from "localization/LanguageProvider";
@@ -21,6 +24,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import imageMap from "assets/imageMap";
 import ChoiceButton from "./ChoiceButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import FallbackBlurView from "./FallBackBlurView";
 
 const StoryContent = ({
   page,
@@ -45,15 +50,49 @@ const StoryContent = ({
   const pageRef = useRef(page);
   const historyRef = useRef(history);
   const fallbackImage = require("../assets/images/Earth.png");
-const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
+
+  const [pressFeedback, setPressFeedback] = useState(new Animated.Value(1));
+  const flashOverlayOpacity = useRef(new Animated.Value(0)).current;
+
   const resolvedImage = imageMap[page.image] || fallbackImage;
   const imageFadeAnim = useRef(new Animated.Value(1)).current;
   const previousImageRef = useRef(resolvedImage);
-  console.log(page.image);
-  console.log("resolved image: " + resolvedImage);
-  if (!resolvedImage) {
-    console.warn("⚠️ Could not resolve image for:", page.image);
-  }
+  const [showText, setShowText] = useState(true);
+  const [overlayActive, setOverlayActive] = useState(false);
+  const textOpacity = useRef(new Animated.Value(1)).current;
+  const isIntro = page.id === "intro";
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.1,
+          duration: 800,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 800,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    pulse.start();
+    return () => pulse.stop(); // optional cleanup
+  }, []);
+  const handleRestoreText = () => {
+    Haptics.selectionAsync();
+    setShowText(true);
+    Animated.timing(textOpacity, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
   useEffect(() => {
     pageRef.current = page;
   }, [page]);
@@ -80,6 +119,33 @@ const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground
   useEffect(() => {
     historyRef.current = history;
   }, [history]);
+
+  const handleLongPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+
+    // Show brief flash (white overlay)
+    Animated.sequence([
+      Animated.timing(flashOverlayOpacity, {
+        toValue: 0.5,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(flashOverlayOpacity, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Then fade out the text
+    Animated.timing(textOpacity, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setShowText(false);
+    });
+  };
 
   const getFullPathFromCurrent = (currentPageId, story) => {
     let path = [];
@@ -160,7 +226,7 @@ const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground
               .toLowerCase() === gameOverText
         );
 
-        if (isGameOverPage) {
+        if (isGameOverPage || !showText) {
           // 🚫 Disable all gestures — must tap button
           console.log("🚫 Gestures blocked on Game Over screen");
           return;
@@ -228,10 +294,56 @@ const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground
             ]}
             showsVerticalScrollIndicator={true}
           >
-            {page.text?.length > 1 && (
-              <BlurView intensity={50} tint={theme} style={s.blurContainer}>
-                <Text style={s.storyText}>{page.text}</Text>
-              </BlurView>
+            {!showText && (
+              <View style={s.tapToRevealMessage}>
+                <Text style={s.tapToRevealText}>
+                  {`👆 ${t("hint.tapToRestore")}` ||
+                    " Tap the screen to bring back the text"}
+                </Text>
+              </View>
+            )}
+            {page.text?.length > 1 && showText ? (
+              <Animated.View style={[s.blurWrapper, { opacity: textOpacity }]}>
+                <Pressable onLongPress={handleLongPress} delayLongPress={500}>
+                  {({ pressed }) => (
+                    <FallbackBlurView
+                      intensity={50}
+                      tint={theme}
+                      style={[s.blurContainer, { opacity: pressed ? 0.5 : 1 }]}
+                    >
+                      {/* Flash overlay */}
+                      <Animated.View
+                        style={[
+                          StyleSheet.absoluteFillObject,
+                          {
+                            backgroundColor: "white",
+                            opacity: flashOverlayOpacity,
+                          },
+                        ]}
+                        pointerEvents="none"
+                      />
+
+                      {/* Main story text */}
+                      <Text style={s.storyText}>{page.text}</Text>
+
+                      {/* Hint text with pulse */}
+                      {isIntro && (
+                        <Animated.View
+                          style={{ transform: [{ scale: pulseAnim }] }}
+                        >
+                          <Text style={s.hintText}>
+                            👆 {t("hint.longPressToReveal")}
+                          </Text>
+                        </Animated.View>
+                      )}
+                    </FallbackBlurView>
+                  )}
+                </Pressable>
+              </Animated.View>
+            ) : (
+              <TouchableWithoutFeedback onPress={handleRestoreText}>
+                <View style={s.tapToRevealArea} />
+              </TouchableWithoutFeedback>
             )}
           </ScrollView>
         </Animated.View>

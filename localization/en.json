@@ -1,6 +1,8 @@
 {
   "titleScreen": {
-    "mainTitle": "Parallel Fates",
+    "clearHint": "Long press to clear story data.",
+    "mainTitleTop": "Two",
+    "mainTitleBottom": "Roads",
     "start": "Start New Adventure",
     "continue": "🕹️ Continue",
     "delete": "Delete",
@@ -33,12 +35,14 @@
   "gameOver": "Game Over",
   "languageChangeWarning": "If you change the language, you’ll be returned to the title screen. Are you sure?",
   "storyList": {
+    "mainTitle": "Tales of Covarnius",
     "continueChapter": "Continue Chapter",
     "sampleLimit": "🔓 Sample only ({{count}} choices)",
     "deleteProgressTitle": "Delete Progress?",
     "deleteProgressBody": "This will remove saved progress for \"{{title}}\". Are you sure?",
     "deleted": "Deleted",
-    "deletedMessage": "Progress cleared successfully."
+    "deletedMessage": "Progress cleared successfully.",
+    "deleteInstructions": "Long press card to clear story data."
   },
   "chapterMenu": {
     "selectChapter": "Chapter Select",
@@ -88,5 +92,9 @@
   },
   "error": {
     "storyLoadFailed": "Unable to load story: {{message}}"
+  },
+    "hint": {
+    "longPressToReveal": "Long press to remove text.",
+    "tapToRestore": "Tap screen to restore."
   }
 }

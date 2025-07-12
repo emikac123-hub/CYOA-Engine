@@ -74,16 +74,16 @@ const styles = (theme: "light" | "dark") =>
   StyleSheet.create({
     button: {
       backgroundColor:
-        theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
+        theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0)",
       paddingVertical: 14,
       paddingHorizontal: 24,
       borderRadius: 16,
       marginVertical: 10,
       width: "80%",
       alignItems: "center",
-      borderWidth: 1,
+      borderWidth: 2,
       borderColor:
-        theme === "dark" ? "rgba(255, 255, 255, 0.25)" : "rgba(0, 0, 0, 0.1)",
+        theme === "dark" ? "rgba(255, 255, 255, 0.25)" : "rgba(0, 0, 0, 0.3)",
       overflow: "hidden",
     },
     buttonText: {
@@ -93,8 +93,17 @@ const styles = (theme: "light" | "dark") =>
       letterSpacing: 0.3,
       textAlign: "center",
       zIndex: 2,
-        flexShrink: 1,
+      flexShrink: 1,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      backgroundColor:
+        theme === "dark" ? "rgba(0, 0, 0, 0.4)" : "rgba(255, 255, 255, 0.5)", // subtle backdrop
+      borderRadius: 8,
+      textShadowColor: theme === "dark" ? "#000" : "#fff",
+textShadowOffset: { width: 0, height: 1 },
+textShadowRadius: 2,
     },
+
     shimmerOverlay: {
       ...StyleSheet.absoluteFillObject,
       zIndex: 1,

@@ -1,6 +1,8 @@
 {
   "titleScreen": {
-    "mainTitle": "Die Geschichten von Covarnius",
+    "clearHint": "Lange drücken, um Story-Daten zu löschen",
+    "mainTitleTop": "Zwei",
+    "mainTitleBottom": "Wege",
     "start": "Reise beginnen",
     "continue": "🕹️ Weiter",
     "delete": "Löschen",
@@ -33,12 +35,14 @@
   "gameOver": "Spiel beendet!",
   "languageChangeWarning": "Wenn du die Sprache änderst, wirst du zum Startbildschirm zurückgebracht. Bist du sicher?",
   "storyList": {
+    "mainTitle": "Die Geschichten von Covarnius",
     "continueChapter": "Abenteuer fortsetzen",
     "sampleLimit": "🔓 Nur Vorschau ({{count}} Auswahlmöglichkeiten)",
     "deleteProgressTitle": "Fortschritt Löschen?",
     "deleteProgressBody": "Der Fortschritt für „{{title}}“ wird gelöscht. Bist du sicher?",
     "deleted": "Gelöscht",
-    "deletedMessage": "Fortschritt wurde erfolgreich gelöscht."
+    "deletedMessage": "Fortschritt wurde erfolgreich gelöscht.",
+    "deleteInstructions": "Lange auf die Karte drücken, um Story-Daten zu löschen."
   },
   "chapterMenu": {
     "selectChapter": "Kapitel Auswählen",
@@ -88,5 +92,9 @@
   },
   "error": {
     "storyLoadFailed": "Kann Geschichte nicht laden: {{message}}"
+  },
+  "hint": {
+    "longPressToReveal": "Lange drücken, um den Text auszublenden",
+    "tapToRestore": "Tippe auf den Bildschirm, um wiederherzustellen"
   }
 }

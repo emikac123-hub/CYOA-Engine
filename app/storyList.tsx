@@ -1,11 +1,12 @@
 import * as Haptics from "expo-haptics";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SAMPLE_LIMIT } from "../constants/Constants";
 import { useLanguage } from "../localization/LanguageProvider";
 import { useRouter } from "expo-router";
 import { clearProgress } from "../storage/progressManager";
 import {
   Alert,
+  Animated,
   FlatList,
   Image,
   StyleSheet,
@@ -22,6 +23,7 @@ import {
 import { isStoryUnlocked } from "../storage/unlockManager";
 import { loadChapterProgress } from "../storage/progressManager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getDeleteEmoji } from "components/PlatformService";
 
 const coverImages: Record<string, any> = {
   korgle: require("../assets/images/KorgleTitle.png"),
@@ -36,7 +38,9 @@ export default function StoryListScreen() {
   const [chapterMap, setChapterMap] = useState<Record<string, string | null>>(
     {}
   );
-  const [showHint, setShowHint] = useState(false);
+  // Define minimum versions that support 🫥 (Face with Dotted Outline)
+
+  const [showHint, setShowHint] = useState("");
   const [chapterTitles, setChapterTitles] = useState<
     Record<string, Record<string, string>>
   >({});
@@ -44,12 +48,65 @@ export default function StoryListScreen() {
   const { t, lang } = useLanguage();
   const { theme } = useTheme();
   const s = styles(theme);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
   const insets = useSafeAreaInsets();
+  const pulseAnim = useRef(new Animated.Value(1)).current;
   useEffect(() => {
     AsyncStorage.getItem("hasSeenLongPressHint").then((val) => {
-      if (val === "true") setHasSeenLongPressHint(true);
+      console.log("val " + val);
+      if (val !== "") setHasSeenLongPressHint(true);
     });
   }, []);
+  useEffect(() => {
+    AsyncStorage.setItem("hasSeenLongPressHint", "sh");
+  }, []);
+  useEffect(() => {
+    console.log(hasSeenLongPressHint);
+    if (!hasSeenLongPressHint) {
+      setShowHint("sh"); // Show story title in the toast
+      setTimeout(() => setShowHint(""), 5000);
+
+      AsyncStorage.setItem("hasSeenLongPressHint", "true");
+      setHasSeenLongPressHint(true);
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1.05,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    }
+  }, [showHint]);
+  useEffect(() => {
+    if (showHint !== "") {
+      // Fade in
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }).start();
+
+      // After delay, fade out and then clear showHint
+      const timeout = setTimeout(() => {
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }).start(() => {
+          setShowHint("");
+        });
+      }, 2500);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [showHint]);
   useEffect(() => {
     const load = async () => {
       const storyFileMap = {
@@ -92,60 +149,55 @@ export default function StoryListScreen() {
 
     load();
   }, [lang]);
+  const handleLongPress = (item: any) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+
+    Alert.alert(
+      t("storyList.deleteProgressTitle", {
+        defaultValue: "Delete Progress?",
+      }),
+      t("storyList.deleteProgressBody", {
+        defaultValue: `This will remove saved progress for "${item.title}". Are you sure?`,
+        title: item.title,
+      }),
+      [
+        { text: t("titleScreen.cancel"), style: "cancel" },
+        {
+          text: t("titleScreen.delete"),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await clearProgress(item.id);
+
+              // Don't re-lock the story
+              setChapterMap((prev) => ({ ...prev, [item.id]: "intro" }));
+              setResetFlags((prev) => ({ ...prev, [item.id]: true }));
+
+              Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Success
+              );
+              setStories((prev) => [...prev]);
+
+              Alert.alert(
+                t("storyList.deleted"),
+                t("storyList.deletedMessage", {
+                  defaultValue: "Progress cleared successfully.",
+                })
+              );
+            } catch (err) {
+              console.warn("Failed to delete progress:", err);
+              Alert.alert("Error", "Unable to delete progress.");
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const renderItem = ({ item }: { item: any }) => {
     const unlocked = unlockedMap[item.id];
     let currentChapterId = chapterMap[item.id] || "intro";
     const chapterTitle = chapterTitles[item.id]?.[currentChapterId || ""];
-
-    const handleLongPress = () => {
-      if (!hasSeenLongPressHint) {
-        setShowHint(true);
-        setTimeout(() => setShowHint(false), 2500);
-
-        AsyncStorage.setItem("hasSeenLongPressHint", "true");
-        setHasSeenLongPressHint(true);
-      }
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      Alert.alert(
-        t("storyList.deleteProgressTitle", {
-          defaultValue: "Delete Progress?",
-        }),
-        t("storyList.deleteProgressBody", {
-          defaultValue: `This will remove saved progress for "${item.title}". Are you sure?`,
-          title: item.title,
-        }),
-        [
-          { text: t("titleScreen.cancel"), style: "cancel" },
-          {
-            text: t("titleScreen.delete"),
-            style: "destructive",
-            onPress: async () => {
-              try {
-                await clearProgress(item.id);
-                setChapterMap((prev) => ({ ...prev, [item.id]: "intro" }));
-                setUnlockedMap((prev) => ({ ...prev, [item.id]: false }));
-                setResetFlags((prev) => ({ ...prev, [item.id]: true })); // ✅ Flag it
-                Haptics.notificationAsync(
-                  Haptics.NotificationFeedbackType.Success
-                );
-                setStories((prev) => [...prev]);
-                Alert.alert(
-                  t("storyList.deleted"),
-                  t("storyList.deletedMessage", {
-                    defaultValue: "Progress cleared successfully.",
-                  })
-                );
-              } catch (err) {
-                console.warn("Failed to delete progress:", err);
-                Alert.alert("Error", "Unable to delete progress.");
-              }
-            },
-          },
-        ]
-      );
-    };
-
     return (
       <TouchableOpacity
         style={s.card}
@@ -179,7 +231,7 @@ export default function StoryListScreen() {
             });
           }
         }}
-        onLongPress={handleLongPress}
+        onLongPress={() => handleLongPress(item)}
         delayLongPress={500}
       >
         {item.coverImage && coverImages[item.coverImage] && (
@@ -221,10 +273,18 @@ export default function StoryListScreen() {
         paddingHorizontal: 16,
       }}
     >
-      {showHint && (
-        <View style={s.toast}>
-          <Text style={s.toastText}>Hold to reset progress</Text>
-        </View>
+      {showHint !== "" && (
+        <Animated.View
+          style={[
+            s.toast,
+            { opacity: fadeAnim },
+            { transform: [{ scale: pulseAnim }] },
+          ]}
+        >
+          <Text style={s.toastText}>
+            {`${getDeleteEmoji()} ${t("storyList.deleteInstructions")}`}
+          </Text>
+        </Animated.View>
       )}
       <View
         style={{

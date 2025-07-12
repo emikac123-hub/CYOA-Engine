@@ -1,6 +1,9 @@
 {
   "titleScreen": {
-    "mainTitle": "Sögur af Kóvarníus",
+      "clearHint": "Halda inni til að eyða sögugögnum",
+    "mainTitleTop": "Tveir",
+    "mainTitleBottom": "Stígar",
+    
     "start": "Byrja ferðalagið",
     "continue": "🕹️ Haltu áfram",
     "delete": "Eyða",
@@ -32,12 +35,14 @@
   "gameOver": "Leik Lokið",
   "languageChangeWarning": "Ef þú breytir tungumáli verður þér vísað aftur á upphafsskjáinn. Ertu viss?",
   "storyList": {
+     "mainTitle": "Sögur af Kóvarníus",
     "continueChapter": "Haltu áfram ævintýrinu",
     "sampleLimit": "🔓 Aðeins sýnishorn ({{count}} valmöguleikar)",
     "deleteProgressTitle": "Hreinsa Framvindu?",
     "deleteProgressBody": "Framvindu fyrir „{{title}}“ verður eytt. Ertu viss?",
     "deleted": "Eytt",
-    "deletedMessage": "Framvindu var eytt með góðum árangri."
+    "deletedMessage": "Framvindu var eytt með góðum árangri.",
+    "deleteInstructions": "Ýttu lengi á spjaldið til að hreinsa sögugögn."
   },
   "chapterMenu": {
     "selectChapter": "Kaflaval",
@@ -88,5 +93,10 @@
   },
   "error": {
     "storyLoadFailed": "Ekki tókst að hlaða sögu: {{message}}"
+  },
+  "hint": {
+    "longPressToReveal": "Halda inni til að fela textann",
+    
+    "tapToRestore": "Pikkaðu á skjáinn til að endurheimta"
   }
 }

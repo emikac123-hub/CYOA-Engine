@@ -282,7 +282,7 @@ export default function StoryListScreen() {
           ]}
         >
           <Text style={s.toastText}>
-            {`${getDeleteEmoji} ${t("storyList.deleteInstructions")}`}
+            {`${getDeleteEmoji()} ${t("storyList.deleteInstructions")}`}
           </Text>
         </Animated.View>
       )}

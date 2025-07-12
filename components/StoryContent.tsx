@@ -25,6 +25,7 @@ import { BlurView } from "expo-blur";
 import imageMap from "assets/imageMap";
 import ChoiceButton from "./ChoiceButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import FallbackBlurView from "./FallBackBlurView";
 
 const StoryContent = ({
   page,
@@ -305,7 +306,7 @@ const StoryContent = ({
               <Animated.View style={[s.blurWrapper, { opacity: textOpacity }]}>
                 <Pressable onLongPress={handleLongPress} delayLongPress={500}>
                   {({ pressed }) => (
-                    <BlurView
+                    <FallbackBlurView
                       intensity={50}
                       tint={theme}
                       style={[s.blurContainer, { opacity: pressed ? 0.5 : 1 }]}
@@ -335,7 +336,7 @@ const StoryContent = ({
                           </Text>
                         </Animated.View>
                       )}
-                    </BlurView>
+                    </FallbackBlurView>
                   )}
                 </Pressable>
               </Animated.View>

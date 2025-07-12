@@ -9,6 +9,13 @@ dist/
 web-build/
 expo-env.d.ts
 
+
+# Ignore everything in the assets folder
+assets/*
+
+# But don't ignore the folder itself (optional)
+!assets/.gitkeep
+
 # Native
 .kotlin/
 *.orig.*

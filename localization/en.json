@@ -1,6 +1,8 @@
 {
   "titleScreen": {
-    "mainTitle": "Parallel Fates",
+    "clearHint": "Long press to clear story data.",
+    "mainTitleTop": "Two",
+    "mainTitleBottom": "Roads",
     "start": "Start New Adventure",
     "continue": "🕹️ Continue",
     "delete": "Delete",
@@ -38,7 +40,8 @@
     "deleteProgressTitle": "Delete Progress?",
     "deleteProgressBody": "This will remove saved progress for \"{{title}}\". Are you sure?",
     "deleted": "Deleted",
-    "deletedMessage": "Progress cleared successfully."
+    "deletedMessage": "Progress cleared successfully.",
+    "deleteInstructions": 
   },
   "chapterMenu": {
     "selectChapter": "Chapter Select",
@@ -88,5 +91,9 @@
   },
   "error": {
     "storyLoadFailed": "Unable to load story: {{message}}"
+  },
+    "hint": {
+    "longPressToReveal": "Long press to remove text.",
+    "tapToRestore": "Tap screen to restore."
   }
 }

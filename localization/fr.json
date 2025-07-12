@@ -1,6 +1,8 @@
 {
   "titleScreen": {
-    "mainTitle": "Les Contes de Covarnius",
+      "clearHint": "Appui long pour effacer les données de l'histoire",
+    "mainTitleTop": "Deux",
+    "mainTitleBottom": "Routes",
     "start": "Début du voyage",
     "continue": "🕹️ Continuer",
     "delete": "Supprimer",
@@ -33,12 +35,14 @@
   "gameOver": "Veuillez réessayer !",
   "languageChangeWarning": "Si vous changez de langue, vous serez renvoyé à l’écran d’accueil. Êtes-vous sûr ?",
   "storyList": {
+     "mainTitle": "Les Contes de Covarnius",
     "continueChapter": "Reprendre l'aventure",
     "sampleLimit": "🔓 Extrait seulement ({{count}} choix)",
     "deleteProgressTitle": "Supprimer la Progression?",
     "deleteProgressBody": "La progression pour « {{title}} » sera supprimée. Êtes-vous sûr(e) ?",
     "deleted": "Supprimé",
-    "deletedMessage": "La progression a été supprimée avec succès."
+    "deletedMessage": "La progression a été supprimée avec succès.",
+    "deleteInstructions": "Appuyez longuement sur la carte pour effacer les données de l'histoire.",
   },
   "chapterMenu": {
     "chaptersUnlocked": "Chapitres débloqués",
@@ -88,5 +92,10 @@
   },
   "error": {
     "storyLoadFailed": "Impossible de charger l'histoire: {{message}}"
+  },
+  "hint": {
+    "longPressToReveal": "Appui long pour masquer le texte",
+    
+    "tapToRestore": "Touchez l'écran pour restaurer"
   }
 }

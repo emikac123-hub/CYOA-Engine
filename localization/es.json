@@ -1,6 +1,8 @@
 {
   "titleScreen": {
-    "mainTitle": "Cuentos de Covarnius",
+      "clearHint": "Mantén pulsado para borrar los datos de la historia",
+    "mainTitleTop": "Dos",
+    "mainTitleBottom": "Caminos",
     "start": "Iniciar viaje",
     "continue": "🕹️ Continuar",
     "delete": "Eliminar",
@@ -39,7 +41,8 @@
     "deleteProgressTitle": "Eliminar Progreso?",
     "deleteProgressBody": "Se eliminará el progreso de «{{title}}». ¿Estás seguro?",
     "deleted": "Eliminado",
-    "deletedMessage": "El progreso se eliminó correctamente."
+    "deletedMessage": "El progreso se eliminó correctamente.",
+    "deleteInstructions": "Mantén presionada la tarjeta para borrar los datos de la historia."
   },
   "chapterMenu": {
     "selectChapter": "Selección de Capítulo",
@@ -89,5 +92,10 @@
   },
   "error": {
     "storyLoadFailed": "No se pudo cargar la historia: {{message}}"
+  },
+  "hint": {
+    "longPressToReveal": "Mantén pulsado para ocultar el texto",
+    
+    "tapToRestore": "Toca la pantalla para restaurar"
   }
 }

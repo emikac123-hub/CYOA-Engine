@@ -36,6 +36,7 @@
   "gameOver": "Fin del juego",
   "languageChangeWarning": "Si cambias el idioma, volverás a la pantalla de inicio. ¿Estás seguro?",
   "storyList": {
+    "mainTitle": "Cuentos de Covarnius",
     "continueChapter": "Reanudar la aventura",
     "sampleLimit": "🔓 Solo muestra ({{count}} opciones)",
     "deleteProgressTitle": "Eliminar Progreso?",

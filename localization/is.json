@@ -42,7 +42,7 @@
     "deleteProgressBody": "Framvindu fyrir „{{title}}“ verður eytt. Ertu viss?",
     "deleted": "Eytt",
     "deletedMessage": "Framvindu var eytt með góðum árangri.",
-      "deleteInstructions": "Ýttu lengi á spjaldið til að hreinsa sögugögn."
+    "deleteInstructions": "Ýttu lengi á spjaldið til að hreinsa sögugögn."
   },
   "chapterMenu": {
     "selectChapter": "Kaflaval",

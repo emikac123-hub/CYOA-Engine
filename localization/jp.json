@@ -36,14 +36,14 @@
   "gameOver": "ゲーム終了",
   "languageChangeWarning": "言語を変更すると、タイトル画面に戻ります。よろしいですか？",
   "storyList": {
-      "mainTitle": "コヴァーニアスの物語",
+    "mainTitle": "コヴァーニアスの物語",
     "continueChapter": "冒険の続きを始める",
     "sampleLimit": "🔓 お試し版（{{count}}つの選択肢",
     "deleteProgressTitle": "進行状況を削除しますか？",
     "deleteProgressBody": "「{{title}}」の進行状況を削除します。よろしいですか？",
     "deleted": "削除しました",
     "deletedMessage": "進行状況を正常に削除しました。",
-    "deleteInstructions": "カードを長押ししてストーリーデータを消去します。",
+    "deleteInstructions": "カードを長押ししてストーリーデータを消去します。"
   },
   "chapterMenu": {
     "selectChapter": "チャプター選択",

@@ -42,7 +42,7 @@
     "deleteProgressBody": "La progression pour « {{title}} » sera supprimée. Êtes-vous sûr(e) ?",
     "deleted": "Supprimé",
     "deletedMessage": "La progression a été supprimée avec succès.",
-    "deleteInstructions": "Appuyez longuement sur la carte pour effacer les données de l'histoire.",
+    "deleteInstructions": "Appuyez longuement sur la carte pour effacer les données de l'histoire."
   },
   "chapterMenu": {
     "chaptersUnlocked": "Chapitres débloqués",

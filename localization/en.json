@@ -35,13 +35,14 @@
   "gameOver": "Game Over",
   "languageChangeWarning": "If you change the language, you’ll be returned to the title screen. Are you sure?",
   "storyList": {
+    "mainTitle": "Tales of Covarnius",
     "continueChapter": "Continue Chapter",
     "sampleLimit": "🔓 Sample only ({{count}} choices)",
     "deleteProgressTitle": "Delete Progress?",
     "deleteProgressBody": "This will remove saved progress for \"{{title}}\". Are you sure?",
     "deleted": "Deleted",
     "deletedMessage": "Progress cleared successfully.",
-    "deleteInstructions": 
+    "deleteInstructions": "Long press card to clear story data."
   },
   "chapterMenu": {
     "selectChapter": "Chapter Select",

@@ -1,19 +1,16 @@
+
 import { useLanguage } from "../localization/LanguageProvider";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SAMPLE_LIMIT } from "../constants/Constants";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { saveChapterProgress } from "../storage/progressManager";
 import {
-  Animated,
-  Easing,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+  loadSavedDecisionPath,
+  saveChapterProgress,
+  savePathAfterDecision,
+} from "../storage/progressManager";
+import { Animated, Easing, TouchableOpacity, View } from "react-native";
 
 import SettingsModal from "../components/SettingsMenu";
 import StoryLoaderGate, { useStory } from "../components/StoryLoaderGate";
@@ -47,13 +44,12 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   const router = useRouter();
   const previousPageIdRef = useRef(null);
   const { t } = useLanguage();
+  const [decisionPath, setDecisionPath] = useState<string[]>([]);
   const { theme } = useTheme();
   const startPageId = "intro";
   const [chapterMenuVisible, setChapterMenuVisible] = useState(false);
   const insets = useSafeAreaInsets();
-
   const { id, reset } = useLocalSearchParams();
-
   useEffect(() => {
     const loadInitialState = async () => {
       const allPageIds = new Set(story.map((p) => p.id));
@@ -62,8 +58,6 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       try {
         const savedPageId =
           reset === "true" ? null : await loadProgress(meta.id); // ✅ Skip if reset
-
-        console.log("saved page ID:", savedPageId);
         const savedHistory = await AsyncStorage.getItem(
           `${HISTORY_KEY_PREFIX}${meta.id}`
         );
@@ -144,6 +138,7 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       useNativeDriver: true,
     }).start();
   };
+  
   useEffect(() => {
     console.log("🧠 History:", history);
   }, [history]);
@@ -156,7 +151,18 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       ).catch((err) => console.warn("Failed to save history:", err));
     }
   }, [history]);
+useEffect(() => {
+  const loadInitialPath = async () => {
+    const saved = await loadSavedDecisionPath(meta.id);
+    if (saved?.includes(currentPageId)) {
+      setDecisionPath(saved);
+    }
+  };
 
+  if (decisionPath.length === 0 && currentPageId) {
+    loadInitialPath();
+  }
+}, [decisionPath.length, currentPageId]);
   useEffect(() => {
     if (currentPageId) fadeIn();
   }, [currentPageId]);
@@ -221,6 +227,7 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
     const actual = stripped(page.choices[0].text);
     return actual === expected;
   }, [page, t]);
+
   const handleChoice = async (fromId: string, nextId: string) => {
     setHistory((prev) => [...prev, fromId]);
 
@@ -232,9 +239,44 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       return;
     }
 
+    const currentPage = story.find((p) => p.id === fromId);
+    if (currentPage?.choices.length > 1) {
+      // 🌱 New decision made — calculate and store new linear path
+      const newDecisionPath = getFullPathFromCurrent(nextId, story); // ✅ use nextId here!
+      setDecisionPath(newDecisionPath);
+      await savePathAfterDecision(meta.id, newDecisionPath); // ✅ use newDecisionPath
+    } else {
+      // 🔁 Still in linear path — retrieve last saved path and continue using it
+      const persistedPath = await loadSavedDecisionPath(meta.id);
+      console.log("persisted path", persistedPath)
+      setDecisionPath(persistedPath);
+    }
+    console.log("Decision Path: ", decisionPath);
+
     await saveProgress(meta.id, nextId);
     setCurrentPageId(nextId);
     setDecisionCount(nextCount);
+  };
+
+  const getFullPathFromCurrent = (startId, story): string[] => {
+    const path: string[] = [];
+    let currentId = startId;
+    console.log("Current ID", currentId);
+    while (true) {
+      const currentPage = story.find((p) => p.id === currentId);
+      if (!currentPage) break;
+
+      path.push(currentId);
+
+      const choices = currentPage.choices;
+      if (!choices || choices.length !== 1) {
+        break; // stop at game-over or multi-choice
+      }
+
+      currentId = choices[0].nextId;
+    }
+
+    return path;
   };
 
   return (
@@ -278,6 +320,7 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
           router={router}
           setShowPaywall={setShowPaywall}
           setHistory={setHistory}
+          decisionPath={decisionPath}
         />
       )}
 
@@ -286,7 +329,6 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
         title={currentChapterTitle}
         confettiKey={confettiKey}
         onClose={() => {
-          console.log("Popup dismissed");
           setShowChapterPopup(false);
         }}
         accessibilityLabel={t("accessibility.chapterUnlockedPopup")}
@@ -330,3 +372,4 @@ export function stripEmoji(text: string): string {
   const emojiRegex = /^[\p{Extended_Pictographic}\uFE0F\s]+/u;
   return text.replace(emojiRegex, "").trim();
 }
+

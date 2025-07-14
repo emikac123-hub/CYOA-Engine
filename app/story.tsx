@@ -4,16 +4,12 @@ import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SAMPLE_LIMIT } from "../constants/Constants";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { saveChapterProgress } from "../storage/progressManager";
 import {
-  Animated,
-  Easing,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+  findMatchingDecisionPath,
+  saveChapterProgress,
+  saveDecisionPathWithKey,
+} from "../storage/progressManager";
+import { Animated, Easing, TouchableOpacity, View } from "react-native";
 
 import SettingsModal from "../components/SettingsMenu";
 import StoryLoaderGate, { useStory } from "../components/StoryLoaderGate";
@@ -51,9 +47,7 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   const startPageId = "intro";
   const [chapterMenuVisible, setChapterMenuVisible] = useState(false);
   const insets = useSafeAreaInsets();
-
   const { id, reset } = useLocalSearchParams();
-
   useEffect(() => {
     const loadInitialState = async () => {
       const allPageIds = new Set(story.map((p) => p.id));
@@ -62,8 +56,6 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       try {
         const savedPageId =
           reset === "true" ? null : await loadProgress(meta.id); // ✅ Skip if reset
-
-        console.log("saved page ID:", savedPageId);
         const savedHistory = await AsyncStorage.getItem(
           `${HISTORY_KEY_PREFIX}${meta.id}`
         );
@@ -144,6 +136,7 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       useNativeDriver: true,
     }).start();
   };
+
   useEffect(() => {
     console.log("🧠 History:", history);
   }, [history]);
@@ -160,7 +153,6 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   useEffect(() => {
     if (currentPageId) fadeIn();
   }, [currentPageId]);
-
   useEffect(() => {
     if (!page || currentPageId === lastShownChapterId) return;
 
@@ -221,20 +213,87 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
     const actual = stripped(page.choices[0].text);
     return actual === expected;
   }, [page, t]);
+
   const handleChoice = async (fromId: string, nextId: string) => {
-    setHistory((prev) => [...prev, fromId]);
+    setHistory((prev) => [...prev.filter((id) => id !== "GameOver"), fromId]);
+
+    if (currentPageId === "GameOver") {
+      router.replace("/");
+      return;
+    }
 
     const unlocked = await isStoryUnlocked(meta.id);
     const nextCount = decisionCount + 1;
-
     if (!unlocked && nextCount >= SAMPLE_LIMIT) {
       setShowPaywall(true);
       return;
     }
 
-    await saveProgress(meta.id, nextId);
+    const currentPage = story.find((p) => p.id === fromId);
+    const newDecisionPath = getFullPathFromCurrent(nextId, story);
+    if (currentPage?.choices.length > 1) {
+      console.log("Saving the next descition path.");
+      // 🌱 New decision made — calculate and store new linear path
+      console.log("Decision Path to be saved.", newDecisionPath);
+      await saveDecisionPathWithKey(meta.id, nextId, newDecisionPath); // ✅ store path for nextId
+    }
+
+    if (!newDecisionPath.includes("GameOver")) {
+      await saveProgress(meta.id, nextId);
+    }
     setCurrentPageId(nextId);
     setDecisionCount(nextCount);
+  };
+
+  // useEffect(() => {
+  //   const maybeSaveDecisionPath = async () => {
+  //     const decisionPath = getFullPathFromCurrent(nextId, story);
+  //     let match = findMatchingDecisionPath(meta.id, nextId);
+  //      if (currentPage?.choices.length > 1) {
+  //       await saveDecisionPathWithKey(meta.id, nextId, decisionPath);
+  //     }
+  //   };
+
+  //   maybeSaveDecisionPath();
+  // }, [currentPageId]);
+
+  useEffect(() => {
+    const maybeSaveDecisionPath = async () => {
+      console.log("Current Page ID " + page?.id);
+      const decisionPath = getFullPathFromCurrent(page?.id, story);
+      const existing = await findMatchingDecisionPath(meta.id, page?.id);
+
+      if (!existing) {
+        console.log(
+          "📥 No existing path found, saving new decision path for:",
+          page?.id
+        );
+        await saveDecisionPathWithKey(meta.id, page?.id, decisionPath);
+      }
+    };
+
+    maybeSaveDecisionPath();
+  }, [currentPageId]);
+
+  const getFullPathFromCurrent = (startId, story): string[] => {
+    const path: string[] = [];
+    let currentId = startId;
+    console.log("Current ID", currentId);
+    while (true) {
+      const currentPage = story.find((p) => p.id === currentId);
+      if (!currentPage) break;
+
+      path.push(currentId);
+
+      const choices = currentPage.choices;
+      if (!choices || choices.length !== 1) {
+        break; // stop at game-over or multi-choice
+      }
+
+      currentId = choices[0].nextId;
+    }
+
+    return path;
   };
 
   return (
@@ -286,7 +345,6 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
         title={currentChapterTitle}
         confettiKey={confettiKey}
         onClose={() => {
-          console.log("Popup dismissed");
           setShowChapterPopup(false);
         }}
         accessibilityLabel={t("accessibility.chapterUnlockedPopup")}

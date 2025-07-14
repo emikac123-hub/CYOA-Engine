@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Modal,
   Text,
@@ -13,6 +13,7 @@ import { useLanguage } from "localization/LanguageProvider";
 import { useTheme } from "context/ThemeContext";
 import { stripEmoji } from "app/story";
 import { PixelRatio } from "react-native";
+import { Audio } from "expo-av";
 
 type ChapterUnlockPopupProps = {
   visible: boolean;
@@ -30,10 +31,32 @@ const ChapterUnlockPopup = ({
   accessibilityViewIsModal,
   accessible,
 }: ChapterUnlockPopupProps) => {
-  if (!visible) return null;
   const { t } = useLanguage();
   const { theme } = useTheme();
   const s = styles(theme);
+  const chapterUnlockedSound = useRef<Audio.Sound | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadAndPlay = async () => {
+      const { sound } = await Audio.Sound.createAsync(
+        require("../assets/chapter-unlocked.wav")
+      );
+      chapterUnlockedSound.current = sound;
+      if (visible && isMounted) {
+        await sound.replayAsync();
+      }
+    };
+
+    if (visible) {
+      loadAndPlay();
+    }
+
+    return () => {
+      isMounted = false;
+      chapterUnlockedSound.current?.unloadAsync();
+    };
+  }, [visible]);
 
   return (
     <Modal
@@ -45,58 +68,60 @@ const ChapterUnlockPopup = ({
       accessible={accessible}
       accessibilityRole={accessibilityRole}
     >
-      <View style={s.overlay}>
-        <ConfettiCannon
-          count={80}
-          origin={{ x: 200, y: 0 }}
-          explosionSpeed={300}
-          fallSpeed={2000}
-          fadeOut
-          autoStart
-          key={confettiKey}
-        />
-        <LinearGradient
-          colors={["#FF5F6D", "#FFC371", "#47CACC", "#7A5FFF", "#FF5F6D"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={s.gradientBorder}
-        >
-          <View style={s.innerBox} accessible={true}>
-            <Text
-              style={s.subtitle}
-              allowFontScaling
-              accessibilityRole="header"
-              accessibilityLabel={t("accessibility.chapterUnlockedSubtitle")}
-            >
-              {t("unlockPopup.unlocked")}
-            </Text>
-
-            <Text
-              style={s.title}
-              allowFontScaling
-              accessibilityLabel={t("accessibility.chapterUnlockedTitle", {
-                title: stripEmoji(title),
-              })}
-            >
-              🎉 {stripEmoji(title)}
-            </Text>
-
-            <TouchableOpacity
-              onPress={onClose}
-              style={s.okButton}
-              accessibilityRole="button"
-              accessibilityLabel={t("accessibility.okButton")}
-            >
-              <Text allowFontScaling style={s.okText}>🫡 OK</Text>
-            </TouchableOpacity>
-          </View>
-        </LinearGradient>
-      </View>
+      {visible && (
+        <View style={s.overlay}>
+          <ConfettiCannon
+            count={80}
+            origin={{ x: 200, y: 0 }}
+            explosionSpeed={300}
+            fallSpeed={2000}
+            fadeOut
+            autoStart
+            key={confettiKey}
+          />
+          <LinearGradient
+            colors={["#FF5F6D", "#FFC371", "#47CACC", "#7A5FFF", "#FF5F6D"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={s.gradientBorder}
+          >
+            <View style={s.innerBox} accessible={true}>
+              <Text
+                style={s.subtitle}
+                allowFontScaling
+                accessibilityRole="header"
+                accessibilityLabel={t("accessibility.chapterUnlockedSubtitle")}
+              >
+                {t("unlockPopup.unlocked")}
+              </Text>
+              <Text
+                style={s.title}
+                allowFontScaling
+                accessibilityLabel={t("accessibility.chapterUnlockedTitle", {
+                  title: stripEmoji(title),
+                })}
+              >
+                🎉 {stripEmoji(title)}
+              </Text>
+              <TouchableOpacity
+                onPress={onClose}
+                style={s.okButton}
+                accessibilityRole="button"
+                accessibilityLabel={t("accessibility.okButton")}
+              >
+                <Text allowFontScaling style={s.okText}>
+                  🫡 OK
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+        </View>
+      )}
     </Modal>
   );
 };
 const styles = (theme: "light" | "dark") => {
-    const fontScale = PixelRatio.getFontScale();
+  const fontScale = PixelRatio.getFontScale();
   return StyleSheet.create({
     overlay: {
       flex: 1,
@@ -140,5 +165,5 @@ const styles = (theme: "light" | "dark") => {
       fontWeight: "600",
     },
   });
-}
+};
 export default ChapterUnlockPopup;

@@ -1,4 +1,3 @@
-
 import { useLanguage } from "../localization/LanguageProvider";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -6,9 +5,9 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { SAMPLE_LIMIT } from "../constants/Constants";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  loadSavedDecisionPath,
+  findMatchingDecisionPath,
   saveChapterProgress,
-  savePathAfterDecision,
+  saveDecisionPathWithKey,
 } from "../storage/progressManager";
 import { Animated, Easing, TouchableOpacity, View } from "react-native";
 
@@ -44,7 +43,6 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   const router = useRouter();
   const previousPageIdRef = useRef(null);
   const { t } = useLanguage();
-  const [decisionPath, setDecisionPath] = useState<string[]>([]);
   const { theme } = useTheme();
   const startPageId = "intro";
   const [chapterMenuVisible, setChapterMenuVisible] = useState(false);
@@ -138,7 +136,7 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       useNativeDriver: true,
     }).start();
   };
-  
+
   useEffect(() => {
     console.log("🧠 History:", history);
   }, [history]);
@@ -151,22 +149,10 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
       ).catch((err) => console.warn("Failed to save history:", err));
     }
   }, [history]);
-useEffect(() => {
-  const loadInitialPath = async () => {
-    const saved = await loadSavedDecisionPath(meta.id);
-    if (saved?.includes(currentPageId)) {
-      setDecisionPath(saved);
-    }
-  };
 
-  if (decisionPath.length === 0 && currentPageId) {
-    loadInitialPath();
-  }
-}, [decisionPath.length, currentPageId]);
   useEffect(() => {
     if (currentPageId) fadeIn();
   }, [currentPageId]);
-
   useEffect(() => {
     if (!page || currentPageId === lastShownChapterId) return;
 
@@ -233,7 +219,6 @@ useEffect(() => {
 
     const unlocked = await isStoryUnlocked(meta.id);
     const nextCount = decisionCount + 1;
-
     if (!unlocked && nextCount >= SAMPLE_LIMIT) {
       setShowPaywall(true);
       return;
@@ -241,22 +226,41 @@ useEffect(() => {
 
     const currentPage = story.find((p) => p.id === fromId);
     if (currentPage?.choices.length > 1) {
+      console.log("Saving the next descition path.")
       // 🌱 New decision made — calculate and store new linear path
-      const newDecisionPath = getFullPathFromCurrent(nextId, story); // ✅ use nextId here!
-      setDecisionPath(newDecisionPath);
-      await savePathAfterDecision(meta.id, newDecisionPath); // ✅ use newDecisionPath
-    } else {
-      // 🔁 Still in linear path — retrieve last saved path and continue using it
-      const persistedPath = await loadSavedDecisionPath(meta.id);
-      console.log("persisted path", persistedPath)
-      setDecisionPath(persistedPath);
+      const newDecisionPath = getFullPathFromCurrent(nextId, story); // ✅ use nextId
+      console.log("Decision Path to be saved.", newDecisionPath)
+      await saveDecisionPathWithKey(meta.id, nextId, newDecisionPath); // ✅ store path for nextId
     }
-    console.log("Decision Path: ", decisionPath);
 
     await saveProgress(meta.id, nextId);
     setCurrentPageId(nextId);
     setDecisionCount(nextCount);
   };
+
+  // useEffect(() => {
+  //   const maybeSaveDecisionPath = async () => {
+  //     const decisionPath = getFullPathFromCurrent(nextId, story);
+  //     let match = findMatchingDecisionPath(meta.id, nextId);
+  //      if (currentPage?.choices.length > 1) {
+  //       await saveDecisionPathWithKey(meta.id, nextId, decisionPath);
+  //     }
+  //   };
+
+  //   maybeSaveDecisionPath();
+  // }, [currentPageId]);
+
+  useEffect(() => {
+    const maybeSaveDecisionPath = async () => {
+      const decisionPath = getFullPathFromCurrent(currentPageId, story);
+      let match = findMatchingDecisionPath(meta.id, currentPageId);
+      if (currentPageId === 'intro') {
+        await saveDecisionPathWithKey(meta.id, currentPageId, decisionPath);
+      }
+    };
+
+    maybeSaveDecisionPath();
+  }, [currentPageId]);
 
   const getFullPathFromCurrent = (startId, story): string[] => {
     const path: string[] = [];
@@ -320,7 +324,6 @@ useEffect(() => {
           router={router}
           setShowPaywall={setShowPaywall}
           setHistory={setHistory}
-          decisionPath={decisionPath}
         />
       )}
 
@@ -372,4 +375,3 @@ export function stripEmoji(text: string): string {
   const emojiRegex = /^[\p{Extended_Pictographic}\uFE0F\s]+/u;
   return text.replace(emojiRegex, "").trim();
 }
-

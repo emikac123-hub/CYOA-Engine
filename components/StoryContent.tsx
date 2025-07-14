@@ -18,7 +18,10 @@ import { Pressable } from "react-native";
 import { useTheme } from "context/ThemeContext";
 import { storyStyles } from "./storyStyles";
 import { useLanguage } from "localization/LanguageProvider";
-import { clearProgressOnly, loadSavedPath } from "storage/progressManager";
+import {
+  clearProgressOnly,
+  findMatchingDecisionPath,
+} from "storage/progressManager";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BlurView } from "expo-blur";
@@ -40,7 +43,6 @@ const StoryContent = ({
   router,
   setShowPaywall,
   setHistory,
-  decisionPath,
 }) => {
   const { theme } = useTheme();
   const s = storyStyles(theme);
@@ -65,7 +67,14 @@ const StoryContent = ({
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   const LAST_IMAGE_KEY = "lastUsedStoryImage";
-
+  const getPageCounter = (
+    path: string[],
+    currentPageId: string
+  ): { x: number; y: number } => {
+    const index = path.indexOf(currentPageId);
+    if (index === -1) return { x: 0, y: path.length };
+    return { x: index + 1, y: path.length };
+  };
   useEffect(() => {
     const pulse = Animated.loop(
       Animated.sequence([
@@ -101,7 +110,6 @@ const StoryContent = ({
   }, [page]);
 
   useEffect(() => {
-    console.log("History: " + history);
     const resolveImage = async () => {
       let imagePath = page.image;
 
@@ -122,6 +130,33 @@ const StoryContent = ({
 
     resolveImage();
   }, [page?.id]);
+
+  const [pageX, setPageX] = useState(1);
+  const [pageY, setPageY] = useState(1);
+  useEffect(() => {
+    const resolvePathAndCounter = async () => {
+      try {
+        console.log("⚡ Resolving matching path for:", page.id);
+
+        // 🔍 Search all saved paths for one that contains page.id
+        const matchingPath = await findMatchingDecisionPath(meta.id, page.id);
+        console.log("✅ Matching path:", matchingPath);
+
+        if (matchingPath) {
+          const { x, y } = getPageCounter(matchingPath, page.id);
+          setPageX(x);
+          setPageY(y);
+        } else {
+          setPageX(1);
+          setPageY(1);
+        }
+      } catch (error) {
+        console.error("🚨 Error resolving path/counter:", error);
+      }
+    };
+
+    resolvePathAndCounter();
+  }, [page.id]);
 
   useEffect(() => {
     historyRef.current = history;
@@ -171,25 +206,11 @@ const StoryContent = ({
     return path;
   };
 
-  const [dotIndex, setDotIndex] = useState(0);
   const [basePageId, setBasePageId] = useState(page?.id);
 
   const [fullPath, setFullPath] = useState(() =>
     getFullPathFromCurrent(page?.id, story)
   );
-
-  const updatePathForCurrent = (currentId) => {
-    setBasePageId(currentId);
-    const newPath = getFullPathFromCurrent(currentId, story);
-    setFullPath(newPath);
-    setDotIndex(0);
-  };
-  useEffect(() => {
-    if (decisionPath?.length && decisionPath.includes(page.id)) {
-      setFullPath(decisionPath);
-      setDotIndex(decisionPath.indexOf(page.id));
-    }
-  }, [decisionPath, page.id]);
 
   const handleGameOver = async () => {
     const storyId = meta?.id;
@@ -218,6 +239,7 @@ const StoryContent = ({
         const currentHistory = historyRef.current;
 
         const gameOverText = t("gameOver")?.toLowerCase();
+
         const isGameOverPage = currentPage?.choices?.some(
           (choice) =>
             choice.text
@@ -411,50 +433,19 @@ const StoryContent = ({
                 );
               })}
             </View>
+            {isSingleContinue && (
+              <Text
+                style={styles.pageCounter}
+                accessibilityLabel={t("accessibility.pageProgress", {
+                  current: pageX,
+                  total: pageY,
+                })}
+                accessibilityRole="text"
+              >
+                {pageX} / {pageY}
+              </Text>
+            )}
           </View>
-
-          {(() => {
-            const gameOverText = t("gameOver")?.toLowerCase();
-            const hasGameOverInPath = decisionPath.some((id) => {
-              const p = story.find((pg) => pg.id === id);
-              return p?.choices?.some(
-                (choice) =>
-                  choice.text
-                    .replace(/[^\p{L}\p{N}\s]/gu, "")
-                    .trim()
-                    .toLowerCase() === gameOverText
-              );
-            });
-
-            const dotCount = hasGameOverInPath
-              ? decisionPath.length - 1
-              : decisionPath.length;
-            if (dotCount > 0 && isSingleContinue && decisionPath.length > 0) {
-              return (
-                <View
-                  style={styles.choiceTracker}
-                  accessible={true}
-                  accessibilityLabel={t("accessibility.pageProgress", {
-                    current: dotIndex + 1,
-                    total: dotCount,
-                  })}
-                  accessibilityRole="progressbar"
-                >
-                  {Array.from({ length: dotCount }).map((_, i) => (
-                    <View
-                      key={i}
-                      style={[
-                        styles.dot,
-                        i === dotIndex ? styles.activeDot : styles.inactiveDot,
-                      ]}
-                    />
-                  ))}
-                </View>
-              );
-            }
-
-            return null;
-          })()}
         </View>
       </ImageBackground>
     </>
@@ -492,6 +483,20 @@ const dotStyles = (theme) =>
     },
     scrollContainer: {
       paddingHorizontal: 20,
+    },
+    pageCounter: {
+      position: "absolute",
+      bottom: 16,
+      alignSelf: "center",
+      fontSize: 14,
+      fontWeight: "600",
+      color: theme === "dark" ? "#ccc" : "#444",
+      backgroundColor:
+        theme === "dark" ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.5)",
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 12,
+      overflow: "hidden",
     },
   });
 

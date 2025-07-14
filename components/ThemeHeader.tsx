@@ -11,7 +11,7 @@ import { useTheme } from "../context/ThemeContext";
 
 type Props = {
   onSettingsPress: () => void;
-} & AccessibilityProps; // ✅ allow accessibility props if passed
+} & AccessibilityProps; // allow accessibility props if passed
 
 export default function ThemedHeader({ onSettingsPress, ...a11yProps }: Props) {
   const { theme } = useTheme();
@@ -25,7 +25,7 @@ export default function ThemedHeader({ onSettingsPress, ...a11yProps }: Props) {
         accessibilityRole="button"
         accessibilityLabel="Open settings menu"
         accessible={true}
-        {...a11yProps} // ✅ pass through optional a11y props
+        {...a11yProps} // pass through optional a11y props
       >
         <Ionicons
           name="settings-outline"

@@ -44,57 +44,40 @@ const StoryContent = ({
   setShowPaywall,
   setHistory,
 }) => {
+  // Hooks
   const { theme } = useTheme();
-  const s = storyStyles(theme);
-  const styles = dotStyles(theme);
-  const choiceRefs = useRef([]);
   const { t } = useLanguage();
   const insets = useSafeAreaInsets();
+
+  // Styles
+  const s = storyStyles(theme);
+  const styles = dotStyles(theme);
+
+  // Refs
+  const choiceRefs = useRef([]);
   const pageRef = useRef(page);
   const historyRef = useRef(history);
-  const fallbackImage = require("../assets/images/Earth.png");
-
-  const [pressFeedback, setPressFeedback] = useState(new Animated.Value(1));
   const flashOverlayOpacity = useRef(new Animated.Value(0)).current;
-
-  const [resolvedImage, setResolvedImage] = useState(fallbackImage);
-  const imageFadeAnim = useRef(new Animated.Value(1)).current;
-  const previousImageRef = useRef(resolvedImage);
-  const [showText, setShowText] = useState(true);
-  const [overlayActive, setOverlayActive] = useState(false);
   const textOpacity = useRef(new Animated.Value(1)).current;
-  const isIntro = page.id === "intro";
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
+  // State
+  const [resolvedImage, setResolvedImage] = useState(null);
+  const [showText, setShowText] = useState(true);
+  const [pageX, setPageX] = useState(1);
+  const [pageY, setPageY] = useState(1);
+
+  // Constants
+  const isIntro = page.id === "intro";
+  const fallbackImage = require("../assets/images/Earth.png");
   const LAST_IMAGE_KEY = "lastUsedStoryImage";
-  const getPageCounter = (
-    path: string[],
-    currentPageId: string
-  ): { x: number; y: number } => {
+
+  // Helper Functions
+  const getPageCounter = (path: string[], currentPageId: string): { x: number; y: number } => {
     const index = path.indexOf(currentPageId);
-    if (index === -1) return { x: 0, y: path.length };
-    return { x: index + 1, y: path.length };
+    return index === -1 ? { x: 0, y: path.length } : { x: index + 1, y: path.length };
   };
-  useEffect(() => {
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 800,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 800,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    pulse.start();
-    return () => pulse.stop(); // optional cleanup
-  }, []);
+
   const handleRestoreText = () => {
     Haptics.selectionAsync();
     setShowText(true);
@@ -105,43 +88,70 @@ const StoryContent = ({
     }).start();
   };
 
+  const handleLongPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    Animated.sequence([
+      Animated.timing(flashOverlayOpacity, { toValue: 0.5, duration: 100, useNativeDriver: true }),
+      Animated.timing(flashOverlayOpacity, { toValue: 0, duration: 100, useNativeDriver: true }),
+    ]).start();
+    Animated.timing(textOpacity, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => setShowText(false));
+  };
+
+  const handleGameOver = async () => {
+    if (meta?.id) {
+      await clearProgressOnly(meta.id);
+    }
+    router.replace("/storyList");
+  };
+
+  // Effects
+
+  // Pulse Animation for Intro
+  useEffect(() => {
+    if (!isIntro) return;
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 1.1, duration: 800, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1, duration: 800, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+      ])
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, [isIntro]);
+
+  // Update Refs
   useEffect(() => {
     pageRef.current = page;
   }, [page]);
 
   useEffect(() => {
+    historyRef.current = history;
+  }, [history]);
+
+  // Image Resolving
+  useEffect(() => {
     const resolveImage = async () => {
       let imagePath = page.image;
-
       if (!imagePath || imagePath.trim() === "") {
-        // 🔁 Load last used image from AsyncStorage
         const lastImage = await AsyncStorage.getItem(LAST_IMAGE_KEY);
-        if (lastImage && imageMap[lastImage]) {
-          setResolvedImage(imageMap[lastImage]);
-        } else {
-          setResolvedImage(fallbackImage);
-        }
+        setResolvedImage(imageMap[lastImage] || fallbackImage);
       } else {
-        // Store new image path and use it
         await AsyncStorage.setItem(LAST_IMAGE_KEY, imagePath);
         setResolvedImage(imageMap[imagePath] || fallbackImage);
       }
     };
-
     resolveImage();
   }, [page?.id]);
 
-  const [pageX, setPageX] = useState(1);
-  const [pageY, setPageY] = useState(1);
+  // Path and Counter Resolving
   useEffect(() => {
     const resolvePathAndCounter = async () => {
       try {
-        console.log("⚡ Resolving matching path for:", page.id);
-
-        // 🔍 Search all saved paths for one that contains page.id
         const matchingPath = await findMatchingDecisionPath(meta.id, page.id);
-        console.log("✅ Matching path:", matchingPath);
-
         if (matchingPath) {
           const { x, y } = getPageCounter(matchingPath, page.id);
           setPageX(x);
@@ -151,109 +161,32 @@ const StoryContent = ({
           setPageY(1);
         }
       } catch (error) {
-        console.error("🚨 Error resolving path/counter:", error);
+        console.error("Error resolving path/counter:", error);
       }
     };
-
     resolvePathAndCounter();
-  }, [page.id]);
+  }, [page.id, meta.id]);
 
-  useEffect(() => {
-    historyRef.current = history;
-  }, [history]);
-
-  const handleLongPress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-
-    // Show brief flash (white overlay)
-    Animated.sequence([
-      Animated.timing(flashOverlayOpacity, {
-        toValue: 0.5,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(flashOverlayOpacity, {
-        toValue: 0,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    // Then fade out the text
-    Animated.timing(textOpacity, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      setShowText(false);
-    });
-  };
-
-  const getFullPathFromCurrent = (currentPageId, story) => {
-    let path = [];
-    let currentId = currentPageId;
-    while (true) {
-      const currentPage = story.find((p) => p.id === currentId);
-      if (
-        !currentPage ||
-        !currentPage.choices ||
-        currentPage.choices.length !== 1
-      )
-        break;
-      path.push(currentId);
-      currentId = currentPage.choices[0].nextId;
-    }
-    return path;
-  };
-
-  const [basePageId, setBasePageId] = useState(page?.id);
-
-  const [fullPath, setFullPath] = useState(() =>
-    getFullPathFromCurrent(page?.id, story)
-  );
-
-  const handleGameOver = async () => {
-    const storyId = meta?.id;
-    if (storyId) {
-      await clearProgressOnly(storyId);
-    }
-    router.replace("/storyList");
-  };
-
+  // Pan Responder
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_, gestureState) => {
         const { dx, dy } = gestureState;
-        // Only claim responder if the swipe is primarily horizontal
-        // and has moved a minimum distance.
         return Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10;
       },
-      onPanResponderRelease: (
-        _: GestureResponderEvent,
-        gestureState: PanResponderGestureState
-      ) => {
-        const dx = gestureState.dx;
+      onPanResponderRelease: (_, gestureState) => {
+        const { dx } = gestureState;
         const threshold = 50;
         const currentPage = pageRef.current;
         const currentHistory = historyRef.current;
-
         const gameOverText = t("gameOver")?.toLowerCase();
-
         const isGameOverPage = currentPage?.choices?.some(
           (choice) =>
-            choice.text
-              .replace(
-                /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
-                ""
-              )
-              .trim()
-              .toLowerCase() === gameOverText
+            choice.text.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "").trim().toLowerCase() === gameOverText
         );
 
         if (isGameOverPage || !showText) {
-          // 🚫 Disable all gestures — must tap button
-          console.log("🚫 Gestures blocked on Game Over screen");
           return;
         }
 
@@ -274,7 +207,6 @@ const StoryContent = ({
             choiceRefs.current.forEach((ref) => ref?.pulse?.());
           }
         } else if (dx > threshold && currentHistory.length > 0) {
-          console.log("Current History: ", currentHistory);
           const prev = [...currentHistory];
           const last = prev.pop();
           setHistory(prev);

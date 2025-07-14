@@ -229,8 +229,8 @@ const styles = (theme: "light" | "dark") => {
       borderWidth: 1,
       borderColor:
         theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
-      alignItems: "center", // ✅ center horizontally
-      justifyContent: "center", // ✅ center vertically (optional)
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     chapterText: {

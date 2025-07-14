@@ -30,7 +30,7 @@ export function ThemedText({
       accessible={rest.accessible}
       accessibilityLabel={rest.accessibilityLabel}
       accessibilityRole={rest.accessibilityRole}
-      {...rest} // ✅ fallback for any other accessibility or text props
+      {...rest} // fallback for any other accessibility or text props
     />
   );
 }

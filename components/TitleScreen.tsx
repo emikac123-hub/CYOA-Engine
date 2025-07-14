@@ -17,7 +17,7 @@ import { clearProgress, getLastPlayedStory } from "../storage/progressManager";
 import GleamingButton from "./GleamingButton";
 import { useLanguage } from "../localization/LanguageProvider";
 
-// 👇 Import your background image
+// Import your background image
 const background = require("../assets/images/Two-Roads.png");
 
 export default function TitleScreen() {
@@ -59,7 +59,7 @@ export default function TitleScreen() {
   useEffect(() => {
     const fetchProgress = async () => {
       const progress = await getLastPlayedStory();
-      console.log("📦 Last Played Progress:", progress);
+      console.log("Last Played Progress:", progress);
       setLastPlayed(progress);
     };
     fetchProgress();

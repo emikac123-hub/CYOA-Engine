@@ -47,7 +47,7 @@ const StoryLoaderGate = ({
         setStoryData({ meta, story, chapters });
         setError(null);
       } catch (err: any) {
-        console.error("❌ Failed to load story:", err);
+        console.error("Failed to load story:", err);
         setError(err.message || "Failed to load story");
       }
     };

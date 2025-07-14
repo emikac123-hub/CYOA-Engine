@@ -215,7 +215,12 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   }, [page, t]);
 
   const handleChoice = async (fromId: string, nextId: string) => {
-    setHistory((prev) => [...prev, fromId]);
+    setHistory((prev) => [...prev.filter((id) => id !== "GameOver"), fromId]);
+
+    if (currentPageId === "GameOver") {
+      router.replace("/");
+      return;
+    }
 
     const unlocked = await isStoryUnlocked(meta.id);
     const nextCount = decisionCount + 1;
@@ -225,15 +230,17 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
     }
 
     const currentPage = story.find((p) => p.id === fromId);
+    const newDecisionPath = getFullPathFromCurrent(nextId, story);
     if (currentPage?.choices.length > 1) {
-      console.log("Saving the next descition path.")
+      console.log("Saving the next descition path.");
       // 🌱 New decision made — calculate and store new linear path
-      const newDecisionPath = getFullPathFromCurrent(nextId, story); // ✅ use nextId
-      console.log("Decision Path to be saved.", newDecisionPath)
+      console.log("Decision Path to be saved.", newDecisionPath);
       await saveDecisionPathWithKey(meta.id, nextId, newDecisionPath); // ✅ store path for nextId
     }
 
-    await saveProgress(meta.id, nextId);
+    if (!newDecisionPath.includes("GameOver")) {
+      await saveProgress(meta.id, nextId);
+    }
     setCurrentPageId(nextId);
     setDecisionCount(nextCount);
   };
@@ -252,10 +259,16 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
 
   useEffect(() => {
     const maybeSaveDecisionPath = async () => {
-      const decisionPath = getFullPathFromCurrent(currentPageId, story);
-      let match = findMatchingDecisionPath(meta.id, currentPageId);
-      if (currentPageId === 'intro') {
-        await saveDecisionPathWithKey(meta.id, currentPageId, decisionPath);
+      console.log("Current Page ID " + page?.id);
+      const decisionPath = getFullPathFromCurrent(page?.id, story);
+      const existing = await findMatchingDecisionPath(meta.id, page?.id);
+
+      if (!existing) {
+        console.log(
+          "📥 No existing path found, saving new decision path for:",
+          page?.id
+        );
+        await saveDecisionPathWithKey(meta.id, page?.id, decisionPath);
       }
     };
 

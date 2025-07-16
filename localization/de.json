@@ -52,6 +52,8 @@
     "unlocked": "Kapitel freigeschaltet!"
   },
   "accessibility": {
+ 
+    "appTitle": "Zwei Wege",
     "languageSelectTitle": "Sprache auswählen",
     "selectLanguage": "Sprache auswählen {{language}}",
     "languageChangeModal": "Bestätigung der Sprachänderung",
@@ -66,7 +68,7 @@
     "startStory": "Geschichte starten {{title}}",
     "continueStory": "{{title}} fortsetzen. Kapitel: {{chapter}}",
     "backToHome": "Zurück zum Startbildschirm",
-    "selectStoryHeader": "Wählen Sie eine Geschichte, um zu beginnen",
+    "selectStoryHeader": "Wählen Sie eine Geschichte, um zu beginnen. Dreifach tippen, um den Fortschritt zu löschen.",
     "chapterUnlocked": "{{title}}. Kapitel {{current}} entsperrt. Doppelklicken, um zu lesen.",
     "currentChapter": "Aktuell ausgewählt.",
     "chapterLocked": "Gesperrtes Kapitel",

@@ -35,7 +35,7 @@
   "gameOver": "Veuillez réessayer !",
   "languageChangeWarning": "Si vous changez de langue, vous serez renvoyé à l’écran d’accueil. Êtes-vous sûr ?",
   "storyList": {
-     "mainTitle": "Les Contes de Covarnius",
+     "mainTitle": "Deux Routes",
     "continueChapter": "Reprendre l'aventure",
     "sampleLimit": "🔓 Extrait seulement ({{count}} choix)",
     "deleteProgressTitle": "Supprimer la Progression?",
@@ -52,6 +52,8 @@
     "unlocked": "Chapitre débloqué !"
   },
   "accessibility": {
+    
+       "appTitle": "Deux Routes",
     "languageSelectTitle": "Sélectionner la langue",
     "selectLanguage": "Sélectionner la langue {{language}}",
     "languageChangeModal": "Confirmation de changement de langue",
@@ -66,7 +68,7 @@
     "startStory": "Commencer l'histoire {{title}}",
     "continueStory": "Continuer {{title}}. Chapitre: {{chapter}}",
     "backToHome": "Retourner à l'écran d'accueil",
-    "selectStoryHeader": "Sélectionner une histoire pour commencer",
+    "selectStoryHeader": "Sélectionner une histoire pour commencer. Touchez trois fois pour supprimer la progression.",
     "chapterUnlocked": "{{title}}. Chapitre {{current}} débloqué. Double-tapez pour lire.",
     "currentChapter": "Chapitre actuellement sélectionné.",
     "chapterLocked": "Chapitre verrouillé",

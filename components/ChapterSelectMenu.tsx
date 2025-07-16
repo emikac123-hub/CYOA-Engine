@@ -11,6 +11,7 @@ import {
   PixelRatio,
 } from "react-native";
 import Modal from "react-native-modal";
+import { useAccessibility } from "../accessibility/AccessibilityService";
 import { useLanguage } from "../localization/LanguageProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -42,6 +43,7 @@ const ChapterSelectMenu = ({
 }: ChapterSelectMenuProps) => {
   const numberOfDuplicateChaptersAndHomeScreen = 2;
   const { t } = useLanguage();
+  const { isScreenReaderEnabled } = useAccessibility();
   const { theme } = useTheme();
   const s = styles(theme);
   const insets = useSafeAreaInsets();
@@ -83,112 +85,228 @@ const ChapterSelectMenu = ({
       accessibilityViewIsModal={accessibilityViewIsModal}
       accessible={accessible}
     >
-      <SafeAreaView
-        style={[
-          s.safeArea,
-          {
-            paddingTop: insets.top + 16,
-            height: Dimensions.get("window").height * 0.75,
-          },
-        ]}
-      >
-        <View style={[s.header, { paddingHorizontal: 20 }]}>
-          <Ionicons
-            name="book-outline"
-            size={24}
-            color={theme === "dark" ? "#fff" : "#000"}
-          />
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+      {isScreenReaderEnabled ? (
+        // ✅ Simpler version for VoiceOver / TalkBack
+        <SafeAreaView style={[s.safeArea, { padding: 20 }]}>
+          <Text
+            style={[s.title, { marginBottom: 16 }]}
+            accessibilityRole="header"
           >
-            <Text style={s.title}>{t("chapterMenu.selectChapter")}</Text>
-            <Text
-              style={[s.progressText, { fontStyle: "italic", marginTop: 4 }]}
-            >
-              {`${unlockedCount}/${
-                totalChapters - numberOfDuplicateChaptersAndHomeScreen || "?"
-              } ${t("chapterMenu.chaptersUnlocked")}`}
-            </Text>
-          </View>
-          <Ionicons name="book-outline" size={24} color="transparent" />
-        </View>
+            {t("chapterMenu.selectChapter")}
+          </Text>
 
-        <FlatList
-          data={chaptersWithStatus}
-          keyExtractor={(item, index) => `${item.id || item.title}-${index}`}
-          renderItem={({ item }) => {
-            const isActive = item.id === currentPageId;
-            const card = (
-              <View
-                style={[
-                  s.lockedChapterContent,
-                  {
-                    backgroundColor:
-                      theme === "dark"
-                        ? "rgba(0,0,0,0.3)"
-                        : "rgba(255,255,255,0.3)",
-                  },
-                ]}
-              >
-                <Ionicons
-                  name="lock-closed-outline"
-                  size={20}
-                  color={theme === "dark" ? "#ccc" : "#555"}
-                />
-              </View>
-            );
-
-            return (
-              <View style={{ paddingHorizontal: 20 }}>
-                {item.unlocked ? (
-                  <TouchableOpacity
-                    onPress={() => onSelectChapter(item)}
-                    style={[s.chapterButton, isActive && s.activeChapterButton]}
-                    accessibilityRole="button"
-                    accessibilityLabel={t("accessibility.chapterUnlocked", {
+          {chaptersWithStatus.map((item, index) => (
+            <TouchableOpacity
+              key={`${item.id}-${index}`}
+              onPress={() => item.unlocked && onSelectChapter(item)}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={
+                item.unlocked
+                  ? t("accessibility.chapterUnlocked", {
                       title: item.title,
-                      current: isActive
-                        ? t("accessibility.currentChapter")
-                        : "",
-                    })}
-                    accessible={true}
-                  >
-                    <Text
-                      style={[s.chapterText, isActive && s.activeChapterText]}
-                      allowFontScaling
-                    >
-                      {item.title}
-                    </Text>
-                  </TouchableOpacity>
-                ) : (
-                  <LinearGradient
-                    colors={
-                      theme === "dark"
-                        ? ["#00f0ff", "#0ff", "#00f0ff"]
-                        : ["#00ccff", "#66f2ff", "#00ccff"]
-                    }
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={s.lockedChapterBorder}
-                  >
-                    <FallbackBlurView
-                      intensity={60}
-                      tint={theme === "dark" ? "dark" : "light"}
-                      style={s.lockedChapterBlur}
+                      current:
+                        item.id === currentPageId
+                          ? t("accessibility.currentChapter")
+                          : "",
+                    })
+                  : t("accessibility.chapterLocked")
+              }
+              accessibilityHint={
+                item.unlocked
+                  ? t("accessibility.selectChapterHint")
+                  : t("accessibility.chapterLockedHint")
+              }
+              disabled={!item.unlocked}
+              style={[
+                {
+                  backgroundColor: item.unlocked ? "#007AFF" : "#ccc",
+                  padding: 14,
+                  marginBottom: 12,
+                  borderRadius: 10,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  color: "#fff",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                {item.title}
+              </Text>
+            </TouchableOpacity>
+          ))}
+
+          <TouchableOpacity
+            onPress={onClose}
+            accessibilityRole="button"
+            accessibilityLabel={t("accessibility.closeChapterMenu")}
+            style={{
+              backgroundColor: "#444",
+              padding: 14,
+              marginTop: 24,
+              borderRadius: 10,
+            }}
+          >
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: 16,
+                textAlign: "center",
+                fontWeight: "600",
+              }}
+            >
+              {t("accessibility.close")}
+            </Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      ) : (
+        // ❖ Your ex
+        <SafeAreaView
+          style={[
+            s.safeArea,
+            {
+              paddingTop: insets.top + 16,
+              height: Dimensions.get("window").height * 0.75,
+            },
+          ]}
+          accessible={true}
+          accessibilityViewIsModal={true}
+          accessibilityLabel={
+            accessibilityLabel || t("accessibility.chapterMenuModal")
+          }
+          importantForAccessibility="yes"
+        >
+          <View style={[s.header, { paddingHorizontal: 20 }]}>
+            <TouchableOpacity
+              onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel={t("accessibility.close")}
+              accessible={true}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons
+                name="close"
+                size={28}
+                color={theme === "dark" ? "#fff" : "#000"}
+              />
+            </TouchableOpacity>
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={s.title}>{t("chapterMenu.selectChapter")}</Text>
+              <Text
+                style={[s.progressText, { fontStyle: "italic", marginTop: 4 }]}
+              >
+                {`${unlockedCount}/${
+                  totalChapters - numberOfDuplicateChaptersAndHomeScreen || "?"
+                } ${t("chapterMenu.chaptersUnlocked")}`}
+              </Text>
+            </View>
+            <FallbackBlurView
+              tint={theme === "dark" ? "dark" : "light"}
+              intensity={60}
+              style={{
+                borderRadius: 20,
+                padding: 6,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Ionicons name="book-outline" size={24} color="transparent" />
+            </FallbackBlurView>
+          </View>
+
+          <FlatList
+            data={chaptersWithStatus}
+            keyExtractor={(item, index) => `${item.id || item.title}-${index}`}
+            renderItem={({ item }) => {
+              const isActive = item.id === currentPageId;
+              const card = (
+                <View
+                  style={[
+                    s.lockedChapterContent,
+                    {
+                      backgroundColor:
+                        theme === "dark"
+                          ? "rgba(0,0,0,0.3)"
+                          : "rgba(255,255,255,0.3)",
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name="lock-closed-outline"
+                    size={20}
+                    color={theme === "dark" ? "#ccc" : "#555"}
+                  />
+                </View>
+              );
+
+              return (
+                <View style={{ paddingHorizontal: 20 }}>
+                  {item.unlocked ? (
+                    <TouchableOpacity
+                      onPress={() => onSelectChapter(item)}
+                      style={[
+                        s.chapterButton,
+                        isActive && s.activeChapterButton,
+                      ]}
+                      accessibilityRole="button"
+                      accessibilityLabel={t("accessibility.chapterUnlocked", {
+                        title: item.title,
+                        current: isActive
+                          ? t("accessibility.currentChapter")
+                          : "",
+                      })}
                       accessible={true}
-                      accessibilityLabel={t("accessibility.chapterLocked")}
-                      accessibilityRole="text"
+                      accessibilityTraits={["button"]}
+                      importantForAccessibility="yes"
                     >
-                      {card}
-                    </FallbackBlurView>
-                  </LinearGradient>
-                )}
-              </View>
-            );
-          }}
-          contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
-        />
-      </SafeAreaView>
+                      <Text
+                        style={[s.chapterText, isActive && s.activeChapterText]}
+                        allowFontScaling
+                        accessibilityRole="text"
+                      >
+                        {item.title}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <LinearGradient
+                      colors={
+                        theme === "dark"
+                          ? ["#00f0ff", "#0ff", "#00f0ff"]
+                          : ["#00ccff", "#66f2ff", "#00ccff"]
+                      }
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={s.lockedChapterBorder}
+                    >
+                      <FallbackBlurView
+                        intensity={60}
+                        tint={theme === "dark" ? "dark" : "light"}
+                        style={s.lockedChapterBlur}
+                        accessible={true}
+                        accessibilityLabel={t("accessibility.chapterLocked")}
+                        accessibilityRole="text"
+                      >
+                        {card}
+                      </FallbackBlurView>
+                    </LinearGradient>
+                  )}
+                </View>
+              );
+            }}
+            contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+          />
+        </SafeAreaView>
+      )}
     </Modal>
   );
 };

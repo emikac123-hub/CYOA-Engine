@@ -53,6 +53,8 @@
     "unlocked": "¡Capítulo desbloqueado!"
   },
   "accessibility": {
+  
+            "appTitle": "Dos Caminos",
     "languageSelectTitle": "Seleccionar idioma",
     "selectLanguage": "Seleccionar idioma {{language}}",
     "languageChangeModal": "Confirmación de cambio de idioma",
@@ -67,7 +69,7 @@
     "startStory": "Comenzar historia {{title}}",
     "continueStory": "Continuar {{title}}. Capítulo: {{chapter}}",
     "backToHome": "Regresar a la pantalla de inicio",
-    "selectStoryHeader": "Selecciona una historia para comenzar",
+    "selectStoryHeader": "Selecciona una historia para comenzar. Toca tres veces para borrar el progreso.",
     "chapterUnlocked": "{{title}}. Capítulo {{current}} desbloqueado. Toca dos veces para leer.",
     "currentChapter": "Capítulo actual seleccionado.",
     "chapterLocked": "Capítulo bloqueado",

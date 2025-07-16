@@ -21,6 +21,8 @@ languages.forEach((lang) => {
     beforeAll(() => {
       const storyData = JSON.parse(fs.readFileSync(filePath, "utf8"));
       const storyBlock = storyData[Object.keys(storyData)[0]];
+      console.log("STORY BLOCK")
+      console.log(storyBlock)
       story = storyBlock.story;
     });
 
@@ -149,7 +151,7 @@ languages.forEach((lang) => {
 
     test("No page should have a choice that loops back to itself (id === nextId)", () => {
       const selfLinking = [];
-
+      console.log("STORY " + story)
       story.forEach((page) => {
         if (page.choices) {
           page.choices.forEach((choice) => {
@@ -164,9 +166,9 @@ languages.forEach((lang) => {
       });
 
       if (selfLinking.length > 0) {
-        console.warn(`⚠️ ${lang.toUpperCase()} has self-linking pages:`);
+        console.log(`⚠️ ${lang.toUpperCase()} has self-linking pages:`);
         selfLinking.forEach((p, i) => {
-          console.warn(`  ${i + 1}. ID: ${p.id} links to itself → "${p.text}"`);
+          console.log(`  ${i + 1}. ID: ${p.id} links to itself → "${p.text}"`);
         });
       }
 

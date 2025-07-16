@@ -141,8 +141,6 @@ export const saveDecisionPathWithKey = async (
   path: string[]
 ) => {
   const key = getDecisionPathKey(storyId, pageId);
-  console.log("Stoy ID Being Saved: " + key);
-  console.log("Path being saved: " + path);
   await AsyncStorage.setItem(key, JSON.stringify(path));
 };
 /**

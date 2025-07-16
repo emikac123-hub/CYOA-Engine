@@ -55,14 +55,18 @@ const ChoiceButton = forwardRef<ChoiceButtonRef, ChoiceButtonProps>(
       <Animated.View style={{ transform: [{ scale }] }}>
         <Pressable
           onPress={onPress}
-          style={[s.choiceButton, style]}
+          style={({ pressed }) => [
+            s.choiceButton,
+            pressed && {
+              backgroundColor: theme === "dark" ? "#2a2a2a" : "#e6e6e6",
+              transform: [{ scale: 0.98 }],
+            },
+            style,
+          ]}
           accessibilityRole="button"
           accessibilityLabel={text}
         >
-          <Text
-            style={[s.choiceText, textStyle]}
-            allowFontScaling={true}
-          >
+          <Text style={[s.choiceText, textStyle]} allowFontScaling={true}>
             {text}
           </Text>
         </Pressable>
@@ -74,16 +78,24 @@ const ChoiceButton = forwardRef<ChoiceButtonRef, ChoiceButtonProps>(
 const styles = (theme: "light" | "dark", fontScale: number) =>
   StyleSheet.create({
     choiceButton: {
-      backgroundColor: theme === "dark" ? "#333" : "#e0e0e0",
-      padding: 12 * fontScale,
-      borderRadius: 10,
-      marginBottom: 14,
-      borderColor: theme === "dark" ? "#555" : "#ccc",
+      backgroundColor: theme === "dark" ? "#222" : "#f0f0f0",
+      paddingVertical: 14 * fontScale,
+      paddingHorizontal: 20,
+      borderRadius: 20,
+      marginBottom: 16,
       borderWidth: 1,
+      borderColor: theme === "dark" ? "#444" : "#ddd",
+      shadowColor: "#000",
+      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 6,
+      elevation: 3, // Android shadow
     },
     choiceText: {
       color: theme === "dark" ? "#fff" : "#000",
-      fontSize: 16 * fontScale,
+      fontSize: 17 * fontScale,
+      fontWeight: "600",
+      letterSpacing: 0.3,
       textAlign: "center",
     },
   });

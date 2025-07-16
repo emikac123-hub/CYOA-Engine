@@ -6,7 +6,7 @@
       "backgroundColor": "#000000"
     },
     "name": "choose-your-own-adventure",
-    "slug": "choose-your-own-adventure",
+    "slug": "two-roads",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -14,14 +14,19 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.killerwolf.tworoads",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.killerwolf.tworoads"
     },
     "web": {
       "bundler": "metro",
@@ -42,6 +47,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8d104825-73c6-458e-a9f0-bbd763ad8059"
+      }
+    },
+    "owner": "killerwolf"
   }
 }

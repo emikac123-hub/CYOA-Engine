@@ -52,6 +52,8 @@
     "unlocked": "Chapter Unlocked!"
   },
   "accessibility": {
+      
+        "appTitle": "Two Roads",
     "languageSelectTitle": "Select language",
     "selectLanguage": "Select language {{language}}",
     "languageChangeModal": "Language change confirmation",
@@ -66,7 +68,7 @@
     "startStory": "Start story {{title}}",
     "continueStory": "Continue {{title}}. Chapter: {{chapter}}",
     "backToHome": "Return to home screen",
-    "selectStoryHeader": "Select a story to begin",
+    "selectStoryHeader": "Select a story to begin. Triple tap to delete progress.",
     "chapterUnlocked": "{{title}}. {{current}} Chapter unlocked. Double-tap to read.",
     "currentChapter": "Currently selected.",
     "chapterLocked": "Locked chapter",
@@ -93,7 +95,7 @@
   "error": {
     "storyLoadFailed": "Unable to load story: {{message}}"
   },
-    "hint": {
+  "hint": {
     "longPressToReveal": "Long press to remove text.",
     "tapToRestore": "Tap screen to restore."
   }

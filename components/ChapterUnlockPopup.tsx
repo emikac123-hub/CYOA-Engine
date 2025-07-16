@@ -14,6 +14,7 @@ import { useTheme } from "context/ThemeContext";
 import { stripEmoji } from "app/story";
 import { PixelRatio } from "react-native";
 import { Audio } from "expo-av";
+import { useAccessibility } from "accessibility/AccessibilityService"; // adjust path if needed
 
 type ChapterUnlockPopupProps = {
   visible: boolean;
@@ -35,7 +36,26 @@ const ChapterUnlockPopup = ({
   const { theme } = useTheme();
   const s = styles(theme);
   const chapterUnlockedSound = useRef<Audio.Sound | null>(null);
+  const titleRef = useRef<View>(null);
+  const { isScreenReaderEnabled } = useAccessibility();
+  useEffect(() => {
+    let timeout: NodeJS.Timeout | null = null;
 
+    if (visible && isScreenReaderEnabled) {
+      timeout = setTimeout(() => {
+        onClose();
+      }, 6000); // Auto-close after 6 seconds if accessibility is on
+    }
+
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [visible, isScreenReaderEnabled]);
+  useEffect(() => {
+    if (visible && titleRef.current) {
+      titleRef.current.setNativeProps({ accessibilityFocus: true });
+    }
+  }, [visible]);
   useEffect(() => {
     let isMounted = true;
     const loadAndPlay = async () => {
@@ -64,12 +84,18 @@ const ChapterUnlockPopup = ({
       animationType="fade"
       visible={visible}
       accessibilityLabel={accessibilityLabel}
+      accessibilityHint={t("accessibility.popupWillCloseAutomatically")}
       accessibilityViewIsModal={accessibilityViewIsModal}
       accessible={accessible}
       accessibilityRole={accessibilityRole}
     >
       {visible && (
-        <View style={s.overlay}>
+        <View
+          style={s.overlay}
+          accessible={true}
+          accessibilityViewIsModal={true}
+          importantForAccessibility="yes"
+        >
           <ConfettiCannon
             count={80}
             origin={{ x: 200, y: 0 }}
@@ -85,7 +111,7 @@ const ChapterUnlockPopup = ({
             end={{ x: 1, y: 1 }}
             style={s.gradientBorder}
           >
-            <View style={s.innerBox} accessible={true}>
+            <View style={s.innerBox} accessible={true} ref={titleRef}>
               <Text
                 style={s.subtitle}
                 allowFontScaling

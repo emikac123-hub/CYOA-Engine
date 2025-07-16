@@ -35,6 +35,7 @@
   "gameOver": "Leik Lokið",
   "languageChangeWarning": "Ef þú breytir tungumáli verður þér vísað aftur á upphafsskjáinn. Ertu viss?",
   "storyList": {
+     
      "mainTitle": "Sögur af Kóvarníus",
     "continueChapter": "Haltu áfram ævintýrinu",
     "sampleLimit": "🔓 Aðeins sýnishorn ({{count}} valmöguleikar)",
@@ -53,6 +54,7 @@
     "unlocked": "Kafli opnaður!"
   },
   "accessibility": {
+ "appTitle": "Tveir Stígar",
     "languageSelectTitle": "Velja tungumál",
     "selectLanguage": "Velja tungumál {{language}}",
     "languageChangeModal": "Staðfesting á tungumálabreytingu",
@@ -67,7 +69,7 @@
     "startStory": "Byrja sögu {{title}}",
     "continueStory": "Halda áfram {{title}}. Kafli: {{chapter}}",
     "backToHome": "Skila til baka á heimasíðu",
-    "selectStoryHeader": "Veldu sögu til að byrja",
+    "selectStoryHeader": "Veldu sögu til að byrja. Þrýstu þrisvar til að eyða framvindu.",
     "chapterUnlocked": "{{title}}. Kafli {{current}} opnaður. Smelltu tvisvar til að lesa.",
     "currentChapter": "Valinn núna.",
     "chapterLocked": "Læstur kafli",

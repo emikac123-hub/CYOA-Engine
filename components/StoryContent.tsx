@@ -11,9 +11,12 @@ import {
   ScrollView,
   ImageBackground,
   Easing,
+  AccessibilityInfo,
+  TouchableOpacity,
 } from "react-native";
 import { TouchableWithoutFeedback } from "react-native";
 import * as Haptics from "expo-haptics";
+import { useAccessibility } from "../accessibility/AccessibilityService";
 import { Pressable } from "react-native";
 import { useTheme } from "context/ThemeContext";
 import { storyStyles } from "./storyStyles";
@@ -60,7 +63,7 @@ const StoryContent = ({
   const flashOverlayOpacity = useRef(new Animated.Value(0)).current;
   const textOpacity = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
-
+  const { isScreenReaderEnabled } = useAccessibility();
   // State
   const [resolvedImage, setResolvedImage] = useState(null);
   const [showText, setShowText] = useState(true);
@@ -73,9 +76,25 @@ const StoryContent = ({
   const LAST_IMAGE_KEY = "lastUsedStoryImage";
 
   // Helper Functions
-  const getPageCounter = (path: string[], currentPageId: string): { x: number; y: number } => {
+  const counterRef = useRef<View>(null);
+
+  useEffect(() => {
+    if (isScreenReaderEnabled && isSingleContinue) {
+      const timer = setTimeout(() => {
+        counterRef.current?.focus(); // On Android: might need accessibilityFocus() native call
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [pageX, pageY]);
+  const getPageCounter = (
+    path: string[],
+    currentPageId: string
+  ): { x: number; y: number } => {
     const index = path.indexOf(currentPageId);
-    return index === -1 ? { x: 0, y: path.length } : { x: index + 1, y: path.length };
+    return index === -1
+      ? { x: 0, y: path.length }
+      : { x: index + 1, y: path.length };
   };
 
   const handleRestoreText = () => {
@@ -91,8 +110,16 @@ const StoryContent = ({
   const handleLongPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     Animated.sequence([
-      Animated.timing(flashOverlayOpacity, { toValue: 0.5, duration: 100, useNativeDriver: true }),
-      Animated.timing(flashOverlayOpacity, { toValue: 0, duration: 100, useNativeDriver: true }),
+      Animated.timing(flashOverlayOpacity, {
+        toValue: 0.5,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(flashOverlayOpacity, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }),
     ]).start();
     Animated.timing(textOpacity, {
       toValue: 0,
@@ -115,8 +142,18 @@ const StoryContent = ({
     if (!isIntro) return;
     const pulse = Animated.loop(
       Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.1, duration: 800, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1, duration: 800, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(pulseAnim, {
+          toValue: 1.1,
+          duration: 800,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 800,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
       ])
     );
     pulse.start();
@@ -131,17 +168,28 @@ const StoryContent = ({
   useEffect(() => {
     historyRef.current = history;
   }, [history]);
-
+  useEffect(() => {
+    if (isScreenReaderEnabled && isSingleContinue) {
+      AccessibilityInfo.announceForAccessibility(
+        t("accessibility.pageProgress", {
+          current: pageX,
+          total: pageY,
+        })
+      );
+    }
+  }, [pageX, pageY, isScreenReaderEnabled]);
   // Image Resolving
   useEffect(() => {
     const resolveImage = async () => {
       let imagePath = page.image;
+      console.log("Image path before checking: " + imagePath)
       if (!imagePath || imagePath.trim() === "") {
         const lastImage = await AsyncStorage.getItem(LAST_IMAGE_KEY);
-        setResolvedImage(imageMap[lastImage] || fallbackImage);
+        console.log("Last Image: " + lastImage)
+        setResolvedImage(imageMap[lastImage] );
       } else {
         await AsyncStorage.setItem(LAST_IMAGE_KEY, imagePath);
-        setResolvedImage(imageMap[imagePath] || fallbackImage);
+        setResolvedImage(imageMap[imagePath]);
       }
     };
     resolveImage();
@@ -183,7 +231,13 @@ const StoryContent = ({
         const gameOverText = t("gameOver")?.toLowerCase();
         const isGameOverPage = currentPage?.choices?.some(
           (choice) =>
-            choice.text.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "").trim().toLowerCase() === gameOverText
+            choice.text
+              .replace(
+                /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
+                ""
+              )
+              .trim()
+              .toLowerCase() === gameOverText
         );
 
         if (isGameOverPage || !showText) {
@@ -220,6 +274,46 @@ const StoryContent = ({
 
   return (
     <>
+      {isScreenReaderEnabled && (
+        <View
+          style={{
+            position: "absolute",
+            top: 80,
+            left: 0,
+            right: 0,
+            alignItems: "center",
+            zIndex: 999,
+          }}
+        >
+          <TouchableOpacity
+            accessible={true}
+            accessibilityRole="text"
+            accessibilityLabel={t("accessibility.pageProgress", {
+              current: pageX,
+              total: pageY,
+              remaining: pageY - pageX,
+            })}
+            accessibilityLiveRegion="polite"
+            style={{
+              backgroundColor: theme === "dark" ? "#333" : "#eee",
+              paddingVertical: 8,
+              paddingHorizontal: 16,
+              borderRadius: 20,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "600",
+                color: theme === "dark" ? "#fff" : "#000",
+              }}
+            >
+              {pageX} / {pageY}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {showText && page?.choices?.length === 1 && (
         <Pressable
           onPress={() => {
@@ -253,6 +347,7 @@ const StoryContent = ({
                 : "rgba(255, 255, 255, 0.0)",
           }}
         />
+
         <View {...panResponder.panHandlers} style={s.container}>
           <Animated.View
             style={[s.textContainer, { opacity: fadeAnim }]}
@@ -261,16 +356,15 @@ const StoryContent = ({
             accessibilityRole="text"
           >
             <ScrollView
-              contentContainerStyle={[
-                s.scrollContainer,
-                {
-                  paddingTop: insets.top + 12,
-                  paddingBottom: 24,
-                  flex: 1,
-                  justifyContent: "center",
-                },
-              ]}
-              showsVerticalScrollIndicator={true}
+              style={{ flex: 1 }}
+              contentContainerStyle={{
+                flexGrow: 1,
+                justifyContent: "center",
+                padding: 20,
+              }}
+              keyboardShouldPersistTaps="handled"
+              scrollEnabled={true}
+              showsVerticalScrollIndicator={false}
             >
               {!showText && isIntro && (
                 <View style={s.tapToRevealMessage}>
@@ -280,6 +374,7 @@ const StoryContent = ({
                   </Text>
                 </View>
               )}
+
               {page.text?.length > 1 && showText ? (
                 <Animated.View
                   style={[s.blurWrapper, { opacity: textOpacity }]}
@@ -307,7 +402,9 @@ const StoryContent = ({
                         />
 
                         {/* Main story text */}
-                        <Text style={s.storyText}>{page.text}</Text>
+                        <Text style={s.storyText} allowFontScaling={true}>
+                          {page.text}
+                        </Text>
 
                         {/* Hint text with pulse */}
                         {isIntro && (
@@ -330,7 +427,6 @@ const StoryContent = ({
               )}
             </ScrollView>
           </Animated.View>
-
           <View style={s.storyContent} pointerEvents="box-none">
             <View style={s.choicesContainer}>
               {page.choices.map((choice, index) => {
@@ -365,7 +461,7 @@ const StoryContent = ({
                 );
               })}
             </View>
-            {isSingleContinue && (
+            {isSingleContinue && !isScreenReaderEnabled && (
               <Text
                 style={styles.pageCounter}
                 accessibilityLabel={t("accessibility.pageProgress", {

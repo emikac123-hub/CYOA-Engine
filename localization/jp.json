@@ -3,7 +3,7 @@
     "clearHint": "長押ししてストーリーデータを削除",
     "mainTitleTop": "二つ",
     "mainTitleBottom": "の道",
-     
+
     "start": "新しい冒険を始める",
     "continue": "🕹️ 次へ",
     "delete": "削除",
@@ -54,6 +54,7 @@
     "unlocked": "チャプターをアンロック！"
   },
   "accessibility": {
+    "appTitle": "二つの道",
     "languageSelectTitle": "言語を選択",
     "selectLanguage": "言語を選択 {{language}}",
     "languageChangeModal": "言語変更確認",
@@ -68,7 +69,7 @@
     "startStory": "ストーリーを開始 {{title}}",
     "continueStory": "{{title}} を続ける。章: {{chapter}}",
     "backToHome": "ホーム画面に戻る",
-    "selectStoryHeader": "冒険を始めるためにストーリーを選択",
+    "selectStoryHeader": "冒険を始めるためにストーリーを選択. 進行状況を削除するには3回タップしてください。",
     "chapterUnlocked": "{{title}}。{{current}} 章がアンロックされました。ダブルタップで読む。",
     "currentChapter": "現在選択中。",
     "chapterLocked": "ロックされた章",

@@ -10,8 +10,8 @@ import {
   saveDecisionPathWithKey,
 } from "../storage/progressManager";
 import { Animated, Easing, TouchableOpacity, View } from "react-native";
+import { useAccessibility } from "../accessibility/AccessibilityService"; // adjust path as needed
 
-import SettingsModal from "../components/SettingsMenu";
 import StoryLoaderGate, { useStory } from "../components/StoryLoaderGate";
 import { loadProgress, saveProgress } from "../storage/progressManager";
 import { isStoryUnlocked } from "../storage/unlockManager";
@@ -22,6 +22,7 @@ import ChapterUnlockPopup from "../components/ChapterUnlockPopup";
 import ChapterSelectMenu from "../components/ChapterSelectMenu";
 import { useTheme } from "../context/ThemeContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import FallbackBlurView from "components/FallBackBlurView";
 
 const StoryScreen = () => {
   const { meta, story, chapters } = useStory(); // ✅ Now includes chapters
@@ -112,7 +113,14 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
   };
 
   // Memoized Values
+  // Determines if the current page should auto-advance with a single "Continue" button.
+  // This logic ensures the page only auto-continues when:
+  // - There is exactly one choice
+  // - The choice text matches the expected "Continue" string (localized and stripped of symbols)
+  // - VoiceOver or TalkBack is NOT active (for accessibility, we want screen reader users to explicitly activate buttons)
+  const { isScreenReaderEnabled } = useAccessibility();
   const isSingleContinue = useMemo(() => {
+    if (isScreenReaderEnabled) return false; // Show the continue button in screen read mode.
     if (!page || !page.choices || page.choices.length !== 1) return false;
     const stripped = (s) =>
       s
@@ -290,12 +298,20 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
           accessibilityLabel={t("accessibility.openChapterMenu")}
           accessibilityRole="button"
         >
-          <Ionicons
-            name="book-outline"
-            size={28}
-            color={theme === "dark" ? "#fff" : "#000"}
-            style={{ opacity: 0.9 }}
-          />
+          <FallbackBlurView
+            tint={theme === "dark" ? "dark" : "light"}
+            intensity={60}
+            style={{
+              width: 44,
+              height: 44,
+              overflow: "hidden",
+              borderRadius: 22,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Ionicons name="book-outline" size={24} />
+          </FallbackBlurView>
         </TouchableOpacity>
       </View>
 
@@ -344,7 +360,7 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
         allChapters={chapters}
         accessibilityLabel={t("accessibility.chapterMenuList")}
         accessibilityViewIsModal={true}
-        accessible={true}
+        accessible={false}
       />
     </View>
   );

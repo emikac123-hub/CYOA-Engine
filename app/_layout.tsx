@@ -4,18 +4,25 @@ import { ThemeProvider } from "../context/ThemeContext"; // ✅ import the corre
 import ThemedHeader from "components/ThemeHeader";
 import { useState } from "react";
 import SettingsModal from "components/SettingsMenu";
-
+import { AccessibilityProvider } from "../accessibility/AccessibilityService";
 export default function RootLayout() {
   const [settingsVisible, setSettingsVisible] = useState(false);
 
   return (
-    <ThemeProvider>
-      <LanguageProvider>
-        <ThemedHeader onSettingsPress={() => setSettingsVisible(true)} />
-          <SettingsModal visible={settingsVisible} onClose={() => setSettingsVisible(false)} />
-        <Stack screenOptions={{ headerShown: false,  gestureEnabled: false, }} />
-      </LanguageProvider>
-    </ThemeProvider>
+    <AccessibilityProvider>
+      <ThemeProvider>
+        <LanguageProvider>
+          <ThemedHeader onSettingsPress={() => setSettingsVisible(true)} />
+          <SettingsModal
+            visible={settingsVisible}
+            onClose={() => setSettingsVisible(false)}
+          />
+          <Stack
+            screenOptions={{ headerShown: false, gestureEnabled: false }}
+          />
+        </LanguageProvider>
+      </ThemeProvider>
+    </AccessibilityProvider>
   );
 }
 

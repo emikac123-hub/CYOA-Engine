@@ -8,10 +8,11 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../context/ThemeContext";
+import FallbackBlurView from "./FallBackBlurView";
 
 type Props = {
   onSettingsPress: () => void;
-} & AccessibilityProps; // allow accessibility props if passed
+} & AccessibilityProps;
 
 export default function ThemedHeader({ onSettingsPress, ...a11yProps }: Props) {
   const { theme } = useTheme();
@@ -20,28 +21,38 @@ export default function ThemedHeader({ onSettingsPress, ...a11yProps }: Props) {
 
   return (
     <View style={[styles.container, { top: insets.top + 10 }]}>
-      <TouchableOpacity
-        onPress={onSettingsPress}
-        accessibilityRole="button"
-        accessibilityLabel="Open settings menu"
-        accessible={true}
-        {...a11yProps} // pass through optional a11y props
+      <FallbackBlurView
+        tint={theme === "dark" ? "dark" : "light"}
+        intensity={60}
+        style={styles.blurWrapper}
       >
-        <Ionicons
-          name="settings-outline"
-          size={28}
-          color={iconColor}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        />
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={onSettingsPress}
+          accessibilityRole="button"
+          accessibilityLabel="Open settings menu"
+          accessible={true}
+          {...a11yProps}
+        >
+          <Ionicons
+            name="settings-outline"
+            size={28}
+            color={iconColor}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          />
+        </TouchableOpacity>
+      </FallbackBlurView>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
     left: 20,
-    zIndex: 100,
+    zIndex: 1000,
+  },
+  blurWrapper: {
+    borderRadius: 100,
+    padding: 8,
+    overflow: "hidden",
   },
 });

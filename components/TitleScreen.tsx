@@ -76,6 +76,7 @@ export default function TitleScreen() {
           <Animated.View style={{ opacity: opacityAnim }}>
             <View style={s.titleContainer}>
               <Animated.Text
+                accessibilityLabel={t("accessibility.appTitle")}
                 style={[
                   s.parallel,
                   { transform: [{ translateX: parallelAnim }] },
@@ -84,9 +85,10 @@ export default function TitleScreen() {
                 {t("titleScreen.mainTitleTop")}
               </Animated.Text>
               <Animated.Text
+                accessibilityLabel={t("accessibility.appTitle")}
                 style={[s.fates, { transform: [{ translateX: fatesAnim }] }]}
               >
-                           {t("titleScreen.mainTitleBottom")}
+                {t("titleScreen.mainTitleBottom")}
               </Animated.Text>
             </View>
           </Animated.View>

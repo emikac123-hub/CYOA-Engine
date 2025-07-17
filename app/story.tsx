@@ -310,7 +310,11 @@ function ActualStoryEngine({ meta, story, chapters, resumePageId }) {
               justifyContent: "center",
             }}
           >
-            <Ionicons name="book-outline" size={24} />
+            <Ionicons
+              name="book-outline"
+              color={theme === "dark" ? "white" : "black"}
+              size={24}
+            />
           </FallbackBlurView>
         </TouchableOpacity>
       </View>

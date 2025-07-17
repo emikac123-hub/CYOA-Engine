@@ -216,11 +216,12 @@ const ChapterSelectMenu = ({
               style={{
                 borderRadius: 20,
                 padding: 6,
+                overflow: "hidden",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Ionicons name="book-outline" size={24} color="transparent" />
+              <Ionicons name="book-outline" size={24} color={theme === "dark" ? "white": "black"} />
             </FallbackBlurView>
           </View>
 

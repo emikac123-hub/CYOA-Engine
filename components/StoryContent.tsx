@@ -27,7 +27,6 @@ import {
 } from "storage/progressManager";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { BlurView } from "expo-blur";
 import imageMap from "assets/imageMap";
 import ChoiceButton from "./ChoiceButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -182,11 +181,11 @@ const StoryContent = ({
   useEffect(() => {
     const resolveImage = async () => {
       let imagePath = page.image;
-      console.log("Image path before checking: " + imagePath)
+      console.log("Image path before checking: " + imagePath);
       if (!imagePath || imagePath.trim() === "") {
         const lastImage = await AsyncStorage.getItem(LAST_IMAGE_KEY);
-        console.log("Last Image: " + lastImage)
-        setResolvedImage(imageMap[lastImage] );
+        console.log("Last Image: " + lastImage);
+        setResolvedImage(imageMap[lastImage]);
       } else {
         await AsyncStorage.setItem(LAST_IMAGE_KEY, imagePath);
         setResolvedImage(imageMap[imagePath]);
@@ -367,10 +366,44 @@ const StoryContent = ({
               showsVerticalScrollIndicator={false}
             >
               {!showText && isIntro && (
-                <View style={s.tapToRevealMessage}>
+                <View
+                  style={{
+                    backgroundColor:
+                      theme === "dark"
+                        ? "rgba(0,0,0,0.6)"
+                        : "rgba(255,255,255,0.7)",
+                    padding: 12,
+                    marginHorizontal: 20,
+                    borderRadius: 12,
+                    marginTop: 10,
+                  }}
+                >
                   <Text style={s.tapToRevealText}>
-                    {`👆 ${t("hint.tapToRestore")}` ||
-                      " Tap the screen to bring back the text"}
+                    👆 Tap to reveal the story
+                  </Text>
+                </View>
+              )}
+              {showText && isIntro && (
+                <View
+                  style={{
+                    backgroundColor:
+                      theme === "dark"
+                        ? "rgba(0,0,0,0.6)"
+                        : "rgba(255,255,255,0.7)",
+                    padding: 12,
+                    marginHorizontal: 20,
+                    borderRadius: 12,
+                    marginTop: 10,
+                  }}
+                >
+                  <Text style={s.tapToRevealText}>
+                    👆 Tap to reveal the story
+                  </Text>
+                  <Text style={s.tapToRevealText}>
+                    👈 Swipe left or tap to go forward
+                  </Text>
+                  <Text style={s.tapToRevealText}>
+                    👉 Swipe right to go back
                   </Text>
                 </View>
               )}
